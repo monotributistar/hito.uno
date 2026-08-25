@@ -1,0 +1,12 @@
+{
+  "id": "carilo-centro-v1",
+  "label": "Cariló, Buenos Aires, Argentina",
+  "center": [-37.1611032, -56.8997873],
+  "bbox": [-37.1692, -56.91, -37.153, -56.8895],
+  "scaleMetersPerUnit": 20,
+  "simplification": {
+    "buildingsMeters": 0.75,
+    "roadsMeters": 1.5,
+    "areasMeters": 1.5
+  }
+}
