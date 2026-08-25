@@ -11,5 +11,16 @@
       "pattern": "hito.uno",
       "custom_domain": true
     }
-  ]
+  ],
+  "env": {
+    "dev": {
+      "name": "hito-uno-dev",
+      "routes": [
+        {
+          "pattern": "dev.hito.uno",
+          "custom_domain": true
+        }
+      ]
+    }
+  }
 }
