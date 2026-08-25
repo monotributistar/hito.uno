@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "source": "OpenStreetMap",
+  "attribution": "© OpenStreetMap contributors",
+  "license": "ODbL",
+  "licenseUrl": "https://www.openstreetmap.org/copyright",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "bbox": [
+    -37.1692,
+    -56.91,
+    -37.153,
+    -56.8895
+  ],
+  "snapshotAt": "2026-08-25T23:16:17.563Z",
+  "querySha256": "7bb7fac91458500dfeb57ac6200c326a6b571ae29da0c99ad15cbca14b565856",
+  "artifactSha256": "a883bbb0558a2ba2e8b60cfb267dd63b9ebe30fce78da7ee5897b6cbf4dc1a1f",
+  "counts": {
+    "sourceWays": 349,
+    "buildings": 230,
+    "roads": 117,
+    "areas": 2,
+    "proceduralTrees": 260
+  }
+}
