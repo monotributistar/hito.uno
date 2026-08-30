@@ -18,7 +18,7 @@ type Props = {
 }
 
 const GOOGLE_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbx_7EtkkcW_it-sHZBaNwcKmSkGjUS8xyDW83l-cmFlsdPNk5OgA_oy21X0crtwpTEVcg/exec'
+  'https://script.google.com/macros/s/AKfycbzPbTpdaGcOrutc0u86gnerx_d0Bm5GOVZ8uQQrmQN33kqPaXSA_HLmIYb8y1N72Qzxiw/exec'
 
 export default function LandingV02({ onSceneFocusChange }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1)
