@@ -5,3 +5,5 @@ dist
 *.local
 *.log
 *.tsbuildinfo
+.clasp.json
+Code.js
