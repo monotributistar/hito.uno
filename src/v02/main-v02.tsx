@@ -1,13 +1,13 @@
 import { lazy, StrictMode, Suspense, useCallback, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import LandingV01 from './LandingV01'
+import LandingV02 from './LandingV02'
 import { experiences, type ExperienceId } from '../experience-data'
 import '../styles.css'
-import './landing-v01.css'
+import './landing-v02.css'
 
 const CariloMap = lazy(() => import('../scene/CariloMap'))
 
-function AppV01() {
+function AppV02() {
   const [sceneFocus, setSceneFocus] = useState<ExperienceId>(experiences[0].id)
   const handleSceneFocusChange = useCallback((id: ExperienceId) => setSceneFocus(id), [])
 
@@ -19,7 +19,7 @@ function AppV01() {
         </Suspense>
       </div>
 
-      <LandingV01 onSceneFocusChange={handleSceneFocusChange} />
+      <LandingV02 onSceneFocusChange={handleSceneFocusChange} />
 
       <a
         className="map-attribution"
@@ -35,6 +35,6 @@ function AppV01() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AppV01 />
+    <AppV02 />
   </StrictMode>,
 )

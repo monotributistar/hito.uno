@@ -18,7 +18,7 @@ type Props = {
 }
 
 const GOOGLE_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbx_7EtkkcW_it-sHZBaNwcKmSkGjUS8xyDW83l-cmFlsdPNk5OgA_oy21X0crtwpTEVcg/exec'
+  'https://script.google.com/macros/s/AKfycbzPbTpdaGcOrutc0u86gnerx_d0Bm5GOVZ8uQQrmQN33kqPaXSA_HLmIYb8y1N72Qzxiw/exec'
 
 export default function LandingV02({ onSceneFocusChange }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1)
@@ -86,8 +86,13 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
     }
 
     try {
+      // no-cors: Apps Script Web Apps no devuelven header Access-Control-Allow-Origin,
+      // así que el navegador bloquea la lectura de la respuesta aunque el POST sí llegue
+      // y el script lo ejecute. Con no-cors el fetch resuelve (respuesta opaca, no legible)
+      // en vez de rechazar por CORS — es la única señal disponible para este patrón.
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload),
       })
