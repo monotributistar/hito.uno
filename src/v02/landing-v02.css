@@ -192,6 +192,24 @@
   margin-bottom: 26px;
 }
 
+.v01-gallery {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 26px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+
+.v01-gallery img {
+  flex: 0 0 auto;
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  border: 1px solid rgba(23, 56, 58, 0.18);
+  scroll-snap-align: start;
+}
+
 .v01-activation {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 60px 300px;

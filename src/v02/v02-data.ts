@@ -6,7 +6,7 @@ export type ObjectKey = 'tarjeta' | 'llavero' | 'apoyavasos' | 'placa' | 'packag
 
 type UseCase = { label: string; description: string; sceneId: ExperienceId }
 type TapAction = { label: string; promise: string }
-type HitoObject = { label: string; moment: string; result: string; sceneId: ExperienceId }
+type HitoObject = { label: string; moment: string; result: string; sceneId: ExperienceId; images?: string[] }
 
 export const useCases: Record<UseCaseKey, UseCase> = {
   networking: {
@@ -49,6 +49,10 @@ export const objects: Record<ObjectKey, HitoObject> = {
     moment: 'Al presentarte.',
     result: 'Contacto guardado, sin tipear.',
     sceneId: 'estudio-juridico',
+    images: Array.from(
+      { length: 12 },
+      (_, index) => `/images/products/tarjeta/tarjeta-${String(index + 1).padStart(2, '0')}.webp`,
+    ),
   },
   llavero: {
     label: 'Llavero',

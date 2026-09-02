@@ -405,6 +405,19 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
           ))}
         </div>
 
+        {object.images && object.images.length > 0 && (
+          <div className="v01-gallery" aria-label={`Fotos de ${object.label}`}>
+            {object.images.map((src, index) => (
+              <img
+                key={src}
+                src={src}
+                alt={`${object.label} Hito.uno — foto ${index + 1}`}
+                loading="lazy"
+              />
+            ))}
+          </div>
+        )}
+
         <div className="v01-activation">
           <div className="v01-object">
             <p className="kicker">OBJETO · {object.label.toUpperCase()}</p>
