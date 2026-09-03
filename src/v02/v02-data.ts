@@ -2,7 +2,7 @@ import type { ExperienceId } from '../experience-data'
 
 export type UseCaseKey = 'networking' | 'ventas' | 'identificacion' | 'producto' | 'evento'
 export type TapActionKey = 'guardar-contacto' | 'abrir-pagina' | 'mostrar-informacion' | 'iniciar-conversacion'
-export type ObjectKey = 'tarjeta' | 'llavero' | 'apoyavasos' | 'placa' | 'packaging' | 'totem'
+export type ObjectKey = 'tarjeta' | 'llavero' | 'apoyavasos' | 'placa' | 'recibidor'
 
 type UseCase = { label: string; description: string; sceneId: ExperienceId }
 type TapAction = { label: string; promise: string }
@@ -110,16 +110,8 @@ export const objects: Record<ObjectKey, HitoObject> = {
     sceneId: 'alojamiento',
     photos: [],
   },
-  packaging: {
-    label: 'Packaging',
-    moment: 'Al abrir el producto.',
-    result: 'Recompra, cuidados y origen.',
-    blurb: 'La caja sigue hablando después de la compra. Origen, cuidados y el camino de vuelta al mostrador.',
-    sceneId: 'pizzeria',
-    photos: [],
-  },
-  totem: {
-    label: 'Tótem',
+  recibidor: {
+    label: 'Recibidor',
     moment: 'Al terminar la compra.',
     result: 'Reseña en dos segundos.',
     blurb: 'Espera en el mostrador el momento exacto en que la compra terminó bien. La reseña llega en dos segundos.',
