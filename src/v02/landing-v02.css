@@ -192,116 +192,187 @@
   margin-bottom: 26px;
 }
 
-.v01-gallery {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 26px;
-  padding-bottom: 4px;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-}
-
-.v01-gallery img {
-  flex: 0 0 auto;
-  width: 220px;
-  height: 220px;
-  object-fit: cover;
-  border: 1px solid rgba(23, 56, 58, 0.18);
-  scroll-snap-align: start;
-}
-
-.v01-activation {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 60px 300px;
-  gap: 20px;
-  align-items: center;
-}
-
-.v01-object {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-height: 220px;
-  justify-content: center;
-  padding: 28px;
+.carousel {
   border: 1px solid rgba(23, 56, 58, 0.18);
   background: rgba(238, 241, 232, 0.82);
+  backdrop-filter: blur(10px);
 }
 
-.v01-object .primary-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 24px;
-  min-height: 48px;
-  padding: 0 18px;
-  border: 1px solid #17383a;
-  border-radius: 3px;
-  width: fit-content;
-  cursor: pointer;
-  text-transform: uppercase;
+.carousel .v01-object-selector {
+  margin-bottom: 0;
+  padding: 20px 20px 16px;
 }
 
-.v01-signal {
+/* Stage ------------------------------------------------------------- */
+/* El 3/2 del spec da ~900px de alto en el contenedor de 1440 de este sitio:
+   el max-height lo mantiene dentro de una pantalla sin cambiar el encuadre
+   horizontal (cover recorta arriba y abajo, donde las fotos tienen aire). */
+.carousel-stage {
+  position: relative;
+  margin: 0 20px;
+  aspect-ratio: 3 / 2;
+  max-height: min(58vh, 560px);
+  overflow: hidden;
+  background: #e2e8df;
+}
+
+.carousel-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 450ms ease;
+}
+
+.carousel-photo.is-current {
+  opacity: 1;
+}
+
+/* La veladura protege la tipografia. Es la misma mecanica que el hero
+   usa sobre el mapa, no un degrade nuevo. */
+.carousel-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(238, 241, 232, 0.97) 0%,
+    rgba(238, 241, 232, 0.86) 26%,
+    rgba(238, 241, 232, 0.08) 56%,
+    transparent 70%
+  );
+}
+
+.carousel-copy {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 18px;
+  width: 34%;
+  padding-left: clamp(20px, 3vw, 44px);
+  pointer-events: none;
 }
 
-.v01-dot {
+.carousel-copy h3 {
+  margin: 0;
+  color: #17383a;
+  font: 500 clamp(1.7rem, 2.3vw, 2.6rem) / 0.96 'DM Sans', sans-serif;
+  letter-spacing: -0.055em;
+  text-wrap: pretty;
+}
+
+.carousel-description {
+  margin: 0;
+  max-width: 250px;
+  color: #466868;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.carousel-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.carousel-signal {
   width: 11px;
   height: 11px;
   border-radius: 50%;
   background: #ed8068;
+  opacity: 0.22;
+  transition: opacity 180ms ease;
 }
 
-.v01-line {
-  width: 1px;
-  height: 64px;
-  background: repeating-linear-gradient(180deg, #ed8068 0 4px, transparent 4px 9px);
+.carousel-signal.is-live {
+  opacity: 1;
 }
 
-.v01-phone {
+/* Controles --------------------------------------------------------- */
+.carousel-controls {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 220px;
-  padding: 16px;
-  border: 1px solid rgba(23, 56, 58, 0.2);
-  border-radius: 22px;
-  background: rgba(238, 241, 232, 0.92);
-}
-
-.v01-phone-notch {
-  width: 44px;
-  height: 4px;
-  border-radius: 2px;
-  margin: 0 auto 4px;
-  background: rgba(23, 56, 58, 0.2);
-}
-
-.v01-phone-result {
-  margin: 0;
-  color: #17383a;
-  font-size: 1.25rem;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-}
-
-.v01-phone-action {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  margin-top: auto;
-  padding: 0 16px;
-  border: 1px solid #17383a;
-  border-radius: 3px;
-  color: #17383a;
-  background: rgba(238, 241, 232, 0.68);
+  gap: 20px;
+  padding: 16px 20px 20px;
+}
+
+.carousel-count {
   font: 700 0.66rem 'Space Mono', monospace;
-  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #4a5f6b;
+}
+
+.carousel-rail {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+}
+
+/* El boton mide 44px de alto; la linea visible es el span interno.
+   El area de click NO puede ser la linea de 2px. */
+.carousel-rail button {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: flex 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.carousel-rail button span {
+  width: 100%;
+  height: 2px;
+  background: rgba(23, 56, 58, 0.2);
+  transition: background 180ms ease, height 180ms ease;
+}
+
+.carousel-rail button.is-current {
+  flex: 3;
+}
+
+.carousel-rail button.is-current span {
+  height: 4px;
+  background: #ed8068;
+}
+
+.carousel-caption {
+  font: 400 0.66rem / 1.4 'Space Mono', monospace;
+  color: #4a5f6b;
+}
+
+.carousel-arrows {
+  display: flex;
+  gap: 6px;
+}
+
+.carousel-arrows button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(23, 56, 58, 0.2);
+  border-radius: 2px;
+  background: none;
+  color: #17383a;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 160ms ease;
+}
+
+.carousel-arrows button.is-primary {
+  border-color: #17383a;
+}
+
+.carousel-arrows button:hover {
+  border-color: #17383a;
 }
 
 .v01-cases-grid {
@@ -452,18 +523,50 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .v01-activation {
-    grid-template-columns: minmax(0, 1fr);
+  /* La veladura entra desde abajo, igual que en el hero. */
+  .carousel-stage {
+    aspect-ratio: 4 / 5;
   }
 
-  .v01-signal {
-    flex-direction: row;
+  /* El recorte 4/5 deja el objeto en el centro, justo detras del texto:
+     se lo sube con object-position y se alarga el tramo opaco del scrim. */
+  .carousel-photo {
+    object-position: center 32%;
   }
 
-  .v01-line {
-    width: 64px;
-    height: 1px;
-    background: repeating-linear-gradient(90deg, #ed8068 0 4px, transparent 4px 9px);
+  .carousel-scrim {
+    background: linear-gradient(
+      0deg,
+      rgba(238, 241, 232, 0.97) 0%,
+      rgba(238, 241, 232, 0.93) 46%,
+      rgba(238, 241, 232, 0.5) 66%,
+      rgba(238, 241, 232, 0.08) 84%,
+      transparent 94%
+    );
+  }
+
+  .carousel-copy {
+    justify-content: flex-end;
+    width: 100%;
+    padding: 0 20px 24px;
+  }
+
+  /* El kicker es lo mas alto del bloque y cae donde la veladura ya cedio */
+  .carousel-copy .kicker {
+    color: #17383a;
+  }
+
+  .carousel-description {
+    max-width: none;
+  }
+
+  .carousel-controls {
+    flex-wrap: wrap;
+  }
+
+  .carousel-caption {
+    order: 3;
+    width: 100%;
   }
 
   .v01-panel {
@@ -475,5 +578,13 @@
     overflow-x: auto;
     border-right: 0;
     border-bottom: 1px solid rgba(23, 56, 58, 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-photo,
+  .carousel-rail button,
+  .carousel-rail button span {
+    transition: none;
   }
 }
