@@ -67,6 +67,11 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
   const photoCount = object.photos.length
   const currentPhoto = photoCount > 0 ? object.photos[photoIndex] : null
 
+  // Al tocar, si el soporte tiene foto de resultado el carrusel cruza a ella:
+  // misma escena, pantalla ya resuelta. Sin resultPhoto solo cambia el texto.
+  const showingResult = tapped && Boolean(object.resultPhoto)
+  const visibleSrc = showingResult ? object.resultPhoto!.src : currentPhoto?.src
+
   // El resultado del toque pertenece a la foto que se estaba viendo:
   // cambiar de foto apaga el estado tocado.
   const goToPhoto = (index: number) => {
@@ -420,17 +425,19 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
           </div>
 
           <div className="carousel-stage">
-            {object.photos.map((photo, index) => (
-              <img
-                key={photo.src}
-                className={index === photoIndex ? 'carousel-photo is-current' : 'carousel-photo'}
-                src={photo.src}
-                alt={photo.alt}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-                aria-hidden={index !== photoIndex}
-              />
-            ))}
+            {(object.resultPhoto ? [...object.photos, object.resultPhoto] : object.photos).map(
+              (photo, index) => (
+                <img
+                  key={photo.src}
+                  className={photo.src === visibleSrc ? 'carousel-photo is-current' : 'carousel-photo'}
+                  src={photo.src}
+                  alt={photo.alt}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  aria-hidden={photo.src !== visibleSrc}
+                />
+              ),
+            )}
 
             <div className="carousel-scrim" aria-hidden="true" />
 

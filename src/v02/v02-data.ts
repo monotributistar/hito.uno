@@ -19,6 +19,9 @@ type HitoObject = {
   blurb: string
   sceneId: ExperienceId
   photos: Photo[]
+  /** Misma escena que las de contexto, pero con la pantalla ya resuelta.
+   *  Al tocar, el carrusel cruza a esta foto. Sin ella solo cambia el texto. */
+  resultPhoto?: Photo
 }
 
 export const useCases: Record<UseCaseKey, UseCase> = {
@@ -92,7 +95,33 @@ export const objects: Record<ObjectKey, HitoObject> = {
     result: 'Ficha, planos y contacto del asesor.',
     blurb: 'Viaja con la llave. Abre la ficha de la propiedad, los planos y el contacto del asesor en el momento de la visita.',
     sceneId: 'inmobiliaria',
-    photos: [],
+    photos: [
+      {
+        src: '/images/products/llavero/llavero-01.webp',
+        alt: 'Llavero Hito.uno azul colgado de una llave, sobre una superficie de piedra con luz cálida',
+        caption: 'Con la llave · casa',
+      },
+      {
+        src: '/images/products/llavero/llavero-02.webp',
+        alt: 'Llavero Hito redondo con una llave dorada, apoyado en el mostrador de la recepción de un hotel junto a una campanilla de bronce',
+        caption: 'Recepción · hotel',
+      },
+      {
+        src: '/images/products/llavero/llavero-03.webp',
+        alt: 'Llavero Hito redondo parado sobre el mármol de una recepción, junto a la campanilla y el libro de registro',
+        caption: 'Mostrador · check-in',
+      },
+      {
+        src: '/images/products/llavero/llavero-04.webp',
+        alt: 'Llavero Hito.uno cuadrado sobre una mesa de entrada de mármol, junto a un libro y un portavelas encendido',
+        caption: 'Mesa de entrada · estadía',
+      },
+    ],
+    resultPhoto: {
+      src: '/images/products/llavero/llavero-resultado.webp',
+      alt: 'El mismo llavero junto a un teléfono que ya muestra el menú abierto: contacto, ubicación, instrucciones, documentación y ayuda por WhatsApp',
+      caption: 'Después del toque',
+    },
   },
   apoyavasos: {
     label: 'Apoyavasos',
@@ -100,7 +129,13 @@ export const objects: Record<ObjectKey, HitoObject> = {
     result: 'Carta, promo del día y playlist.',
     blurb: 'Ya está en la mesa cuando llega el pedido. La carta, la promo del día y la playlist, sin llamar a nadie.',
     sceneId: 'bar',
-    photos: [],
+    photos: [
+      {
+        src: '/images/products/apoyavasos/apoyavasos-01.webp',
+        alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
+        caption: 'Barra · bar',
+      },
+    ],
   },
   placa: {
     label: 'Placa',
@@ -112,11 +147,17 @@ export const objects: Record<ObjectKey, HitoObject> = {
   },
   recibidor: {
     label: 'Recibidor',
-    moment: 'Al terminar la compra.',
-    result: 'Reseña en dos segundos.',
-    blurb: 'Espera en el mostrador el momento exacto en que la compra terminó bien. La reseña llega en dos segundos.',
+    moment: 'Al apoyarte en el mostrador.',
+    result: 'Visita activada, equipo avisado.',
+    blurb: 'Espera en el mostrador y ofrece las tres puertas de entrada: acercar la tarjeta, escanear el código o escribirle al equipo.',
     sceneId: 'comercio',
-    photos: [],
+    photos: [
+      {
+        src: '/images/products/recibidor/recibidor-01.webp',
+        alt: 'Cartel Hito.uno de bienvenida parado en el mostrador de la recepción de un hotel, con las opciones de acercar la tarjeta, escanear el código o escribir al equipo',
+        caption: 'Mostrador · bienvenida',
+      },
+    ],
   },
 }
 
