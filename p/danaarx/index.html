@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- El perfil expone datos de contacto de una persona: lo dejamos fuera
+         de los buscadores. Se llega por el objeto NFC o por el link directo. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#eef1e8" />
+    <meta name="description" content="Dana Arcella — Dana por el Mundo. WhatsApp, Instagram y Facebook en un solo lugar." />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content="Dana Arcella — Dana por el Mundo" />
+    <meta property="og:description" content="Escribime por WhatsApp o seguime en Instagram y Facebook." />
+    <meta property="og:url" content="https://hito.uno/p/danaarx" />
+    <title>Dana Arcella · hito.uno</title>
+  </head>
+  <body>
+    <!-- `data-partner` define que perfil monta esta entrada; el slug tiene que
+         coincidir con una entrada de `src/partner/partners.ts`. -->
+    <div id="root" data-partner="danaarx"></div>
+    <script type="module" src="/src/partner/main-partner.tsx"></script>
+  </body>
+</html>

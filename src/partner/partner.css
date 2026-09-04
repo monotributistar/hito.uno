@@ -1,0 +1,243 @@
+/* Perfil partner — extiende src/styles.css, no lo reemplaza.
+   Tokens heredados: #17383a texto, #eef1e8 fondo, #ed8068 acento,
+   #315f63 / #587d78 grises frios, DM Sans + Space Mono.
+
+   Pensada mobile-first: el 100% del trafico llega apoyando el celular sobre
+   un objeto NFC, asi que no cargamos el mapa 3D ni nada por encima del
+   contenido util. */
+
+.partner-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  min-height: 100svh;
+  padding: 28px 20px 40px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(237, 128, 104, 0.1), transparent 62%),
+    repeating-linear-gradient(45deg, rgba(23, 56, 58, 0.045) 0 1px, transparent 1px 26px),
+    #eef1e8;
+}
+
+.partner-topbar {
+  width: min(100%, 460px);
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(23, 56, 58, 0.16);
+  text-align: center;
+}
+
+.partner-brand {
+  color: #17383a;
+  font: 700 1rem 'Space Mono', monospace;
+  letter-spacing: -0.08em;
+  text-decoration: none;
+}
+
+/* --- Tarjeta --- */
+
+.partner-card {
+  display: grid;
+  gap: 28px;
+  width: min(100%, 460px);
+  padding: clamp(24px, 7vw, 36px) clamp(20px, 6vw, 32px);
+  border: 1px solid rgba(23, 56, 58, 0.18);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 24px 60px -42px rgba(23, 56, 58, 0.55);
+}
+
+.partner-card--empty {
+  gap: 18px;
+  text-align: center;
+}
+
+.partner-identity {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.partner-avatar {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.partner-avatar--monogram {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(23, 56, 58, 0.2);
+  background: #17383a;
+  color: #eef1e8;
+  font: 700 2rem 'Space Mono', monospace;
+  letter-spacing: -0.06em;
+}
+
+.partner-name {
+  margin: 8px 0 0;
+  color: #17383a;
+  font-size: clamp(1.7rem, 6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.partner-tagline {
+  margin: 0;
+  color: #587d78;
+  font: 700 0.62rem 'Space Mono', monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.partner-bio {
+  margin: 6px 0 0;
+  max-width: 34ch;
+  color: #315f63;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* --- Links de contacto --- */
+
+.partner-links {
+  display: grid;
+  gap: 10px;
+}
+
+.partner-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px; /* objetivo tactil comodo con el celular en una mano */
+  padding: 12px 16px;
+  border: 1px solid rgba(23, 56, 58, 0.2);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  color: #17383a;
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.partner-link:hover {
+  border-color: #17383a;
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+}
+
+.partner-link:active {
+  transform: translateY(0);
+}
+
+.partner-link--primary {
+  border-color: #17383a;
+  background: #17383a;
+  color: #eef1e8;
+}
+
+.partner-link--primary:hover {
+  border-color: #ed8068;
+  background: #17383a;
+}
+
+.partner-link-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(23, 56, 58, 0.07);
+  color: #17383a;
+}
+
+.partner-link--primary .partner-link-icon {
+  background: rgba(238, 241, 232, 0.14);
+  color: #eef1e8;
+}
+
+.partner-link-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.partner-link-label {
+  font-size: 0.98rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.partner-link-detail {
+  overflow: hidden;
+  color: #587d78;
+  font: 400 0.66rem 'Space Mono', monospace;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.partner-link--primary .partner-link-detail {
+  color: rgba(238, 241, 232, 0.72);
+}
+
+.partner-link-chevron {
+  flex: 0 0 auto;
+  color: #ed8068;
+  font-size: 1rem;
+  transition: transform 0.18s ease;
+}
+
+.partner-link:hover .partner-link-chevron {
+  transform: translateX(3px);
+}
+
+/* --- Pie --- */
+
+.partner-footer {
+  display: grid;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.partner-footer-line {
+  margin: 0;
+  color: #587d78;
+  font-size: 0.82rem;
+}
+
+.partner-footer-link {
+  color: #17383a;
+  font: 700 0.6rem 'Space Mono', monospace;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.partner-footer-link:hover {
+  color: #ed8068;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-link,
+  .partner-link-chevron {
+    transition: none;
+  }
+
+  .partner-link:hover {
+    transform: none;
+  }
+
+  .partner-link:hover .partner-link-chevron {
+    transform: none;
+  }
+}
