@@ -29,6 +29,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
   const [finish, setFinish] = useState(finishes[0])
   const [activeObject, setActiveObject] = useState<ObjectKey>('tarjeta')
   const [tapped, setTapped] = useState(false)
+  const [photoIndex, setPhotoIndex] = useState(0)
 
   // Estados del Formulario de Contacto
   const [contactData, setContactData] = useState({
@@ -58,10 +59,27 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
   const selectObject = (key: ObjectKey) => {
     setActiveObject(key)
     setTapped(false)
+    setPhotoIndex(0)
     onSceneFocusChange(objects[key].sceneId)
   }
 
   const object = objects[activeObject]
+  const photoCount = object.photos.length
+  const currentPhoto = photoCount > 0 ? object.photos[photoIndex] : null
+
+  // Al tocar, si el soporte tiene foto de resultado el carrusel cruza a ella:
+  // misma escena, pantalla ya resuelta. Sin resultPhoto solo cambia el texto.
+  const showingResult = tapped && Boolean(object.resultPhoto)
+  const visibleSrc = showingResult ? object.resultPhoto!.src : currentPhoto?.src
+
+  // El resultado del toque pertenece a la foto que se estaba viendo:
+  // cambiar de foto apaga el estado tocado.
+  const goToPhoto = (index: number) => {
+    setPhotoIndex(index)
+    setTapped(false)
+  }
+  const nextPhoto = () => goToPhoto((photoIndex + 1) % photoCount)
+  const prevPhoto = () => goToPhoto((photoIndex - 1 + photoCount) % photoCount)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -391,41 +409,88 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
           <em>solo el primer hito.</em>
         </h2>
 
-        <div className="business-selector v01-object-selector" aria-label="Elegir soporte">
-          {Object.entries(objects).map(([key, item]) => (
-            <button
-              type="button"
-              key={key}
-              className={activeObject === key ? 'is-active' : ''}
-              aria-pressed={activeObject === key}
-              onClick={() => selectObject(key as ObjectKey)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="v01-activation">
-          <div className="v01-object">
-            <p className="kicker">OBJETO · {object.label.toUpperCase()}</p>
-            <p className="card-description">{object.moment}</p>
-            <button type="button" className="primary-action" onClick={() => setTapped((value) => !value)}>
-              {tapped ? 'Reiniciar' : 'Un toque'}
-              <span aria-hidden="true">◦</span>
-            </button>
+        <div className="carousel">
+          <div className="business-selector v01-object-selector" aria-label="Elegir soporte">
+            {Object.entries(objects).map(([key, item]) => (
+              <button
+                type="button"
+                key={key}
+                className={activeObject === key ? 'is-active' : ''}
+                aria-pressed={activeObject === key}
+                onClick={() => selectObject(key as ObjectKey)}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
 
-          <div className="v01-signal" aria-hidden="true">
-            <span className="v01-dot" />
-            <span className="v01-line" />
+          <div className="carousel-stage">
+            {(object.resultPhoto ? [...object.photos, object.resultPhoto] : object.photos).map(
+              (photo, index) => (
+                <img
+                  key={photo.src}
+                  className={photo.src === visibleSrc ? 'carousel-photo is-current' : 'carousel-photo'}
+                  src={photo.src}
+                  alt={photo.alt}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  aria-hidden={photo.src !== visibleSrc}
+                />
+              ),
+            )}
+
+            <div className="carousel-scrim" aria-hidden="true" />
+
+            <div className="carousel-copy">
+              <p className="kicker">OBJETO · {object.label.toUpperCase()}</p>
+              <h3 aria-live="polite">{tapped ? object.result : object.moment}</h3>
+              <p className="carousel-description">
+                {tapped ? 'El objeto ya sabía qué tenía que pasar. Un toque, un paso.' : object.blurb}
+              </p>
+              <div className="carousel-actions">
+                <button type="button" className="primary-action" onClick={() => setTapped((value) => !value)}>
+                  {tapped ? 'Reiniciar' : 'Un toque'}
+                  <span aria-hidden="true">{tapped ? '↺' : '◦'}</span>
+                </button>
+                <span className={tapped ? 'carousel-signal is-live' : 'carousel-signal'} aria-hidden="true" />
+              </div>
+            </div>
           </div>
 
-          <div className="v01-phone" aria-live="polite">
-            <span className="v01-phone-notch" aria-hidden="true" />
-            <p className="kicker">{tapped ? 'EXPERIENCIA ACTIVA' : 'PANTALLA EN ESPERA'}</p>
-            <p className="v01-phone-result">{tapped ? object.result : '—'}</p>
-            <span className="secondary-action v01-phone-action">Acción</span>
-          </div>
+          {currentPhoto && (
+            <div className="carousel-controls">
+              <span className="carousel-count">
+                {String(photoIndex + 1).padStart(2, '0')} / {String(photoCount).padStart(2, '0')}
+              </span>
+
+              <div className="carousel-rail" role="tablist" aria-label="Fotos del soporte">
+                {object.photos.map((photo, index) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    key={photo.src}
+                    className={index === photoIndex ? 'is-current' : ''}
+                    aria-selected={index === photoIndex}
+                    aria-label={`Foto ${String(index + 1).padStart(2, '0')} · ${photo.caption}`}
+                    onClick={() => goToPhoto(index)}
+                  >
+                    <span aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+
+              <span className="carousel-caption">{currentPhoto.caption}</span>
+
+              <div className="carousel-arrows">
+                <button type="button" onClick={prevPhoto} aria-label="Foto anterior">
+                  ←
+                </button>
+                <button type="button" className="is-primary" onClick={nextPhoto} aria-label="Foto siguiente">
+                  →
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
