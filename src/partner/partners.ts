@@ -67,8 +67,11 @@ const partners: Partner[] = [
     name: 'Dana Arcella',
     tagline: 'Club de viajes privado en cruceros',
     location: 'Pinamar, Argentina',
+    bio: 'Viajo en crucero y te muestro cómo hacerlo vos.',
     monogram: 'DA',
-    accent: '#0e7a91',
+    /* Foto de perfil de su pagina de Facebook, recortada a 400x400.
+       Es una imagen de ella: si la cambia alla, hay que actualizarla aca. */
+    photo: '/images/partners/danaarx/perfil.webp',
     links: [
       {
         kind: 'whatsapp',

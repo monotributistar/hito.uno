@@ -77,6 +77,7 @@
 .partner-avatar {
   width: 104px;
   height: 104px;
+  border: 1px solid rgba(23, 56, 58, 0.14);
   border-radius: 50%;
   object-fit: cover;
 }
