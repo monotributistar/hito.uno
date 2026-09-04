@@ -25,14 +25,21 @@ export type PartnerLink = {
 export type Partner = {
   slug: string
   name: string
-  /** Como se presenta: marca personal, rubro o ciudad. */
+  /** Que hace, en una linea. Va debajo del nombre, en mayusculas. */
   tagline?: string
+  /** Ciudad o zona donde trabaja. */
+  location?: string
   /** Parrafo corto debajo del nombre. Opcional. */
   bio?: string
   /** Iniciales para el avatar mientras no haya foto. */
   monogram: string
   /** Ruta a la foto de perfil dentro de `public/`. Opcional. */
   photo?: string
+  /** Color propio del partner para acentos (flechas, halo, hover).
+      Si no viene, la pagina usa el coral de hito. Tiene que legible tanto
+      sobre el crema #eef1e8 como sobre el verde #17383a del boton principal:
+      un tono medio saturado funciona, uno muy claro o muy oscuro no. */
+  accent?: string
   links: PartnerLink[]
 }
 
@@ -58,8 +65,10 @@ const partners: Partner[] = [
   {
     slug: 'danaarx',
     name: 'Dana Arcella',
-    tagline: 'Dana por el Mundo',
+    tagline: 'Club de viajes privado en cruceros',
+    location: 'Pinamar, Argentina',
     monogram: 'DA',
+    accent: '#0e7a91',
     links: [
       {
         kind: 'whatsapp',

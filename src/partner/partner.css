@@ -7,6 +7,11 @@
    contenido util. */
 
 .partner-shell {
+  /* Cada partner puede pisar este token desde `accent` en partners.ts.
+     El default es el coral de hito, asi que un partner sin color propio
+     sigue viendose igual que antes. */
+  --partner-accent: #ed8068;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -16,6 +21,16 @@
   padding: 28px 20px 40px;
   background:
     radial-gradient(120% 80% at 50% 0%, rgba(237, 128, 104, 0.1), transparent 62%),
+    repeating-linear-gradient(45deg, rgba(23, 56, 58, 0.045) 0 1px, transparent 1px 26px),
+    #eef1e8;
+  /* Segunda declaracion: los navegadores con color-mix tinen el halo con el
+     color del partner; los que no la entienden se quedan con la de arriba. */
+  background:
+    radial-gradient(
+      120% 80% at 50% 0%,
+      color-mix(in srgb, var(--partner-accent) 13%, transparent),
+      transparent 62%
+    ),
     repeating-linear-gradient(45deg, rgba(23, 56, 58, 0.045) 0 1px, transparent 1px 26px),
     #eef1e8;
 }
@@ -93,6 +108,23 @@
   text-transform: uppercase;
 }
 
+.partner-location {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 2px 0 0;
+  color: #587d78;
+  font: 400 0.66rem 'Space Mono', monospace;
+  letter-spacing: 0.06em;
+}
+
+.partner-location-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--partner-accent);
+}
+
 .partner-bio {
   margin: 6px 0 0;
   max-width: 34ch;
@@ -142,7 +174,7 @@
 }
 
 .partner-link--primary:hover {
-  border-color: #ed8068;
+  border-color: var(--partner-accent);
   background: #17383a;
 }
 
@@ -190,7 +222,7 @@
 
 .partner-link-chevron {
   flex: 0 0 auto;
-  color: #ed8068;
+  color: var(--partner-accent);
   font-size: 1rem;
   transition: transform 0.18s ease;
 }
@@ -224,7 +256,7 @@
 }
 
 .partner-footer-link:hover {
-  color: #ed8068;
+  color: var(--partner-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type CSSProperties } from 'react'
 import PartnerIcon from './PartnerIcon'
 import type { Partner } from './partners'
 
@@ -14,8 +14,14 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
   const primary = partner.links.filter((link) => link.primary)
   const secondary = partner.links.filter((link) => !link.primary)
 
+  // El color propio del partner viaja como custom property: el CSS lo lee con
+  // un fallback al coral de hito, asi que un partner sin `accent` no rompe.
+  const theme = partner.accent
+    ? ({ '--partner-accent': partner.accent } as CSSProperties)
+    : undefined
+
   return (
-    <main className="partner-shell">
+    <main className="partner-shell" style={theme}>
       <header className="partner-topbar">
         <a className="partner-brand" href="https://hito.uno">
           hito.uno
@@ -33,6 +39,12 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
           )}
           <h1 className="partner-name">{partner.name}</h1>
           {partner.tagline ? <p className="partner-tagline">{partner.tagline}</p> : null}
+          {partner.location ? (
+            <p className="partner-location">
+              <span className="partner-location-dot" aria-hidden="true" />
+              {partner.location}
+            </p>
+          ) : null}
           {partner.bio ? <p className="partner-bio">{partner.bio}</p> : null}
         </div>
 
