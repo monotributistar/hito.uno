@@ -1,6 +1,6 @@
 # Fotografía de soportes — reglas y prompts
 
-Para generar las fotos que faltan del carrusel de la sección Soportes (V02).
+Para generar las fotos que faltan del carrusel de la sección Soportes.
 
 ## Las cuatro reglas
 
@@ -94,6 +94,6 @@ ffmpeg -y -i entrada.png -c:v libwebp -quality 82 salida.webp
 ```
 
 Van a `public/images/products/<soporte>/<soporte>-NN.webp`, y la de resultado a
-`<soporte>-resultado.webp`. Después se declaran en `src/v02/v02-data.ts`, cada una
+`<soporte>-resultado.webp`. Después se declaran en `src/landing/landing-data.ts`, cada una
 con su `alt` (describe la escena, es el texto que reemplaza a la foto) y su
 `caption` (el pie corto del riel).
