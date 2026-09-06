@@ -11,7 +11,7 @@ import {
   type ObjectKey,
   type TapActionKey,
   type UseCaseKey,
-} from './v02-data'
+} from './landing-data'
 
 type Props = {
   onSceneFocusChange: (id: ExperienceId) => void
@@ -20,7 +20,7 @@ type Props = {
 const GOOGLE_SCRIPT_URL =
   'https://script.google.com/macros/s/AKfycbzPbTpdaGcOrutc0u86gnerx_d0Bm5GOVZ8uQQrmQN33kqPaXSA_HLmIYb8y1N72Qzxiw/exec'
 
-export default function LandingV02({ onSceneFocusChange }: Props) {
+export default function Landing({ onSceneFocusChange }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [useCase, setUseCase] = useState<UseCaseKey>('networking')
   const [tapAction, setTapAction] = useState<TapActionKey>('guardar-contacto')
@@ -165,7 +165,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      <section className="v01-configurator" id="demo" aria-labelledby="configurator-title">
+      <section className="hito-configurator" id="demo" aria-labelledby="configurator-title">
         <aside className="experience-rail">
           <p className="kicker">PEDÍ TU DEMO / CONFIGURADOR</p>
           <h2 id="configurator-title">
@@ -178,12 +178,12 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
             concreta de objeto y experiencia.
           </p>
 
-          <div className="v01-step-head">
-            <span className="v01-step-label">PASO {step} DE 3</span>
-            <span className="v01-step-rule" aria-hidden="true" />
+          <div className="hito-step-head">
+            <span className="hito-step-label">PASO {step} DE 3</span>
+            <span className="hito-step-rule" aria-hidden="true" />
             <button
               type="button"
-              className="v01-step-back"
+              className="hito-step-back"
               onClick={() => setStep((prev) => Math.max(1, prev - 1) as 1 | 2 | 3)}
               disabled={step === 1}
             >
@@ -191,7 +191,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
             </button>
           </div>
 
-          <h3 className="v01-question">
+          <h3 className="hito-question">
             {step === 1 && '¿Para qué la querés?'}
             {step === 2 && '¿Qué querés que pase al tocarla?'}
             {step === 3 && 'Detalles del objeto y tu contacto'}
@@ -233,13 +233,13 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
             {step === 3 && (
               <>
                 {status === 'success' ? (
-                  <div className="v01-success-message">
+                  <div className="hito-success-message">
                     <h4>¡Solicitud enviada!</h4>
                     <p>Nos pondremos en contacto pronto para preparar tu propuesta de Hito.</p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="v01-object-form">
-                    <label className="v01-field">
+                  <form onSubmit={handleSubmit} className="hito-object-form">
+                    <label className="hito-field">
                       <span>Forma</span>
                       <select value={shape} onChange={(e) => setShape(e.target.value)}>
                         {shapes.map((option) => (
@@ -250,7 +250,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
                       </select>
                     </label>
 
-                    <label className="v01-field">
+                    <label className="hito-field">
                       <span>Tamaño</span>
                       <select value={size} onChange={(e) => setSize(e.target.value)}>
                         {sizes.map((option) => (
@@ -261,7 +261,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
                       </select>
                     </label>
 
-                    <label className="v01-field">
+                    <label className="hito-field">
                       <span>Terminación</span>
                       <select value={finish} onChange={(e) => setFinish(e.target.value)}>
                         {finishes.map((option) => (
@@ -272,7 +272,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
                       </select>
                     </label>
 
-                    <label className="v01-field">
+                    <label className="hito-field">
                       <span>Tu nombre *</span>
                       <input
                         type="text"
@@ -284,7 +284,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
                       />
                     </label>
 
-                    <label className="v01-field">
+                    <label className="hito-field">
                       <span>Empresa / Proyecto</span>
                       <input
                         type="text"
@@ -295,7 +295,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
                       />
                     </label>
 
-                    <label className="v01-field">
+                    <label className="hito-field">
                       <span>Email o WhatsApp *</span>
                       <input
                         type="text"
@@ -309,7 +309,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
 
                     <button
                       type="submit"
-                      className="primary-action v01-submit"
+                      className="primary-action hito-submit"
                       disabled={status === 'submitting'}
                     >
                       {status === 'submitting' ? 'Enviando...' : 'Pedir mi demo'}
@@ -317,7 +317,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
                     </button>
 
                     {status === 'error' && (
-                      <p className="v01-error-text">Hubo un error al enviar. Intentá nuevamente.</p>
+                      <p className="hito-error-text">Hubo un error al enviar. Intentá nuevamente.</p>
                     )}
                   </form>
                 )}
@@ -330,7 +330,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
           </p>
         </aside>
 
-        <div className="v01-preview">
+        <div className="hito-preview">
           <div className="card-index" aria-hidden="true">01</div>
           <p className="card-eyebrow">Tu primer hito / preview</p>
           <h3>{tapActions[tapAction].promise}</h3>
@@ -361,14 +361,14 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      <section className="v01-steps" id="pasos" aria-labelledby="steps-title">
+      <section className="hito-steps" id="pasos" aria-labelledby="steps-title">
         <p className="card-eyebrow">Reducimos pasos / la idea</p>
         <h2 id="steps-title">
           Menos pasos entre una persona
           <br />
           <em>y lo que importa.</em>
         </h2>
-        <div className="v01-steps-grid">
+        <div className="hito-steps-grid">
           <div>
             <p className="kicker">SIN HITO</p>
             <ol className="product-list">
@@ -383,8 +383,8 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
             </ol>
           </div>
           <div>
-            <p className="kicker v01-kicker-accent">CON HITO</p>
-            <ol className="product-list v01-single-step">
+            <p className="kicker hito-kicker-accent">CON HITO</p>
+            <ol className="product-list hito-single-step">
               <li>
                 <span className="marker-number">01</span>
                 <span>
@@ -401,7 +401,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      <section className="v01-supports" id="soportes" aria-labelledby="supports-title">
+      <section className="hito-supports" id="soportes" aria-labelledby="supports-title">
         <p className="card-eyebrow">Soportes / el sistema</p>
         <h2 id="supports-title">
           Una tarjeta es
@@ -410,7 +410,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
         </h2>
 
         <div className="carousel">
-          <div className="business-selector v01-object-selector" aria-label="Elegir soporte">
+          <div className="business-selector hito-object-selector" aria-label="Elegir soporte">
             {Object.entries(objects).map(([key, item]) => (
               <button
                 type="button"
@@ -494,17 +494,17 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      <section className="v01-cases" id="casos" aria-labelledby="cases-title">
+      <section className="hito-cases" id="casos" aria-labelledby="cases-title">
         <p className="card-eyebrow">Casos / microhistorias</p>
         <h2 id="cases-title">
           El mismo principio,
           <br />
           <em>seis contextos.</em>
         </h2>
-        <div className="v01-cases-grid">
+        <div className="hito-cases-grid">
           {experiences.map((experience) => (
             <article
-              className="v01-case"
+              className="hito-case"
               key={experience.id}
               onMouseEnter={() => onSceneFocusChange(experience.id)}
               onFocus={() => onSceneFocusChange(experience.id)}
@@ -513,7 +513,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
               <p className="card-eyebrow">{experience.eyebrow}</p>
               <h3>{experience.title}</h3>
               <p className="card-description">{experience.description}</p>
-              <ul className="v01-case-products">
+              <ul className="hito-case-products">
                 {experience.products.map((product) => (
                   <li key={product.label}>{product.label}</li>
                 ))}
@@ -523,22 +523,22 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      <section className="v01-platform" id="plataforma" aria-labelledby="platform-title">
+      <section className="hito-platform" id="plataforma" aria-labelledby="platform-title">
         <p className="card-eyebrow">Plataforma / vista conceptual, en desarrollo</p>
         <h2 id="platform-title">
           Vos decidís qué pasa
           <br />
           <em>después del toque.</em>
         </h2>
-        <div className="v01-panel">
-          <nav className="v01-panel-nav" aria-label="Secciones del panel (maqueta)">
+        <div className="hito-panel">
+          <nav className="hito-panel-nav" aria-label="Secciones del panel (maqueta)">
             <span className="is-current">Mis hitos</span>
             <span>Destinos</span>
             <span>Contenido</span>
             <span>Activaciones</span>
           </nav>
-          <div className="v01-panel-body">
-            <div className="v01-metrics">
+          <div className="hito-panel-body">
+            <div className="hito-metrics">
               <div>
                 <p className="kicker">HITOS ACTIVOS</p>
                 <strong>24</strong>
@@ -552,7 +552,7 @@ export default function LandingV02({ onSceneFocusChange }: Props) {
                 <strong className="is-accent">316</strong>
               </div>
             </div>
-            <div className="v01-panel-table">Lista de hitos · objeto / destino / estado</div>
+            <div className="hito-panel-table">Lista de hitos · objeto / destino / estado</div>
           </div>
         </div>
       </section>
