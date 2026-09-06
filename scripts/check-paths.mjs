@@ -46,8 +46,10 @@ for (const archivo of archivosDeTexto('.')) {
     for (const patron of FOSILES) {
       if (!patron.test(linea)) continue
       const donde = `${archivo}:${i + 1}`
-      // En docs es historia escrita, no un path que se ejecute: avisa nomas.
-      if (archivo.includes('docs')) avisos.push(`${donde} — ${linea.trim().slice(0, 90)}`)
+      // En markdown el versionado suele ser prosa que explica por que ya no
+      // existe (el README cuenta la historia de v01/v02). Eso no es una ruta
+      // que se ejecute: avisa nomas. En codigo y config, si es error.
+      if (extname(archivo) === '.md') avisos.push(`${donde} — ${linea.trim().slice(0, 90)}`)
       else errores.push(`${donde} — resto de versionado: ${linea.trim().slice(0, 90)}`)
       break
     }
