@@ -8,10 +8,11 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "map:refresh": "node scripts/maps/fetch-map.mjs",
+    "check:paths": "node scripts/check-paths.mjs",
     "deploy": "npm run build && wrangler deploy --env=\"\"",
     "deploy:dev": "npm run build && wrangler deploy --env dev",
     "deploy:production": "npm run deploy",
-    "check": "tsc -b && vite build && wrangler deploy --dry-run --env=\"\""
+    "check": "npm run check:paths && tsc -b && vite build && wrangler deploy --dry-run --env=\"\""
   },
   "dependencies": {
     "@react-three/fiber": "latest",
