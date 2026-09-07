@@ -207,11 +207,14 @@
 /* El 3/2 del spec da ~900px de alto en el contenedor de 1440 de este sitio:
    el max-height lo mantiene dentro de una pantalla sin cambiar el encuadre
    horizontal (cover recorta arriba y abajo, donde las fotos tienen aire). */
+/* Alto controlado, ancho completo. Ojo con volver a `aspect-ratio` +
+   `max-height`: al limitar el alto tambien achica el ancho para mantener la
+   proporcion, y la stage queda flotando en la mitad del bloque con la columna
+   de texto aplastada. El recorte lo resuelve el object-fit de la foto. */
 .carousel-stage {
   position: relative;
   margin: 0 20px;
-  aspect-ratio: 3 / 2;
-  max-height: min(58vh, 560px);
+  height: min(58vh, 560px);
   overflow: hidden;
   background: #e2e8df;
 }
@@ -523,8 +526,10 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* La veladura entra desde abajo, igual que en el hero. */
+  /* En mobile manda la proporcion, no el alto: hay que soltar el height de
+     desktop o pisa al aspect-ratio. La veladura entra desde abajo. */
   .carousel-stage {
+    height: auto;
     aspect-ratio: 4 / 5;
   }
 
