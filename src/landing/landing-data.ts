@@ -96,6 +96,13 @@ export const objects: Record<ObjectKey, HitoObject> = {
     blurb: 'Viaja con la llave. Abre la ficha de la propiedad, los planos y el contacto del asesor en el momento de la visita.',
     sceneId: 'inmobiliaria',
     photos: [
+      // Primera a proposito: es la unica que tiene su par de resultado en la
+      // misma escena, asi el cruce por defecto al tocar es el que mejor lee.
+      {
+        src: '/images/products/llavero/llavero-auto.webp',
+        alt: 'Llavero Hito.uno colgado de la llave de un auto, sobre una mesa de travertino con luz natural',
+        caption: 'Con la llave del auto',
+      },
       {
         src: '/images/products/llavero/llavero-01.webp',
         alt: 'Llavero Hito.uno azul colgado de una llave, sobre una superficie de piedra con luz cálida',
@@ -118,8 +125,8 @@ export const objects: Record<ObjectKey, HitoObject> = {
       },
     ],
     resultPhoto: {
-      src: '/images/products/llavero/llavero-resultado.webp',
-      alt: 'El mismo llavero junto a un teléfono que ya muestra el menú abierto: contacto, ubicación, instrucciones, documentación y ayuda por WhatsApp',
+      src: '/images/products/llavero/llavero-auto-resultado.webp',
+      alt: 'La misma mesa de travertino con la llave y el llavero, ahora con un teléfono que muestra la información del auto: seguro, documentación, asistencia, contacto y mantenimiento',
       caption: 'Después del toque',
     },
   },
