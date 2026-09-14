@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Los perfiles exponen datos de contacto de personas: los dejamos fuera
+         de los buscadores. Se llega por el objeto (QR o NFC) o por el link directo. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#eef1e8" />
+    <meta name="description" content="Perfil activado con hito.uno." />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content="Perfil · hito.uno" />
+    <meta property="og:description" content="Un objeto, un gesto, una experiencia." />
+    <title>Perfil · hito.uno</title>
+  </head>
+  <body>
+    <!-- Entrada unica para todos los perfiles. El Worker sirve este HTML para
+         cualquier /p/<slug>; el slug se lee de la URL en main-partner.tsx y se
+         busca en src/partner/partners.json. El titulo real se pone al montar. -->
+    <div id="root"></div>
+    <script type="module" src="/src/partner/main-partner.tsx"></script>
+  </body>
+</html>

@@ -8,8 +8,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        // Perfiles partner: una entrada por cliente, servida en /p/<slug>.
-        'partner-danaarx': resolve(__dirname, 'p/danaarx/index.html'),
+        // Perfiles partner: una sola entrada para todos. El Worker
+        // (worker/index.ts) la sirve para cualquier /p/<slug> del registro.
+        partner: resolve(__dirname, 'p/index.html'),
       },
     },
   },

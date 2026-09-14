@@ -1,13 +1,15 @@
 /* Registro de perfiles partner.
-   Cada entrada es el destino de un objeto NFC de un cliente: al apoyar el
-   celular, el chip abre `hito.uno/p/<slug>` y esta pagina muestra sus canales.
+   Cada perfil es el destino de un objeto (tarjeta, llavero, porta tarjetas)
+   de un cliente: al escanear el QR o apoyar el celular, se abre
+   `hito.uno/p/<slug>` y esta pagina muestra sus canales.
 
-   Para dar de alta un partner nuevo hacen falta dos pasos:
-   1. agregar su objeto `Partner` en `partners` (abajo);
-   2. crear `p/<slug>/index.html` (copiando el de otro partner y cambiando el
-      `data-partner`) y sumar esa entrada a `build.rollupOptions.input` en
-      `vite.config.ts`. Sin el paso 2 la URL no existe como asset y Cloudflare
-      devuelve la landing principal. */
+   Los datos viven en `partners.json`. Dar de alta un perfil es agregar una
+   entrada ahi: el Worker (`worker/index.ts`) sirve cualquier `/p/<slug>` con
+   la entrada generica `p/index.html`, asi que no hace falta crear HTML por
+   cliente ni tocar `vite.config.ts`. Este modulo solo valida el JSON y arma
+   los `href` (wa.me, instagram.com) a partir de los datos crudos. */
+
+import registry from './partners.json'
 
 export type PartnerLinkKind = 'whatsapp' | 'instagram' | 'facebook' | 'web' | 'email'
 
@@ -36,12 +38,28 @@ export type Partner = {
   /** Ruta a la foto de perfil dentro de `public/`. Opcional. */
   photo?: string
   /** Color propio del partner para acentos (flechas, halo, hover).
-      Si no viene, la pagina usa el coral de hito. Tiene que legible tanto
-      sobre el crema #eef1e8 como sobre el verde #17383a del boton principal:
-      un tono medio saturado funciona, uno muy claro o muy oscuro no. */
+      Si no viene, la pagina usa el coral de hito. Tiene que ser legible tanto
+      sobre el crema #eef1e8 como sobre el verde #17383a del boton principal. */
   accent?: string
+  /** Perfil interno de prueba del equipo. No cambia nada en pantalla; sirve
+      para distinguirlos de los clientes reales en el registro. */
+  sandbox?: boolean
   links: PartnerLink[]
 }
+
+/* Forma cruda de un link en `partners.json`: whatsapp lleva `phone`,
+   instagram lleva `handle`, el resto lleva `href` ya armado. */
+type RawLink = {
+  kind: PartnerLinkKind
+  label: string
+  detail?: string
+  primary?: boolean
+  phone?: string
+  handle?: string
+  href?: string
+}
+
+type RawPartner = Omit<Partner, 'links'> & { links: RawLink[] }
 
 /** wa.me exige el numero en formato internacional y SOLO digitos: sin `+`,
     sin espacios, sin guiones. Normalizamos aca para que quien cargue un
@@ -61,40 +79,39 @@ export function instagramHref(handle: string): string {
   return `https://instagram.com/${encodeURIComponent(user)}`
 }
 
-const partners: Partner[] = [
-  {
-    slug: 'danaarx',
-    name: 'Dana Arcella',
-    tagline: 'Club de viajes privado en cruceros',
-    location: 'Pinamar, Argentina',
-    bio: 'Viajo en crucero y te muestro cómo hacerlo vos.',
-    monogram: 'DA',
-    /* Foto de perfil de su pagina de Facebook, recortada a 400x400.
-       Es una imagen de ella: si la cambia alla, hay que actualizarla aca. */
-    photo: '/images/partners/danaarx/perfil.webp',
-    links: [
-      {
-        kind: 'whatsapp',
-        label: 'Escribime por WhatsApp',
-        detail: '+54 9 223 582 4178',
-        href: whatsappHref('+5492235824178'),
-        primary: true,
-      },
-      {
-        kind: 'instagram',
-        label: 'Instagram',
-        detail: '@danaarx',
-        href: instagramHref('danaarx'),
-      },
-      {
-        kind: 'facebook',
-        label: 'Facebook',
-        detail: 'Dana por el Mundo',
-        href: 'https://www.facebook.com/61582912405547/',
-      },
-    ],
-  },
-]
+/* Convierte un link crudo del JSON en un link listo para renderizar.
+   Falla con un mensaje claro si faltan datos: preferimos que el build se
+   rompa a que un boton del perfil de un cliente lleve a ningun lado. */
+function buildLink(slug: string, raw: RawLink): PartnerLink {
+  const base = { kind: raw.kind, label: raw.label, detail: raw.detail, primary: raw.primary }
+
+  if (raw.kind === 'whatsapp') {
+    if (!raw.phone) throw new Error(`Perfil "${slug}": el link de WhatsApp necesita "phone".`)
+    return { ...base, href: whatsappHref(raw.phone), detail: raw.detail ?? raw.phone }
+  }
+  if (raw.kind === 'instagram') {
+    if (!raw.handle) throw new Error(`Perfil "${slug}": el link de Instagram necesita "handle".`)
+    const user = raw.handle.replace(/^@/, '')
+    return { ...base, href: instagramHref(user), detail: raw.detail ?? `@${user}` }
+  }
+  if (!raw.href) throw new Error(`Perfil "${slug}": el link "${raw.label}" necesita "href".`)
+  return { ...base, href: raw.href }
+}
+
+function buildPartner(raw: RawPartner): Partner {
+  if (!/^[a-z0-9-]+$/.test(raw.slug)) {
+    throw new Error(`Slug invalido "${raw.slug}": solo minusculas, numeros y guiones.`)
+  }
+  return { ...raw, links: raw.links.map((link) => buildLink(raw.slug, link)) }
+}
+
+const partners: Partner[] = (registry.partners as RawPartner[]).map(buildPartner)
+
+const slugs = new Set<string>()
+for (const partner of partners) {
+  if (slugs.has(partner.slug)) throw new Error(`Slug repetido en partners.json: "${partner.slug}".`)
+  slugs.add(partner.slug)
+}
 
 /** Devuelve el partner del slug, o `null` si no existe (la pagina muestra un
     estado de error explicito en vez de romper). */

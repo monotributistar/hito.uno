@@ -8,6 +8,9 @@
  * (el src de un <script>, las fotos de landing-data.ts). Una foto declarada
  * que no existe compila y buildea sin una sola queja: simplemente no carga.
  *
+ * Tambien valida los dos registros de datos que alimentan al Worker:
+ * `src/partner/partners.json` (perfiles) y `worker/objects.json` (puertos).
+ *
  * Uso: node scripts/check-paths.mjs
  */
 
@@ -109,6 +112,39 @@ for (const foto of fotosEnDisco(join('public', 'images', 'products'))) {
   if (!datos.includes(rutaWeb)) avisos.push(`foto sin usar en el carrusel: ${rutaWeb}`)
 }
 
+// 6 · Registro de perfiles (partners.json) -----------------------------------
+// El Worker sirve cualquier /p/<slug> que este aca. Un slug repetido o una
+// foto que no existe compilan igual: por eso se validan en este paso.
+const registro = JSON.parse(readFileSync('src/partner/partners.json', 'utf8'))
+const slugs = new Set()
+for (const p of registro.partners ?? []) {
+  if (!/^[a-z0-9-]+$/.test(p.slug ?? '')) errores.push(`partners.json — slug invalido: "${p.slug}"`)
+  if (slugs.has(p.slug)) errores.push(`partners.json — slug repetido: "${p.slug}"`)
+  slugs.add(p.slug)
+  if (p.photo && !existsSync(join('public', p.photo))) {
+    errores.push(`partners.json — la foto de "${p.slug}" no existe: ${p.photo}`)
+  }
+  const primarios = (p.links ?? []).filter((l) => l.primary).length
+  if (primarios > 1) avisos.push(`partners.json — "${p.slug}" tiene ${primarios} links primarios; la pagina espera uno`)
+  for (const l of p.links ?? []) {
+    const ok = l.kind === 'whatsapp' ? l.phone : l.kind === 'instagram' ? l.handle : l.href
+    if (!ok) errores.push(`partners.json — "${p.slug}": el link "${l.label}" (${l.kind}) no tiene phone/handle/href`)
+  }
+}
+
+// 7 · Tabla de puertos (objects.json) ----------------------------------------
+// Un objeto ya impreso apunta a /o/<id>. Si el destino interno no existe como
+// perfil, el toque termina en "perfil no disponible" delante del cliente.
+const puertos = JSON.parse(readFileSync('worker/objects.json', 'utf8'))
+let objetos = 0
+for (const [id, entry] of Object.entries(puertos.objects ?? {})) {
+  objetos++
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) errores.push(`objects.json — id invalido: "${id}"`)
+  if (!entry.to) errores.push(`objects.json — "${id}" no tiene destino "to"`)
+  const m = (entry.to ?? '').match(/^\/p\/([^/?#]+)/)
+  if (m && !slugs.has(m[1])) errores.push(`objects.json — "${id}" apunta a /p/${m[1]}, que no esta en partners.json`)
+}
+
 // Resultado ------------------------------------------------------------------
 if (avisos.length) {
   console.log(`\nAvisos (${avisos.length}) — no frenan el build:`)
@@ -122,4 +158,6 @@ if (errores.length) {
   process.exit(1)
 }
 
-console.log(`\n✓ Rutas OK — ${fotos} fotos declaradas, todas existen. Sin restos de versionado.\n`)
+console.log(
+  `\n✓ Rutas OK — ${fotos} fotos declaradas, ${slugs.size} perfiles, ${objetos} puertos. Sin restos de versionado.\n`,
+)

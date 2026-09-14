@@ -2,9 +2,17 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "hito-uno",
   "compatibility_date": "2026-08-24",
+  // El Worker resuelve los perfiles /p/<slug> y las redirecciones de objetos
+  // /o/<id>. Ver worker/index.ts.
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Sin esto, una navegacion del navegador a /p/<slug> (que no existe como
+    // archivo) recibe el fallback SPA —la landing— antes de que el Worker
+    // llegue a correr. Con estas rutas el Worker corre primero y decide.
+    "run_worker_first": ["/p/*", "/o/*"]
   },
   "routes": [
     {

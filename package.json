@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:worker": "npm run build && wrangler dev --env dev --port 8787",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "map:refresh": "node scripts/maps/fetch-map.mjs",
