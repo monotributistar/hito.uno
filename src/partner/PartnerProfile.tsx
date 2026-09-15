@@ -12,6 +12,16 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
     document.title = `${partner.name} · hito.uno`
   }, [partner.name])
 
+  // Un objeto puede apuntar a una seccion del perfil (ej. "Mi catalogo" es
+  // /p/<slug>#catalog-<slug>). El navegador intenta ir al #ancla al cargar,
+  // antes de que React monte la pagina, y no la encuentra: lo repetimos una
+  // vez montada.
+  useEffect(() => {
+    const hash = decodeURIComponent(window.location.hash.slice(1))
+    if (!hash) return
+    requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ block: 'start' }))
+  }, [])
+
   const primary = partner.links.filter((link) => link.primary)
   const secondary = partner.links.filter((link) => !link.primary)
 
