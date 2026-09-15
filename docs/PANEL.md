@@ -1,6 +1,7 @@
 # hito.uno — Panel (cliente) y Administración (equipo)
 
-- Estado: diseño aprobado en conversación el 2026-09-15, pendiente de revisión de Javier.
+- Estado: capa 0 **construida y desplegada en `dev`** (2026-09-15). El resto, diseñado
+  y pendiente de revisión de Javier.
 - Se apoya en `DISENO.md` (capacidad real), `OFERTA.md` (escalera y puertos) y en lo que
   ya existe en `worker/index.ts` (puertos `/o/<id>`, conteo de toques, KV opcional).
 - Regla: el panel sirve si responde tres preguntas. **Qué objetos tengo, a dónde
@@ -32,8 +33,11 @@ orden. Cuando exista, la maqueta se reemplaza por una captura real.
 ### Mis hitos (inicio)
 
 - Nombre del cliente, plan vigente, estado de la membresía (activa / inactiva).
-- Link de su página (`hito.uno/p/<slug>`) con botón copiar, y **QR descargable** en
-  PNG y SVG. Es lo que usa como link en bio o para imprimir por su cuenta.
+- Link de su página (`hito.uno/p/<slug>`) con botón copiar. **Sin QR descargable**
+  (decisión de Stephano, 2026-09-15): el QR descargable le permitiría imprimir sus
+  propios objetos y eso canibaliza la venta de la pieza física, que es la mitad del
+  negocio. El link no tiene ese problema: lo necesita para su bio y no reemplaza nada.
+  El QR se genera en administración, para producir los objetos.
 - Resumen: cantidad de objetos, toques últimos 7 días, toques últimos 30 días.
 
 ### Destinos
@@ -84,7 +88,7 @@ que la persona tiene y un campo para poner la URL a la que quiere que apunte. Na
 más. Todo lo demás se agrega en capas alrededor de esa idea, y cada capa se usa antes
 de empezar la siguiente.
 
-### Panel Lite (etapa 0)
+### Panel Lite (etapa 0) — **hecho, en `dev`**
 
 ```
 hito.uno/panel/<token>
@@ -110,30 +114,25 @@ hito.uno/panel/<token>
 
 | Capa | Qué agrega | Por qué en ese orden |
 | --- | --- | --- |
-| 0.1 · Sugerencias | Debajo del campo: "Mi página", "Mi WhatsApp", "Mi Instagram", "Mi catálogo", "Dejar reseña". Un toque rellena la URL. | La mayoría no quiere tipear una URL; quiere elegir. |
+| 0.1 · Sugerencias ✅ | **Hecho junto con la capa 0** (son datos que el Worker ya tenía). Debajo del campo: "Mi página", "Mi WhatsApp", "Mi Instagram", "Mi catálogo", "Dejar reseña". Un toque rellena la URL. | La mayoría no quiere tipear una URL; quiere elegir. |
 | 0.2 · Toques | "Tocado 12 veces esta semana" debajo del objeto. | Es la razón para seguir pagando (OFERTA.md, regla de retención). Necesita Analytics Engine. |
 | 0.3 · Varios objetos | La misma tarjeta repetida por objeto: tarjeta, llavero, porta tarjetas. | Aparece con Hito 1 y Hito 2 (puertos adicionales). |
-| 0.4 · Link y QR | Copiar el link de la página y descargar su QR. | Lo pide quien lo usa como link en bio o imprime por su cuenta. |
+| 0.4 · Link | Copiar el link de su página. **Sin QR descargable**: imprimir sus propios objetos canibaliza la venta de la pieza. El QR vive en administración. | Lo pide quien lo usa como link en bio. |
 | 1 · Contenido | Editar nombre, bio, foto y links de la página. | Recién cuando haya clientes que lo pidan; hoy lo hace el equipo por WhatsApp. |
-| 2 · Activaciones | Toques por día y por objeto. | Solo con volumen. |
+| 2 · Activaciones | Toques por día y por objeto, no solo el total. | El desglose diario no dice nada con 12 toques por semana: el número de la capa 0.2 ya responde \"¿sirve?\". Recién con cientos de toques aparecen patrones (qué día, qué objeto, qué campaña) que justifiquen una pantalla entera. |
 
 El panel de administración (sección 3) arranca en paralelo con la capa 0: sin él no
 hay forma de crear el token del cliente ni de dar de alta el objeto.
 
-### Dónde se guarda la URL
+### Dónde se guarda la URL — resuelto
 
-El Panel Lite necesita **un lugar donde escribir** que el Worker lea en cada toque.
-Dos opciones, en orden de preferencia:
+**Durable Object con SQLite** (`worker/store.ts`, binding `STORE`). Probado en `dev`
+el 2026-09-15: la migración de `wrangler.jsonc` lo crea sola en el deploy y el token
+de CI alcanzó. **No hizo falta ningún paso manual en Cloudflare ni `wrangler login`.**
 
-1. **Durable Object con SQLite.** Se crea solo en el deploy con una migración en
-   `wrangler.jsonc`: no hay que crear nada en el panel de Cloudflare ni autenticar
-   Wrangler en la máquina de nadie. Escrituras consistentes. Se prueba primero en
-   `dev`: si el token de CI tiene permiso, queda; si el deploy lo rechaza, opción 2.
-2. **KV `PUERTOS`.** Ya está previsto en `worker/index.ts` y en el README. Necesita
-   `wrangler login` y crear el namespace (pendiente de Stephano).
-
-En ambos casos `worker/objects.json` sigue como semilla y como respaldo: si el
-almacén no responde, el toque cae al JSON y nunca a un error.
+`worker/objects.json` queda como semilla y como respaldo: si el almacén no responde,
+el toque cae al JSON y nunca a un error. El KV `PUERTOS` sigue soportado en el código
+como alternativa, pero ya no hace falta.
 
 ## 5. Modelo de datos
 
