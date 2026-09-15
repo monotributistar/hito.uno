@@ -952,3 +952,11 @@
     padding-bottom: 96px;
   }
 }
+
+@media (max-width: 760px) {
+  /* La barra sticky vive abajo: la atribucion del mapa sube para no quedar
+     tapada. Solo en la landing (el perfil partner no tiene mapa ni barra). */
+  .hito-shell .map-attribution {
+    bottom: 86px;
+  }
+}
