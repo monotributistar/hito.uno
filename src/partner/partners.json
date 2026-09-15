@@ -33,7 +33,7 @@
     {
       "slug": "stephano",
       "name": "Stephano Arcella",
-      "tagline": "Producto y diseño · hito.uno",
+      "tagline": "Cofundador · hito.uno",
       "location": "Cariló, Argentina",
       "monogram": "SA",
       "sandbox": true,
@@ -52,20 +52,21 @@
         },
         {
           "kind": "web",
-          "label": "Alquilo",
-          "detail": "Casas y departamentos en la costa",
-          "href": "#catalog-stephano"
+          "label": "Conocé Hito",
+          "detail": "hito.uno",
+          "href": "https://hito.uno"
         }
       ],
       "modules": [
         {
           "type": "catalogo",
-          "title": "Alquilo",
-          "sheetId": "1eAsKFUsY71rs8vDIY83HTtLMmcfCJFiNtfSA-Z9nOTo",
+          "title": "Hitos disponibles",
+          "csvUrl": "/catalogos/stephano.csv",
           "whatsapp": "+5492254590762",
-          "cta": "Consultar"
+          "cta": "Quiero uno"
         }
-      ]
+      ],
+      "bio": "Hacemos objetos que abren tu página, tu catálogo o tu WhatsApp. Este perfil es uno de ellos."
     },
     {
       "slug": "javier",

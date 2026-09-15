@@ -224,6 +224,8 @@ cifras. El equipo configura todo por el cliente.
 | 2026-09-14 | Dashboard: se quiere; aparece como próximamente en "Qué incluye". |
 | 2026-09-14 | Entran NFC y QR, impresión 3D propia, software a medida en servidores propios. Packaging descartado. |
 | 2026-09-14 | Los bocetos generados por IA son inspiración, no spec. La landing actual va por donde queremos; se le suman ideas rescatadas (tres puertas, plantilla /p/ comercio), no se reemplaza. |
+| 2026-09-15 | **Perfil de Dana en hold:** no se trabaja más sobre él por ahora. Su página sigue publicada y sin cambios, porque ya puede estar en uso. |
+| 2026-09-15 | **`/p/stephano` es la muestra visual para clientes:** cofundador de Hito, catálogo con los objetos reales de Hito (sin precios hasta definirlos) y "Quiero uno" a WhatsApp. Se demuestra en vivo cambiando el destino desde el panel. |
 
 ### Pendientes de decisión
 
