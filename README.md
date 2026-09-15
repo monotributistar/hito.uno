@@ -52,6 +52,27 @@ publica y entra cualquiera que sepa la URL. Para eso está `dev.hito.uno`.
 `dev.hito.uno` es público para quien conozca el subdominio. Si hace falta que sea
 privado de verdad, hay que ponerle Cloudflare Access por delante.
 
+## Panel del cliente (`/panel/<token>`)
+
+El cliente abre un link secreto y ve **su Hito y a dónde apunta**. Cambia la URL,
+guarda, y el próximo toque ya va al destino nuevo. Sin cuenta, sin contraseña.
+
+- Los destinos y los tokens viven en un **Durable Object con SQLite**
+  (`worker/store.ts`, binding `STORE`). Se crea solo con la migración de
+  `wrangler.jsonc`: no hay que crear nada a mano en Cloudflare.
+- `worker/objects.json` es la **semilla**: se carga la primera vez y después manda
+  la base. Si el almacén no responde, el toque cae al JSON y nunca a un error.
+- `worker/tokens.json` tiene los links secretos. **Solo de perfiles sandbox del
+  equipo**: un token de cliente real no se commitea. `npm run check` falla si
+  aparece uno que no sea sandbox.
+- El token viaja por header (`X-Hito-Token`), nunca en la URL de la API: la URL
+  `/panel/<token>` solo carga la app.
+- Las sugerencias debajo del campo (Mi página, Mi WhatsApp, Mi Instagram, Mi
+  catálogo) se arman en el Worker desde `partners.json`.
+
+Probar en local: `npm run dev:worker` y abrir `localhost:8787/panel/<token>`.
+El `npm run dev` de Vite no ejecuta el Worker, así que ahí no hay API.
+
 ## Verificación de rutas
 
 `scripts/check-paths.mjs` (`npm run check:paths`) falla si:

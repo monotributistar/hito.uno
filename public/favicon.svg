@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Favicon hito.uno: monograma H1. La H en el verde de la marca y el 1 en
+       coral, como "Hito" oscuro y ".uno" coral en el logo. Fondo crema #eef1e8,
+       el mismo theme-color de las paginas. -->
+  <rect width="64" height="64" rx="10" fill="#eef1e8"/>
+  <!-- H: dos astas y un travesano -->
+  <rect x="8" y="14" width="9" height="36" fill="#17383a"/>
+  <rect x="24" y="14" width="9" height="36" fill="#17383a"/>
+  <rect x="17" y="28" width="7" height="8" fill="#17383a"/>
+  <!-- 1: asta con bandera diagonal hacia la izquierda -->
+  <rect x="46" y="14" width="9" height="36" fill="#ed8068"/>
+  <polygon points="46,14 37,21 37,31 46,24" fill="#ed8068"/>
+</svg>

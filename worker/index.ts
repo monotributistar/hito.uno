@@ -1,61 +1,65 @@
 /* Worker de hito.uno.
    Cloudflare sirve primero los archivos estaticos de `dist/`. Solo cuando una
    ruta no coincide con ningun archivo (o esta en `run_worker_first`) llega
-   aca. Este Worker resuelve dos cosas que un sitio estatico no puede:
+   aca. Este Worker resuelve lo que un sitio estatico no puede:
 
    1. `/p/<slug>` — perfiles partner. Hay una sola entrada HTML (`p/index.html`)
-      para todos los perfiles; el slug se lee de la URL en el cliente. Sin este
-      paso, `/p/stephano` no existe como archivo y el fallback SPA devolveria
-      la landing principal.
+      para todos los perfiles; el slug se lee de la URL en el cliente.
 
-   2. `/o/<id>` — puertos. Cada objeto fisico (tarjeta, llavero, porta tarjetas)
-      lleva impreso un `/o/<id>` en vez de la URL final. Asi un QR ya impreso se
-      puede reapuntar sin reimprimir. La redireccion es 302 y sin cache,
-      justamente para que el cambio se vea al instante.
+   2. `/o/<id>` — puertos. Cada objeto fisico (tarjeta, llavero, porta
+      tarjetas) lleva impreso un `/o/<id>` en vez de la URL final. Asi un QR
+      ya impreso se puede reapuntar sin reimprimir. La redireccion es 302 y
+      sin cache, para que el cambio se vea en el toque siguiente.
 
-   El destino de un puerto se resuelve en dos capas:
-   - `worker/objects.json`: la tabla base, versionada en el repo. Cambiarla es
-     un commit y un deploy.
-   - KV `PUERTOS` (opcional): si el binding existe y tiene la clave `to:<id>`,
-     gana sobre el JSON. Es lo que va a editar el dashboard minimo sin deploy.
-     Mientras el binding no este configurado, el Worker funciona igual.
+   3. `/panel/<token>` y `/api/panel/*` — el Panel Lite: el cliente ve su
+      objeto y elige a donde apunta. El destino vive en el Durable Object
+      `HitoStore` (ver store.ts); `objects.json` queda como semilla y como
+      respaldo si el almacen no responde.
 
-   Cada redireccion se cuenta en Analytics Engine (`TOQUES`), que no necesita
-   crear nada por adelantado y no agrega latencia. De ahi salen las metricas
-   de toques por objeto cuando se quiera mostrarlas. */
+   El conteo de toques (Analytics Engine, binding TOQUES) es opcional: el
+   Worker funciona igual sin el. */
 
 import objects from './objects.json'
+import partnersRegistry from '../src/partner/partners.json'
+import { instagramHref, whatsappHref } from '../src/partner/links'
+import { HitoStore, kindFromId, type ObjectRow } from './store'
 
-type ObjectEntry = {
-  /** Destino: ruta interna (`/p/danaarx`) o URL completa. */
-  to: string
-  /** Que objeto fisico es y de quien. Solo documentacion. */
-  label?: string
-  owner?: string
-}
+export { HitoStore }
+
+type SeedEntry = { to: string; label?: string; owner?: string }
 
 type AssetsBinding = { fetch(request: Request): Promise<Response> }
 type KVBinding = { get(key: string): Promise<string | null> }
 type AnalyticsBinding = {
   writeDataPoint(point: { blobs?: string[]; doubles?: number[]; indexes?: string[] }): void
 }
+type DurableObjectStub = { fetch(request: Request | string, init?: RequestInit): Promise<Response> }
+type DurableObjectNamespace = {
+  idFromName(name: string): unknown
+  get(id: unknown): DurableObjectStub
+}
 
 export interface Env {
   ASSETS: AssetsBinding
-  /** KV con destinos editables en caliente. Opcional hasta que se cree el namespace. */
+  /** Almacen del panel (destinos y tokens). Opcional: sin el, todo cae al JSON. */
+  STORE?: DurableObjectNamespace
+  /** Alternativa historica a STORE. Si existe, gana sobre el JSON. */
   PUERTOS?: KVBinding
-  /** Analytics Engine con un punto por redireccion. Opcional por si se quita el binding. */
+  /** Conteo de toques. Opcional por si se quita el binding. */
   TOQUES?: AnalyticsBinding
 }
 
-const OBJECTS = objects.objects as Record<string, ObjectEntry>
+const SEED = objects.objects as Record<string, SeedEntry>
 
-/** Entrada generica de perfiles. Se pide con barra final: es la forma canonica
-    del asset y evita la redireccion automatica de `/p/index.html` a `/p/`. */
+/** Entrada generica de perfiles, servida para cualquier `/p/<slug>`. */
 const PARTNER_ENTRY = '/p/'
+/** Entrada del panel, servida para cualquier `/panel/<token>`. */
+const PANEL_ENTRY = '/panel/'
 
 const OBJECT_ROUTE = /^\/o\/([A-Za-z0-9_-]{1,64})\/?$/
 const PARTNER_ROUTE = /^\/p\/[^/]+\/?$/
+const PANEL_ROUTE = /^\/panel(\/[^/]*)?\/?$/
+const PANEL_OBJECT_API = /^\/api\/panel\/objects\/([A-Za-z0-9_-]{1,64})$/
 
 function redirect(location: string): Response {
   return new Response(null, {
@@ -68,23 +72,50 @@ function redirect(location: string): Response {
   })
 }
 
-/** Destino de un puerto: KV si existe y tiene el id, si no la tabla del repo.
-    Un fallo de KV no rompe el toque: se cae al JSON. */
-async function resolveTarget(id: string, env: Env): Promise<{ to: string; source: 'kv' | 'json' } | null> {
+function json(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+  })
+}
+
+function store(env: Env): DurableObjectStub | null {
+  if (!env.STORE) return null
+  return env.STORE.get(env.STORE.idFromName('global'))
+}
+
+/* Llama al Durable Object. Si falla (binding recien creado, error puntual),
+   devuelve null y quien llama decide el respaldo: nunca se rompe el toque. */
+async function ask<T>(env: Env, path: string, init?: RequestInit): Promise<T | null> {
+  const stub = store(env)
+  if (!stub) return null
+  try {
+    const res = await stub.fetch(`https://store.hito${path}`, init)
+    if (!res.ok) return null
+    return (await res.json()) as T
+  } catch (err) {
+    console.error(`HitoStore fallo en ${path}:`, err)
+    return null
+  }
+}
+
+/** Destino de un puerto: almacen, KV historico, y por ultimo la semilla. */
+async function resolveTarget(id: string, env: Env): Promise<string | null> {
+  const fromStore = await ask<{ to: string | null }>(env, `/destination?id=${encodeURIComponent(id)}`)
+  if (fromStore?.to) return fromStore.to
+
   if (env.PUERTOS) {
     try {
       const override = await env.PUERTOS.get(`to:${id}`)
-      if (override) return { to: override, source: 'kv' }
+      if (override) return override
     } catch (err) {
       console.error(`KV PUERTOS fallo para "${id}":`, err)
     }
   }
-  const entry = OBJECTS[id]
-  return entry ? { to: entry.to, source: 'json' } : null
+  return SEED[id]?.to ?? null
 }
 
-/** Un punto por toque. `indexes` permite filtrar por objeto al consultar;
-    `blobs` guarda el destino resuelto y el pais para leerlos despues. */
+/** Un punto por toque. `indexes` permite filtrar por objeto al consultar. */
 function countHit(env: Env, request: Request, id: string, target: string, owner: string): void {
   if (!env.TOQUES) return
   try {
@@ -101,28 +132,161 @@ function countHit(env: Env, request: Request, id: string, target: string, owner:
   }
 }
 
+/* --- Panel --------------------------------------------------------------- */
+
+type RawLink = { kind: string; label: string; phone?: string; handle?: string; href?: string }
+type RawPartner = { slug: string; name: string; links?: RawLink[]; modules?: { type: string }[] }
+
+const PARTNERS = partnersRegistry.partners as RawPartner[]
+
+/** Destinos sugeridos de un cliente: los espacios esperados (su pagina, su
+    WhatsApp, su Instagram, su catalogo) ya resueltos como URL, para que no
+    tenga que tipear nada. */
+function suggestionsFor(slug: string): { label: string; url: string }[] {
+  const partner = PARTNERS.find((p) => p.slug === slug)
+  const out = [{ label: 'Mi página', url: `/p/${slug}` }]
+  if (!partner) return out
+
+  for (const link of partner.links ?? []) {
+    try {
+      if (link.kind === 'whatsapp' && link.phone) {
+        out.push({ label: 'Mi WhatsApp', url: whatsappHref(link.phone) })
+      } else if (link.kind === 'instagram' && link.handle) {
+        out.push({ label: 'Mi Instagram', url: instagramHref(link.handle) })
+      } else if (link.kind === 'facebook' && link.href) {
+        out.push({ label: 'Mi Facebook', url: link.href })
+      } else if (link.kind === 'email' && link.href) {
+        out.push({ label: 'Mi email', url: link.href })
+      }
+    } catch {
+      // Un link mal cargado no puede romper el panel entero.
+    }
+  }
+  if ((partner.modules ?? []).some((m) => m.type === 'catalogo')) {
+    out.push({ label: 'Mi catálogo', url: `/p/${slug}#catalog-${slug}` })
+  }
+  return out
+}
+
+/** Objetos de un cliente. Sin almacen, se derivan de la semilla. */
+async function objectsOf(owner: string, env: Env): Promise<ObjectRow[]> {
+  const fromStore = await ask<{ objects: ObjectRow[] }>(
+    env,
+    `/objects?owner=${encodeURIComponent(owner)}`,
+  )
+  if (fromStore?.objects?.length) return fromStore.objects
+
+  return Object.entries(SEED)
+    .filter(([, entry]) => entry.owner === owner)
+    .map(([id, entry]) => ({
+      id,
+      owner,
+      kind: kindFromId(id),
+      label: entry.label ?? '',
+      to: entry.to,
+    }))
+}
+
+/** Token del header. Nunca viaja en la URL de la API: la URL `/panel/<token>`
+    solo carga la app, y la app lo manda aca. */
+function tokenOf(request: Request): string {
+  return (request.headers.get('x-hito-token') ?? '').trim()
+}
+
+async function ownerOf(request: Request, env: Env): Promise<string | null> {
+  const token = tokenOf(request)
+  if (!token) return null
+  const res = await ask<{ owner: string | null }>(
+    env,
+    `/owner?token=${encodeURIComponent(token)}`,
+  )
+  return res?.owner ?? null
+}
+
+/** Acepta una ruta interna del sitio o una URL http/https. Todo lo demas
+    (javascript:, data:, mailto sin validar) se rechaza. */
+function validDestination(raw: string): string | null {
+  const value = raw.trim()
+  if (!value) return null
+  if (value.startsWith('/')) return value.startsWith('//') ? null : value
+  let parsed: URL
+  try {
+    parsed = new URL(value)
+  } catch {
+    return null
+  }
+  return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.toString() : null
+}
+
+async function handlePanelApi(request: Request, env: Env, url: URL): Promise<Response | null> {
+  if (!url.pathname.startsWith('/api/panel/')) return null
+
+  const owner = await ownerOf(request, env)
+  if (!owner) return json({ error: 'token invalido' }, 401)
+
+  if (url.pathname === '/api/panel/me' && request.method === 'GET') {
+    const partner = PARTNERS.find((p) => p.slug === owner)
+    return json({
+      owner,
+      name: partner?.name ?? owner,
+      page: `/p/${owner}`,
+      objects: await objectsOf(owner, env),
+      suggestions: suggestionsFor(owner),
+    })
+  }
+
+  const match = url.pathname.match(PANEL_OBJECT_API)
+  if (match && request.method === 'PATCH') {
+    if (!store(env)) {
+      return json({ error: 'El panel todavía no puede guardar cambios.' }, 503)
+    }
+    let body: { to?: string }
+    try {
+      body = (await request.json()) as { to?: string }
+    } catch {
+      return json({ error: 'cuerpo invalido' }, 400)
+    }
+    const to = validDestination(body.to ?? '')
+    if (!to) return json({ error: 'Poné un link que empiece con https:// o una ruta del sitio.' }, 400)
+
+    const res = await ask<{ ok: boolean }>(env, '/set-destination', {
+      method: 'POST',
+      body: JSON.stringify({ owner, id: match[1], to }),
+    })
+    if (!res?.ok) return json({ error: 'No se pudo guardar.' }, 400)
+    return json({ ok: true, to })
+  }
+
+  return json({ error: 'not found' }, 404)
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
 
+    const apiResponse = await handlePanelApi(request, env, url)
+    if (apiResponse) return apiResponse
+
     const objectMatch = url.pathname.match(OBJECT_ROUTE)
     if (objectMatch) {
       const id = objectMatch[1]
-      const resolved = await resolveTarget(id, env)
-      if (!resolved) {
-        // Un objeto impreso con un id que no esta en la tabla no puede llevar a
-        // un error: va a la landing, con el id en la query para poder rastrearlo.
+      const target = await resolveTarget(id, env)
+      if (!target) {
+        // Un objeto impreso con un id desconocido no puede llevar a un error:
+        // va a la landing, con el id en la query para poder rastrearlo.
         countHit(env, request, id, '(desconocido)', '(sin dueno)')
         return redirect(new URL(`/?o=${encodeURIComponent(id)}`, url).toString())
       }
-      const target = resolved.to.startsWith('/') ? new URL(resolved.to, url).toString() : resolved.to
-      countHit(env, request, id, resolved.to, OBJECTS[id]?.owner ?? '(kv)')
-      return redirect(target)
+      countHit(env, request, id, target, SEED[id]?.owner ?? '(sin dueno)')
+      return redirect(target.startsWith('/') ? new URL(target, url).toString() : target)
+    }
+
+    if (PANEL_ROUTE.test(url.pathname)) {
+      return env.ASSETS.fetch(new Request(new URL(PANEL_ENTRY, url).toString(), request))
     }
 
     if (PARTNER_ROUTE.test(url.pathname)) {
-      const entryRequest = new Request(new URL(PARTNER_ENTRY, url).toString(), request)
-      return env.ASSETS.fetch(entryRequest)
+      return env.ASSETS.fetch(new Request(new URL(PARTNER_ENTRY, url).toString(), request))
     }
 
     return env.ASSETS.fetch(request)

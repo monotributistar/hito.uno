@@ -2,18 +2,26 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "hito-uno",
   "compatibility_date": "2026-08-24",
-  // El Worker resuelve los perfiles /p/<slug> y las redirecciones de objetos
-  // /o/<id>. Ver worker/index.ts.
+  // El Worker resuelve los perfiles /p/<slug>, las redirecciones de objetos
+  // /o/<id> y el panel /panel/<token> + /api/panel/*. Ver worker/index.ts.
   "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    // Sin esto, una navegacion del navegador a /p/<slug> (que no existe como
-    // archivo) recibe el fallback SPA —la landing— antes de que el Worker
-    // llegue a correr. Con estas rutas el Worker corre primero y decide.
-    "run_worker_first": ["/p/*", "/o/*"]
+    // Sin esto, una navegacion del navegador a /p/<slug> o /panel/<token>
+    // (que no existen como archivo) recibe el fallback SPA —la landing—
+    // antes de que el Worker llegue a correr. Con estas rutas el Worker
+    // corre primero y decide.
+    "run_worker_first": ["/p/*", "/o/*", "/panel/*", "/api/*"]
   },
+  // Almacen del panel: destinos de cada objeto y tokens de acceso.
+  // Un Durable Object con SQLite se crea solo con la migracion de abajo: no
+  // hay que crear nada a mano en el panel de Cloudflare.
+  "durable_objects": {
+    "bindings": [{ "name": "STORE", "class_name": "HitoStore" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["HitoStore"] }],
   // Conteo de toques por objeto (Analytics Engine). El dataset aparece solo
   // con el primer dato, pero la cuenta tiene que tener Analytics Engine
   // habilitado UNA vez desde el panel, si no el deploy falla con el error
@@ -23,13 +31,6 @@
   //   2. Descomentar este bloque y el de env.dev.
   // Mientras tanto el Worker funciona igual, sin contar.
   // "analytics_engine_datasets": [{ "binding": "TOQUES", "dataset": "hito_toques" }],
-  // Destinos editables en caliente (dashboard minimo). Para activarlo:
-  //   npx wrangler login
-  //   npx wrangler kv namespace create PUERTOS
-  //   npx wrangler kv namespace create PUERTOS --env dev
-  // y pegar los ids que devuelve en los dos bloques `kv_namespaces` (aca y en
-  // env.dev). Mientras no esten, el Worker usa solo worker/objects.json.
-  // "kv_namespaces": [{ "binding": "PUERTOS", "id": "<id de produccion>" }],
   "routes": [
     {
       "pattern": "hito.uno",
@@ -40,8 +41,10 @@
     "dev": {
       "name": "hito-uno-dev",
       // Los bindings no se heredan entre entornos: hay que repetirlos aca.
+      "durable_objects": {
+        "bindings": [{ "name": "STORE", "class_name": "HitoStore" }]
+      },
       // "analytics_engine_datasets": [{ "binding": "TOQUES", "dataset": "hito_toques_dev" }],
-      // "kv_namespaces": [{ "binding": "PUERTOS", "id": "<id de dev>" }],
       "routes": [
         {
           "pattern": "dev.hito.uno",

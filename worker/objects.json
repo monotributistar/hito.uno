@@ -1,9 +1,29 @@
 {
-  "$comment": "Tabla de puertos: cada objeto fisico lleva impreso hito.uno/o/<id> y esta tabla dice a donde lleva. Cambiar `to` reapunta el objeto sin reimprimir nada. `to` acepta una ruta interna (/p/<slug>) o una URL completa. `label` y `owner` son solo documentacion. Cuando exista almacenamiento en Cloudflare, esta tabla se mueve ahi y los ids impresos siguen valiendo.",
+  "$comment": "Semilla de puertos: cada objeto fisico lleva impreso hito.uno/o/<id> y esta tabla dice a donde lleva la primera vez. Despues manda el almacen del panel (worker/store.ts), que el cliente edita desde /panel/<token>. Cambiar `to` aca solo afecta a un objeto que todavia no se guardo nunca desde el panel. `label` es lo que ve el cliente en su panel: escribirlo como se lo nombraria en una conversacion. `kind` define la foto y el icono.",
   "objects": {
-    "t-dana-01": { "to": "/p/danaarx", "label": "Tarjeta personal", "owner": "danaarx" },
-    "t-stephano-01": { "to": "/p/stephano", "label": "Tarjeta Lite (pendiente de imprimir)", "owner": "stephano" },
-    "pt-stephano-01": { "to": "/p/stephano", "label": "Porta tarjetas NFC (prototipo)", "owner": "stephano" },
-    "t-javier-01": { "to": "/p/javier", "label": "Tarjeta Lite (pendiente de imprimir)", "owner": "javier" }
+    "t-dana-01": {
+      "to": "/p/danaarx",
+      "label": "Tarjeta personal",
+      "kind": "tarjeta",
+      "owner": "danaarx"
+    },
+    "t-stephano-01": {
+      "to": "/p/stephano",
+      "label": "Tarjeta Lite",
+      "kind": "tarjeta",
+      "owner": "stephano"
+    },
+    "pt-stephano-01": {
+      "to": "/p/stephano",
+      "label": "Porta tarjetas",
+      "kind": "porta",
+      "owner": "stephano"
+    },
+    "t-javier-01": {
+      "to": "/p/javier",
+      "label": "Tarjeta Lite",
+      "kind": "tarjeta",
+      "owner": "javier"
+    }
   }
 }

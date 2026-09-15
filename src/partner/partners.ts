@@ -10,9 +10,11 @@
    los `href` (wa.me, instagram.com) a partir de los datos crudos. */
 
 import registry from './partners.json'
-import type { CatalogConfig } from './modules/CatalogModule'
+import { instagramHref, whatsappHref, type PartnerLinkKind } from './links'
 
-export type PartnerLinkKind = 'whatsapp' | 'instagram' | 'facebook' | 'web' | 'email'
+export { instagramHref, whatsappHref }
+export type { PartnerLinkKind }
+import type { CatalogConfig } from './modules/CatalogModule'
 
 export type PartnerLink = {
   kind: PartnerLinkKind
@@ -68,24 +70,6 @@ type RawLink = {
 }
 
 type RawPartner = Omit<Partner, 'links'> & { links: RawLink[] }
-
-/** wa.me exige el numero en formato internacional y SOLO digitos: sin `+`,
-    sin espacios, sin guiones. Normalizamos aca para que quien cargue un
-    partner pueda escribirlo como quiera y el link salga siempre bien. */
-export function whatsappHref(phone: string, presetMessage?: string): string {
-  const digits = phone.replace(/\D/g, '')
-  if (digits.length < 8) {
-    throw new Error(`Numero de WhatsApp invalido: "${phone}"`)
-  }
-  const query = presetMessage ? `?text=${encodeURIComponent(presetMessage)}` : ''
-  return `https://wa.me/${digits}${query}`
-}
-
-/** Acepta el handle con o sin `@`. */
-export function instagramHref(handle: string): string {
-  const user = handle.replace(/^@/, '').trim()
-  return `https://instagram.com/${encodeURIComponent(user)}`
-}
 
 /* Convierte un link crudo del JSON en un link listo para renderizar.
    Falla con un mensaje claro si faltan datos: preferimos que el build se
