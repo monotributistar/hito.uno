@@ -81,12 +81,15 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
 }
 
 function LinkButton({ link, primary = false }: { link: PartnerLink; primary?: boolean }) {
+  // Un link a una seccion de la misma pagina (ej. "#catalog-<slug>") baja
+  // hasta ahi; abrirlo en otra pestana no tendria sentido.
+  const internal = link.href.startsWith('#')
   return (
     <a
       className={primary ? 'partner-link partner-link--primary' : 'partner-link'}
       href={link.href}
-      target="_blank"
-      rel="noreferrer noopener"
+      target={internal ? undefined : '_blank'}
+      rel={internal ? undefined : 'noreferrer noopener'}
     >
       <span className="partner-link-icon">
         <PartnerIcon kind={link.kind} />

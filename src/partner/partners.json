@@ -35,23 +35,35 @@
       "name": "Stephano Arcella",
       "tagline": "Producto y diseño · hito.uno",
       "location": "Cariló, Argentina",
-      "bio": "Perfil de prueba del equipo Hito. Sirve para probar cambios sin tocar el de un cliente.",
       "monogram": "SA",
       "sandbox": true,
       "links": [
         {
-          "kind": "web",
-          "label": "Conocé Hito",
-          "detail": "hito.uno",
-          "href": "https://hito.uno",
+          "kind": "whatsapp",
+          "label": "Escribime por WhatsApp",
+          "detail": "+54 9 2254 59 0762",
+          "phone": "+5492254590762",
           "primary": true
+        },
+        {
+          "kind": "instagram",
+          "label": "Instagram",
+          "handle": "sdarcella"
+        },
+        {
+          "kind": "web",
+          "label": "Alquilo",
+          "detail": "Casas y departamentos en la costa",
+          "href": "#catalog-stephano"
         }
       ],
       "modules": [
         {
           "type": "catalogo",
-          "title": "Catálogo de prueba",
-          "sheetId": "1vOyxHk2pIi-F0UnFKH6NJUs9u-663UJkCcEGzSA4Jas"
+          "title": "Alquilo",
+          "sheetId": "1eAsKFUsY71rs8vDIY83HTtLMmcfCJFiNtfSA-Z9nOTo",
+          "whatsapp": "+5492254590762",
+          "cta": "Consultar"
         }
       ]
     },
