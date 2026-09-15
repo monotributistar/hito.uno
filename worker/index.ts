@@ -1,7 +1,7 @@
 /* Worker de hito.uno.
    Cloudflare sirve primero los archivos estaticos de `dist/`. Solo cuando una
-   ruta no coincide con ningun archivo llega aca. Este Worker resuelve dos
-   cosas que un sitio estatico no puede:
+   ruta no coincide con ningun archivo (o esta en `run_worker_first`) llega
+   aca. Este Worker resuelve dos cosas que un sitio estatico no puede:
 
    1. `/p/<slug>` — perfiles partner. Hay una sola entrada HTML (`p/index.html`)
       para todos los perfiles; el slug se lee de la URL en el cliente. Sin este
@@ -10,11 +10,19 @@
 
    2. `/o/<id>` — puertos. Cada objeto fisico (tarjeta, llavero, porta tarjetas)
       lleva impreso un `/o/<id>` en vez de la URL final. Asi un QR ya impreso se
-      puede reapuntar cambiando la tabla `objects.json`. La redireccion es 302
-      y sin cache, justamente para que el cambio se vea al instante.
-      El conteo de toques y la edicion en caliente (dashboard minimo) llegan
-      cuando la tabla pase a un almacenamiento de Cloudflare; la URL impresa no
-      cambia. */
+      puede reapuntar sin reimprimir. La redireccion es 302 y sin cache,
+      justamente para que el cambio se vea al instante.
+
+   El destino de un puerto se resuelve en dos capas:
+   - `worker/objects.json`: la tabla base, versionada en el repo. Cambiarla es
+     un commit y un deploy.
+   - KV `PUERTOS` (opcional): si el binding existe y tiene la clave `to:<id>`,
+     gana sobre el JSON. Es lo que va a editar el dashboard minimo sin deploy.
+     Mientras el binding no este configurado, el Worker funciona igual.
+
+   Cada redireccion se cuenta en Analytics Engine (`TOQUES`), que no necesita
+   crear nada por adelantado y no agrega latencia. De ahi salen las metricas
+   de toques por objeto cuando se quiera mostrarlas. */
 
 import objects from './objects.json'
 
@@ -27,9 +35,17 @@ type ObjectEntry = {
 }
 
 type AssetsBinding = { fetch(request: Request): Promise<Response> }
+type KVBinding = { get(key: string): Promise<string | null> }
+type AnalyticsBinding = {
+  writeDataPoint(point: { blobs?: string[]; doubles?: number[]; indexes?: string[] }): void
+}
 
 export interface Env {
   ASSETS: AssetsBinding
+  /** KV con destinos editables en caliente. Opcional hasta que se cree el namespace. */
+  PUERTOS?: KVBinding
+  /** Analytics Engine con un punto por redireccion. Opcional por si se quita el binding. */
+  TOQUES?: AnalyticsBinding
 }
 
 const OBJECTS = objects.objects as Record<string, ObjectEntry>
@@ -52,6 +68,39 @@ function redirect(location: string): Response {
   })
 }
 
+/** Destino de un puerto: KV si existe y tiene el id, si no la tabla del repo.
+    Un fallo de KV no rompe el toque: se cae al JSON. */
+async function resolveTarget(id: string, env: Env): Promise<{ to: string; source: 'kv' | 'json' } | null> {
+  if (env.PUERTOS) {
+    try {
+      const override = await env.PUERTOS.get(`to:${id}`)
+      if (override) return { to: override, source: 'kv' }
+    } catch (err) {
+      console.error(`KV PUERTOS fallo para "${id}":`, err)
+    }
+  }
+  const entry = OBJECTS[id]
+  return entry ? { to: entry.to, source: 'json' } : null
+}
+
+/** Un punto por toque. `indexes` permite filtrar por objeto al consultar;
+    `blobs` guarda el destino resuelto y el pais para leerlos despues. */
+function countHit(env: Env, request: Request, id: string, target: string, owner: string): void {
+  if (!env.TOQUES) return
+  try {
+    const country = (request.headers.get('cf-ipcountry') ?? '').slice(0, 2)
+    const ua = request.headers.get('user-agent') ?? ''
+    const device = /Mobile|Android|iPhone|iPad/i.test(ua) ? 'mobile' : 'desktop'
+    env.TOQUES.writeDataPoint({
+      indexes: [id],
+      blobs: [owner, target, country, device],
+      doubles: [1],
+    })
+  } catch (err) {
+    console.error(`No se pudo contar el toque de "${id}":`, err)
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
@@ -59,13 +108,15 @@ export default {
     const objectMatch = url.pathname.match(OBJECT_ROUTE)
     if (objectMatch) {
       const id = objectMatch[1]
-      const entry = OBJECTS[id]
-      if (!entry) {
+      const resolved = await resolveTarget(id, env)
+      if (!resolved) {
         // Un objeto impreso con un id que no esta en la tabla no puede llevar a
         // un error: va a la landing, con el id en la query para poder rastrearlo.
+        countHit(env, request, id, '(desconocido)', '(sin dueno)')
         return redirect(new URL(`/?o=${encodeURIComponent(id)}`, url).toString())
       }
-      const target = entry.to.startsWith('/') ? new URL(entry.to, url).toString() : entry.to
+      const target = resolved.to.startsWith('/') ? new URL(resolved.to, url).toString() : resolved.to
+      countHit(env, request, id, resolved.to, OBJECTS[id]?.owner ?? '(kv)')
       return redirect(target)
     }
 

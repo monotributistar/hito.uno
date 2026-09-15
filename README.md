@@ -92,6 +92,25 @@ tarjeta del paquete puede llevar este mes a "lo nuevo" y el mes que viene a las
 reseñas. Un id que no está en la tabla va a la landing con `?o=<id>`, nunca a un
 error.
 
+Cada redirección se cuenta en Analytics Engine (binding `TOQUES`, dataset
+`hito_toques` en producción y `hito_toques_dev` en dev). No hay que crear nada:
+el dataset aparece con el primer toque. Se consulta con SQL desde la API de
+Cloudflare cuando haya que mostrar métricas por objeto.
+
+**Destinos editables sin deploy (dashboard mínimo):** el Worker mira primero la
+clave `to:<id>` en el KV `PUERTOS` y, si no existe, usa `objects.json`. El
+binding está comentado en `wrangler.jsonc` hasta que se cree el namespace:
+
+```bash
+npx wrangler login
+npx wrangler kv namespace create PUERTOS
+npx wrangler kv namespace create PUERTOS --env dev
+```
+
+Pegar los ids en los dos bloques `kv_namespaces` (raíz y `env.dev`). Reapuntar
+un objeto es entonces `npx wrangler kv key put --binding PUERTOS "to:t-dana-01" "/p/danaarx"`
+(con `--env dev` para dev), sin tocar el repo.
+
 Para probar Worker y perfiles juntos en local: `npm run dev:worker` (buildea y
 levanta wrangler en `localhost:8787`). El `npm run dev` de Vite no ejecuta el
 Worker: ahí los perfiles se prueban con `localhost:5173/p/?p=<slug>`.
