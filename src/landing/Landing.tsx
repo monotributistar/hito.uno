@@ -191,6 +191,13 @@ export default function Landing({ onSceneFocusChange }: Props) {
               href={door.href}
               onClick={() => selectObject(door.object)}
             >
+              <img
+                className="hito-door-photo"
+                src={door.photo.src}
+                alt={door.photo.alt}
+                loading="lazy"
+                decoding="async"
+              />
               <div className="hito-door-head">
                 <p className="hito-door-label">{door.label}</p>
                 <span className="hito-door-status">{door.status}</span>
@@ -493,6 +500,15 @@ export default function Landing({ onSceneFocusChange }: Props) {
                 />
               ),
             )}
+
+            {photoCount === 0 ? (
+              // Soporte sin fotos todavia (hoy: la placa). Un panel dibujado
+              // en vez de un stage vacio: se ve intencional, no roto.
+              <div className="carousel-empty" aria-hidden="true">
+                <span className="carousel-empty-mark">{object.label}</span>
+                <span className="carousel-empty-note">Foto en producción</span>
+              </div>
+            ) : null}
 
             <div className="carousel-scrim" aria-hidden="true" />
 

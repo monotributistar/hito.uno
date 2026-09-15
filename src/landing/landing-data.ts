@@ -199,6 +199,8 @@ export type Door = {
   object: ObjectKey
   /** Estado honesto: lo que se puede pedir hoy vs lo que se esta armando. */
   status: 'Disponible hoy' | 'Foco comercial' | 'En desarrollo'
+  /** Foto arriba de la tarjeta. Reusa las de producto que ya estan en public/. */
+  photo: Photo
 }
 
 export const doors: Door[] = [
@@ -211,6 +213,11 @@ export const doors: Door[] = [
     href: '#demo',
     object: 'tarjeta',
     status: 'Disponible hoy',
+    photo: {
+      src: '/images/products/tarjeta/tarjeta-06.webp',
+      alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR y la leyenda "acercá tu tarjeta para conectar"',
+      caption: 'Tarjeta · frente y dorso',
+    },
   },
   {
     key: 'local',
@@ -221,6 +228,11 @@ export const doors: Door[] = [
     href: '#soportes',
     object: 'apoyavasos',
     status: 'Foco comercial',
+    photo: {
+      src: '/images/products/apoyavasos/apoyavasos-01.webp',
+      alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
+      caption: 'Apoyavasos · barra',
+    },
   },
   {
     key: 'objeto',
@@ -231,6 +243,11 @@ export const doors: Door[] = [
     href: '#soportes',
     object: 'llavero',
     status: 'En desarrollo',
+    photo: {
+      src: '/images/products/llavero/llavero-01.webp',
+      alt: 'Llavero Hito.uno azul colgado de una llave, sobre una superficie de piedra con luz cálida',
+      caption: 'Llavero · con la llave',
+    },
   },
 ]
 
