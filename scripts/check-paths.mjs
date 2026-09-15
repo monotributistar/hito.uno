@@ -156,6 +156,21 @@ for (const [id, entry] of Object.entries(puertos.objects ?? {})) {
   if (m && !slugs.has(m[1])) errores.push(`objects.json — "${id}" apunta a /p/${m[1]}, que no esta en partners.json`)
 }
 
+// 8 · Tokens del panel (tokens.json) ---------------------------------------
+// Los tokens del repo son SOLO para los perfiles sandbox del equipo: un token
+// de cliente real commiteado es un secreto filtrado.
+const sandbox = new Set((registro.partners ?? []).filter((p) => p.sandbox).map((p) => p.slug))
+const tokens = JSON.parse(readFileSync("worker/tokens.json", "utf8"))
+let cuantosTokens = 0
+for (const [token, entry] of Object.entries(tokens.tokens ?? {})) {
+  cuantosTokens++
+  if (token.length < 20) errores.push(`tokens.json — token demasiado corto: "${token.slice(0, 8)}…"`)
+  if (!slugs.has(entry.owner)) errores.push(`tokens.json — el token de "${entry.owner}" no corresponde a ningun perfil`)
+  else if (!sandbox.has(entry.owner)) {
+    errores.push(`tokens.json — "${entry.owner}" no es sandbox: los tokens de clientes reales no se commitean`)
+  }
+}
+
 // Resultado ------------------------------------------------------------------
 if (avisos.length) {
   console.log(`\nAvisos (${avisos.length}) — no frenan el build:`)
@@ -170,5 +185,5 @@ if (errores.length) {
 }
 
 console.log(
-  `\n✓ Rutas OK — ${fotos} fotos declaradas, ${slugs.size} perfiles, ${objetos} puertos. Sin restos de versionado.\n`,
+  `\n✓ Rutas OK — ${fotos} fotos declaradas, ${slugs.size} perfiles, ${objetos} puertos, ${cuantosTokens} tokens. Sin restos de versionado.\n`,
 )

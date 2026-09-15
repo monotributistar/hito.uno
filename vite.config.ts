@@ -11,6 +11,8 @@ export default defineConfig({
         // Perfiles partner: una sola entrada para todos. El Worker
         // (worker/index.ts) la sirve para cualquier /p/<slug> del registro.
         partner: resolve(__dirname, 'p/index.html'),
+        // Panel del cliente: una sola entrada para cualquier /panel/<token>.
+        panel: resolve(__dirname, 'panel/index.html'),
       },
     },
   },

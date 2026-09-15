@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- El panel se abre con un link secreto: fuera de buscadores. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#eef1e8" />
+    <meta name="description" content="Panel de tu Hito." />
+    <title>Tu Hito · hito.uno</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
+    <!-- Entrada unica del panel. El Worker sirve este HTML para cualquier
+         /panel/<token>; el token se lee de la URL en main-panel.tsx y viaja
+         a la API por header, nunca en la URL de las llamadas. -->
+    <div id="root"></div>
+    <script type="module" src="/src/panel/main-panel.tsx"></script>
+  </body>
+</html>
