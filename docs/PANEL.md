@@ -77,19 +77,63 @@ país. Sin exportar, sin comparar períodos.
 
 ---
 
-## 4. Etapas de construcción
+## 4. Etapas de construcción: alrededor del Panel Lite
 
-| Etapa | Entrega | Necesita de Cloudflare |
+**Decisión 2026-09-15 (Stephano):** lo inmediato es una sola pantalla. Muestra el Hito
+que la persona tiene y un campo para poner la URL a la que quiere que apunte. Nada
+más. Todo lo demás se agrega en capas alrededor de esa idea, y cada capa se usa antes
+de empezar la siguiente.
+
+### Panel Lite (etapa 0)
+
+```
+hito.uno/panel/<token>
+
+  Tu Hito
+  ┌─────────────────────────────────────────┐
+  │ [foto del objeto]  Tarjeta Lite         │
+  │                    id: t-dana-01         │
+  │                                          │
+  │ Cuando alguien la toca, se abre:         │
+  │ [ https://hito.uno/p/danaarx        ]    │
+  │                             [ Guardar ]  │
+  │ Cambia en el próximo toque.              │
+  └─────────────────────────────────────────┘
+```
+
+- Un objeto, un campo, un botón. Se guarda con efecto inmediato.
+- Valida que sea una URL (http/https) o una ruta interna (`/p/...`). Nunca vacío: si
+  borra el campo, vuelve a su página.
+- Acceso por link secreto (sección 7). Sin login.
+
+### Capas siguientes, en orden
+
+| Capa | Qué agrega | Por qué en ese orden |
 | --- | --- | --- |
-| **Panel 0** · solo lectura | Mis hitos + Destinos (sin cambiar) + Activaciones. Link y QR. | Analytics Engine habilitado; token de API con lectura de Analytics como secreto del Worker |
-| **Panel 1** · destinos | "Cambiar" en Destinos. Escritura en KV desde el Worker. | Namespace KV `PUERTOS` creado y enlazado (prod y dev) |
-| **Admin 0** | Clientes, Objetos, Membresías, Tokens sobre KV. Cloudflare Access delante de `/admin`. | Access configurado (gratis hasta 50 usuarios) |
-| **Panel 2** · contenido | Contenido editable por el cliente. Perfiles pasan de `partners.json` a KV con el JSON como semilla. | Nada nuevo |
+| 0.1 · Sugerencias | Debajo del campo: "Mi página", "Mi WhatsApp", "Mi Instagram", "Mi catálogo", "Dejar reseña". Un toque rellena la URL. | La mayoría no quiere tipear una URL; quiere elegir. |
+| 0.2 · Toques | "Tocado 12 veces esta semana" debajo del objeto. | Es la razón para seguir pagando (OFERTA.md, regla de retención). Necesita Analytics Engine. |
+| 0.3 · Varios objetos | La misma tarjeta repetida por objeto: tarjeta, llavero, porta tarjetas. | Aparece con Hito 1 y Hito 2 (puertos adicionales). |
+| 0.4 · Link y QR | Copiar el link de la página y descargar su QR. | Lo pide quien lo usa como link en bio o imprime por su cuenta. |
+| 1 · Contenido | Editar nombre, bio, foto y links de la página. | Recién cuando haya clientes que lo pidan; hoy lo hace el equipo por WhatsApp. |
+| 2 · Activaciones | Toques por día y por objeto. | Solo con volumen. |
 
-Cada etapa se usa antes de empezar la siguiente. Panel 0 ya es útil el día que se
-enciende: el cliente ve toques reales desde el primer objeto entregado.
+El panel de administración (sección 3) arranca en paralelo con la capa 0: sin él no
+hay forma de crear el token del cliente ni de dar de alta el objeto.
 
----
+### Dónde se guarda la URL
+
+El Panel Lite necesita **un lugar donde escribir** que el Worker lea en cada toque.
+Dos opciones, en orden de preferencia:
+
+1. **Durable Object con SQLite.** Se crea solo en el deploy con una migración en
+   `wrangler.jsonc`: no hay que crear nada en el panel de Cloudflare ni autenticar
+   Wrangler en la máquina de nadie. Escrituras consistentes. Se prueba primero en
+   `dev`: si el token de CI tiene permiso, queda; si el deploy lo rechaza, opción 2.
+2. **KV `PUERTOS`.** Ya está previsto en `worker/index.ts` y en el README. Necesita
+   `wrangler login` y crear el namespace (pendiente de Stephano).
+
+En ambos casos `worker/objects.json` sigue como semilla y como respaldo: si el
+almacén no responde, el toque cae al JSON y nunca a un error.
 
 ## 5. Modelo de datos
 
