@@ -10,6 +10,7 @@
    los `href` (wa.me, instagram.com) a partir de los datos crudos. */
 
 import registry from './partners.json'
+import type { CatalogConfig } from './modules/CatalogModule'
 
 export type PartnerLinkKind = 'whatsapp' | 'instagram' | 'facebook' | 'web' | 'email'
 
@@ -23,6 +24,11 @@ export type PartnerLink = {
   /** El link destacado del perfil (uno solo por partner). */
   primary?: boolean
 }
+
+/* Modulos opcionales del perfil. Son lo que diferencia un escalon de otro
+   en la oferta: un perfil Lite no tiene ninguno; uno Vitrina tiene catalogo.
+   Cada tipo define su propia config; se agregan aca a medida que existen. */
+export type PartnerModule = CatalogConfig
 
 export type Partner = {
   slug: string
@@ -45,6 +51,8 @@ export type Partner = {
       para distinguirlos de los clientes reales en el registro. */
   sandbox?: boolean
   links: PartnerLink[]
+  /** Secciones debajo de los links, en el orden en que se declaran. */
+  modules?: PartnerModule[]
 }
 
 /* Forma cruda de un link en `partners.json`: whatsapp lleva `phone`,
@@ -98,11 +106,25 @@ function buildLink(slug: string, raw: RawLink): PartnerLink {
   return { ...base, href: raw.href }
 }
 
+function validateModule(slug: string, mod: PartnerModule): PartnerModule {
+  if (mod.type === 'catalogo') {
+    if (!mod.sheetId && !mod.csvUrl) {
+      throw new Error(`Perfil "${slug}": el modulo catalogo necesita "sheetId" o "csvUrl".`)
+    }
+    return mod
+  }
+  throw new Error(`Perfil "${slug}": tipo de modulo desconocido "${(mod as { type: string }).type}".`)
+}
+
 function buildPartner(raw: RawPartner): Partner {
   if (!/^[a-z0-9-]+$/.test(raw.slug)) {
     throw new Error(`Slug invalido "${raw.slug}": solo minusculas, numeros y guiones.`)
   }
-  return { ...raw, links: raw.links.map((link) => buildLink(raw.slug, link)) }
+  return {
+    ...raw,
+    links: raw.links.map((link) => buildLink(raw.slug, link)),
+    modules: raw.modules?.map((mod) => validateModule(raw.slug, mod)),
+  }
 }
 
 const partners: Partner[] = (registry.partners as RawPartner[]).map(buildPartner)

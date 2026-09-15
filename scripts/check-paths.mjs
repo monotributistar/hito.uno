@@ -130,6 +130,17 @@ for (const p of registro.partners ?? []) {
     const ok = l.kind === 'whatsapp' ? l.phone : l.kind === 'instagram' ? l.handle : l.href
     if (!ok) errores.push(`partners.json — "${p.slug}": el link "${l.label}" (${l.kind}) no tiene phone/handle/href`)
   }
+  // Modulos: cada tipo declara lo minimo que necesita para funcionar.
+  const TIPOS_MODULO = new Set(['catalogo'])
+  for (const m of p.modules ?? []) {
+    if (!TIPOS_MODULO.has(m.type)) errores.push(`partners.json — "${p.slug}": modulo de tipo desconocido "${m.type}"`)
+    if (m.type === 'catalogo' && !m.sheetId && !m.csvUrl) {
+      errores.push(`partners.json — "${p.slug}": el modulo catalogo necesita sheetId o csvUrl`)
+    }
+    if (m.csvUrl?.startsWith('/') && !existsSync(join('public', m.csvUrl))) {
+      errores.push(`partners.json — "${p.slug}": el csvUrl ${m.csvUrl} no existe en public/`)
+    }
+  }
 }
 
 // 7 · Tabla de puertos (objects.json) ----------------------------------------

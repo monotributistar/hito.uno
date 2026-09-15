@@ -83,6 +83,34 @@ archivo. El slug se lee de la URL en el cliente.
 Los perfiles con `"sandbox": true` son del equipo (Stephano, Javier) y sirven para
 probar cambios sin tocar el de un cliente.
 
+## Módulos del perfil
+
+Un perfil puede declarar `modules` en `partners.json`: secciones debajo de los
+links. Son lo que diferencia un escalón de otro en la oferta.
+
+### Catálogo (`type: "catalogo"`)
+
+Lista de productos leída de una planilla de Google que edita el cliente. No hay
+backend: la página descarga la planilla como CSV desde el navegador.
+
+```json
+{ "type": "catalogo", "title": "Catálogo", "sheetId": "<id de la planilla>", "whatsapp": "+54 9 ..." }
+```
+
+- La planilla tiene que estar compartida como **"cualquiera con el enlace: lector"**.
+  Si no, Google devuelve un login y la página muestra "no disponible".
+- Primera fila = cabecera. Columnas: `nombre` (obligatoria), `precio`,
+  `descripcion`, `foto`, `disponible`. Orden, mayúsculas y acentos no importan.
+  Plantilla en `public/catalogos/ejemplo.csv`.
+- `precio` vacío muestra "Consultar"; `disponible` = `no` muestra "Sin stock" y
+  oculta el botón. Un número se formatea como `$ 12.500`.
+- `foto` acepta cualquier URL de imagen o un link de Drive compartido con enlace.
+- "Lo quiero" abre WhatsApp al número del módulo con el producto ya escrito. Sin
+  `whatsapp`, usa el link destacado del perfil.
+- Si la planilla falla, la página muestra la última lectura buena guardada en el
+  dispositivo. Google cachea la exportación unos minutos: un cambio tarda eso en verse.
+- `csvUrl` en vez de `sheetId` sirve para pruebas o un catálogo servido desde el sitio.
+
 ## Puertos: redirecciones de objetos (`/o/<id>`)
 
 Los objetos físicos no llevan impresa la URL del perfil sino `hito.uno/o/<id>`.

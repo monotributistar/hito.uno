@@ -46,6 +46,13 @@
           "href": "https://hito.uno",
           "primary": true
         }
+      ],
+      "modules": [
+        {
+          "type": "catalogo",
+          "title": "Catálogo de prueba",
+          "sheetId": "1vOyxHk2pIi-F0UnFKH6NJUs9u-663UJkCcEGzSA4Jas"
+        }
       ]
     },
     {
