@@ -9,7 +9,20 @@ type TapAction = { label: string; promise: string }
 
 /** El alt describe la escena (es el texto que reemplaza a la foto), el caption
  *  es el pie corto que se lee bajo el riel del carrusel. */
-type Photo = { src: string; alt: string; caption: string }
+type Photo = {
+  src: string
+  alt: string
+  caption: string
+  /** Calibracion del encuadre, por foto. `focus` es el object-position: el
+   *  punto de la foto que tiene que quedar visible cuando el recorte corta
+   *  (en desktop el stage es mas ancho que la foto y corta arriba/abajo; en
+   *  mobile es 4:5 y corta a los lados). `zoom` y `nudge` empujan el objeto
+   *  hacia la derecha en desktop, fuera de la veladura del texto: se usan
+   *  cuando el objeto quedo en el tercio izquierdo. */
+  focus?: string
+  zoom?: number
+  nudge?: string
+}
 
 type HitoObject = {
   label: string
@@ -71,21 +84,31 @@ export const objects: Record<ObjectKey, HitoObject> = {
         src: '/images/products/tarjeta/tarjeta-01.webp',
         alt: 'Tarjeta Hito apoyada sobre el mostrador de mármol de la recepción de un hotel, junto a una campanilla de bronce',
         caption: 'Recepción · hotel',
+        focus: '45% 55%',
+        zoom: 1.12,
+        nudge: '10%',
       },
       {
         src: '/images/products/tarjeta/tarjeta-02.webp',
         alt: 'Tarjeta Hito parada sobre la barra de un bar, al lado de la carta de cócteles',
         caption: 'Barra · bar',
+        focus: '45% 60%',
+        zoom: 1.1,
+        nudge: '8%',
       },
       {
         src: '/images/products/tarjeta/tarjeta-03.webp',
         alt: 'Tarjeta Hito en un soporte sobre el mostrador de un local, junto a la terminal de pago y su caja',
         caption: 'Mostrador · comercio',
+        focus: '50% 52%',
       },
       {
         src: '/images/products/tarjeta/tarjeta-04.webp',
         alt: 'Una persona sostiene la tarjeta Hito frente a un teléfono apoyado en la mesa, listo para conectar',
         caption: 'En mano · reunión',
+        focus: '55% 50%',
+        zoom: 1.08,
+        nudge: '6%',
       },
     ],
   },
@@ -102,32 +125,41 @@ export const objects: Record<ObjectKey, HitoObject> = {
         src: '/images/products/llavero/llavero-auto.webp',
         alt: 'Llavero Hito.uno colgado de la llave de un auto, sobre una mesa de travertino con luz natural',
         caption: 'Con la llave del auto',
+        focus: '55% 58%',
+        nudge: '4%',
       },
       {
         src: '/images/products/llavero/llavero-01.webp',
         alt: 'Llavero Hito.uno azul colgado de una llave, sobre una superficie de piedra con luz cálida',
         caption: 'Con la llave · casa',
+        focus: '60% 55%',
       },
       {
         src: '/images/products/llavero/llavero-02.webp',
         alt: 'Llavero Hito redondo con una llave dorada, apoyado en el mostrador de la recepción de un hotel junto a una campanilla de bronce',
         caption: 'Recepción · hotel',
+        focus: '55% 62%',
       },
       {
         src: '/images/products/llavero/llavero-03.webp',
         alt: 'Llavero Hito redondo parado sobre el mármol de una recepción, junto a la campanilla y el libro de registro',
         caption: 'Mostrador · check-in',
+        focus: '45% 62%',
+        zoom: 1.1,
+        nudge: '10%',
       },
       {
         src: '/images/products/llavero/llavero-04.webp',
         alt: 'Llavero Hito.uno cuadrado sobre una mesa de entrada de mármol, junto a un libro y un portavelas encendido',
         caption: 'Mesa de entrada · estadía',
+        focus: '60% 58%',
       },
     ],
     resultPhoto: {
       src: '/images/products/llavero/llavero-auto-resultado.webp',
       alt: 'La misma mesa de travertino con la llave y el llavero, ahora con un teléfono que muestra la información del auto: seguro, documentación, asistencia, contacto y mantenimiento',
       caption: 'Después del toque',
+      focus: '65% 55%',
     },
   },
   apoyavasos: {
@@ -141,6 +173,7 @@ export const objects: Record<ObjectKey, HitoObject> = {
         src: '/images/products/apoyavasos/apoyavasos-01.webp',
         alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
         caption: 'Barra · bar',
+        focus: '55% 62%',
       },
     ],
   },
@@ -163,6 +196,8 @@ export const objects: Record<ObjectKey, HitoObject> = {
         src: '/images/products/recibidor/recibidor-01.webp',
         alt: 'Cartel Hito.uno de bienvenida parado en el mostrador de la recepción de un hotel, con las opciones de acercar la tarjeta, escanear el código o escribir al equipo',
         caption: 'Mostrador · bienvenida',
+        focus: '55% 40%',
+        nudge: '6%',
       },
     ],
   },
@@ -217,6 +252,7 @@ export const doors: Door[] = [
       src: '/images/products/tarjeta/tarjeta-06.webp',
       alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR y la leyenda "acercá tu tarjeta para conectar"',
       caption: 'Tarjeta · frente y dorso',
+      focus: '50% 55%',
     },
   },
   {
@@ -232,6 +268,7 @@ export const doors: Door[] = [
       src: '/images/products/apoyavasos/apoyavasos-01.webp',
       alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
       caption: 'Apoyavasos · barra',
+      focus: '55% 62%',
     },
   },
   {
@@ -247,6 +284,7 @@ export const doors: Door[] = [
       src: '/images/products/llavero/llavero-01.webp',
       alt: 'Llavero Hito.uno azul colgado de una llave, sobre una superficie de piedra con luz cálida',
       caption: 'Llavero · con la llave',
+      focus: '60% 55%',
     },
   },
 ]

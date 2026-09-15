@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
 import {
   doors,
@@ -23,6 +23,17 @@ type Props = {
 
 const GOOGLE_SCRIPT_URL =
   'https://script.google.com/macros/s/AKfycbzPbTpdaGcOrutc0u86gnerx_d0Bm5GOVZ8uQQrmQN33kqPaXSA_HLmIYb8y1N72Qzxiw/exec'
+
+/* Encuadre calibrado por foto (ver Photo en landing-data.ts). object-position
+   va inline; zoom y nudge viajan como custom properties que lee el CSS. */
+function photoStyle(photo: { focus?: string; zoom?: number; nudge?: string }): CSSProperties | undefined {
+  if (!photo.focus && !photo.zoom && !photo.nudge) return undefined
+  return {
+    objectPosition: photo.focus,
+    ...(photo.zoom ? { ['--zoom' as string]: String(photo.zoom) } : {}),
+    ...(photo.nudge ? { ['--nudge' as string]: photo.nudge } : {}),
+  } as CSSProperties
+}
 
 export default function Landing({ onSceneFocusChange }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1)
@@ -197,6 +208,7 @@ export default function Landing({ onSceneFocusChange }: Props) {
                 alt={door.photo.alt}
                 loading="lazy"
                 decoding="async"
+                style={photoStyle(door.photo)}
               />
               <div className="hito-door-head">
                 <p className="hito-door-label">{door.label}</p>
@@ -497,6 +509,7 @@ export default function Landing({ onSceneFocusChange }: Props) {
                   loading={index === 0 ? 'eager' : 'lazy'}
                   decoding="async"
                   aria-hidden={photo.src !== visibleSrc}
+                  style={photoStyle(photo)}
                 />
               ),
             )}
