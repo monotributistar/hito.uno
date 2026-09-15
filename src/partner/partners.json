@@ -60,7 +60,7 @@
       "modules": [
         {
           "type": "catalogo",
-          "title": "Tu primer Hito",
+          "title": "Tu primer hito",
           "csvUrl": "/catalogos/stephano.csv",
           "whatsapp": "+5492254590762",
           "cta": "Quiero uno"
