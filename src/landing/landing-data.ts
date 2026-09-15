@@ -183,7 +183,14 @@ export const objects: Record<ObjectKey, HitoObject> = {
     result: 'Wi-Fi, servicios y asistencia.',
     blurb: 'Fija en la pared o el mostrador. Resuelve lo que todos preguntan al llegar: Wi-Fi, servicios y a quién buscar.',
     sceneId: 'alojamiento',
-    photos: [],
+    photos: [
+      {
+        src: '/images/products/placa/placa-01.webp',
+        alt: 'Placa Hito.uno color crema montada en una pared de revoque junto a la puerta de madera de un hotel boutique, con un olivo en maceta al fondo y luz cálida de tarde',
+        caption: 'Entrada · alojamiento',
+        focus: '55% 45%',
+      },
+    ],
   },
   recibidor: {
     label: 'Recibidor',
