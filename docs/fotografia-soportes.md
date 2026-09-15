@@ -23,7 +23,7 @@ Para generar las fotos que faltan del carrusel de la sección Soportes.
 | Llavero | 4 ✅ | 1 ✅ |
 | Apoyavasos | 1 (faltan 3) | falta |
 | Recibidor | 1 (faltan 3) | falta |
-| Placa | 0 (faltan 4) | falta |
+| Placa | 1 (faltan 3) | 1 ✅ |
 
 También conviene reemplazar `tarjeta-04` (la de la mano): la mano ocupa todo el tercio
 izquierdo.
@@ -97,3 +97,17 @@ Van a `public/images/products/<soporte>/<soporte>-NN.webp`, y la de resultado a
 `<soporte>-resultado.webp`. Después se declaran en `src/landing/landing-data.ts`, cada una
 con su `alt` (describe la escena, es el texto que reemplaza a la foto) y su
 `caption` (el pie corto del riel).
+
+## Calibrar el encuadre sin regenerar
+
+Cada foto en `landing-data.ts` acepta tres campos opcionales:
+
+- `focus`: el `object-position` (por ejemplo `'55% 60%'`). Es el punto de la foto
+  que queda visible cuando el recorte corta. En desktop el stage es más ancho que
+  la foto y corta arriba/abajo, así que importa la segunda cifra.
+- `zoom` y `nudge` (solo desktop): agrandan la foto y la corren a la derecha para
+  sacar el objeto de la veladura del texto. Se usan cuando el objeto quedó en el
+  tercio izquierdo, que es justo lo que las reglas de arriba piden evitar.
+
+En mobile la foto va entera arriba y el texto debajo, sin veladura: ahí no hace
+falta calibrar nada.

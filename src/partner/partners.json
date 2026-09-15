@@ -1,0 +1,89 @@
+{
+  "$comment": "Registro de perfiles partner. Dar de alta un perfil = agregar una entrada aca. No hace falta crear HTML ni tocar vite.config.ts: el Worker sirve cualquier /p/<slug> que exista en esta lista. Los links de whatsapp llevan `phone` y los de instagram `handle`; el resto lleva `href`. `sandbox: true` marca perfiles internos de prueba (no se muestra en la pagina).",
+  "partners": [
+    {
+      "slug": "danaarx",
+      "name": "Dana Arcella",
+      "tagline": "Club de viajes privado en cruceros",
+      "location": "Pinamar, Argentina",
+      "bio": "Viajo en crucero y te muestro cómo hacerlo vos.",
+      "monogram": "DA",
+      "photo": "/images/partners/danaarx/perfil.webp",
+      "links": [
+        {
+          "kind": "whatsapp",
+          "label": "Escribime por WhatsApp",
+          "detail": "+54 9 223 582 4178",
+          "phone": "+5492235824178",
+          "primary": true
+        },
+        {
+          "kind": "instagram",
+          "label": "Instagram",
+          "handle": "danaarx"
+        },
+        {
+          "kind": "facebook",
+          "label": "Facebook",
+          "detail": "Dana por el Mundo",
+          "href": "https://www.facebook.com/61582912405547/"
+        }
+      ]
+    },
+    {
+      "slug": "stephano",
+      "name": "Stephano Arcella",
+      "tagline": "Producto y diseño · hito.uno",
+      "location": "Cariló, Argentina",
+      "monogram": "SA",
+      "sandbox": true,
+      "links": [
+        {
+          "kind": "whatsapp",
+          "label": "Escribime por WhatsApp",
+          "detail": "+54 9 2254 59 0762",
+          "phone": "+5492254590762",
+          "primary": true
+        },
+        {
+          "kind": "instagram",
+          "label": "Instagram",
+          "handle": "sdarcella"
+        },
+        {
+          "kind": "web",
+          "label": "Alquilo",
+          "detail": "Casas y departamentos en la costa",
+          "href": "#catalog-stephano"
+        }
+      ],
+      "modules": [
+        {
+          "type": "catalogo",
+          "title": "Alquilo",
+          "sheetId": "1eAsKFUsY71rs8vDIY83HTtLMmcfCJFiNtfSA-Z9nOTo",
+          "whatsapp": "+5492254590762",
+          "cta": "Consultar"
+        }
+      ]
+    },
+    {
+      "slug": "javier",
+      "name": "Javier",
+      "tagline": "Socio · hito.uno",
+      "location": "Cariló, Argentina",
+      "bio": "Perfil de prueba del equipo Hito. Sirve para probar cambios sin tocar el de un cliente.",
+      "monogram": "J",
+      "sandbox": true,
+      "links": [
+        {
+          "kind": "web",
+          "label": "Conocé Hito",
+          "detail": "hito.uno",
+          "href": "https://hito.uno",
+          "primary": true
+        }
+      ]
+    }
+  ]
+}

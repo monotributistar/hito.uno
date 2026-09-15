@@ -1,6 +1,7 @@
 import { useEffect, type CSSProperties } from 'react'
 import PartnerIcon from './PartnerIcon'
-import type { Partner } from './partners'
+import CatalogModule from './modules/CatalogModule'
+import type { Partner, PartnerLink } from './partners'
 
 /* Perfil publico de un partner. Es lo primero que ve alguien que apoyo el
    celular sobre el objeto NFC: tiene que cargar rapido y resolverse en un
@@ -19,6 +20,10 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
   const theme = partner.accent
     ? ({ '--partner-accent': partner.accent } as CSSProperties)
     : undefined
+
+  // Los modulos sin canal propio (ej. "Lo quiero" sin WhatsApp) caen al link
+  // destacado del perfil, que es donde el partner quiere que le escriban.
+  const fallbackHref = primary[0]?.href ?? partner.links[0]?.href
 
   return (
     <main className="partner-shell" style={theme}>
@@ -50,48 +55,20 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
 
         <nav className="partner-links" aria-label={`Canales de contacto de ${partner.name}`}>
           {primary.map((link) => (
-            <a
-              key={link.href}
-              className="partner-link partner-link--primary"
-              href={link.href}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <span className="partner-link-icon">
-                <PartnerIcon kind={link.kind} />
-              </span>
-              <span className="partner-link-text">
-                <span className="partner-link-label">{link.label}</span>
-                {link.detail ? <span className="partner-link-detail">{link.detail}</span> : null}
-              </span>
-              <span className="partner-link-chevron" aria-hidden="true">
-                →
-              </span>
-            </a>
+            <LinkButton key={link.href} link={link} primary />
           ))}
-
           {secondary.map((link) => (
-            <a
-              key={link.href}
-              className="partner-link"
-              href={link.href}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <span className="partner-link-icon">
-                <PartnerIcon kind={link.kind} />
-              </span>
-              <span className="partner-link-text">
-                <span className="partner-link-label">{link.label}</span>
-                {link.detail ? <span className="partner-link-detail">{link.detail}</span> : null}
-              </span>
-              <span className="partner-link-chevron" aria-hidden="true">
-                →
-              </span>
-            </a>
+            <LinkButton key={link.href} link={link} />
           ))}
         </nav>
       </article>
+
+      {partner.modules?.map((mod, i) => {
+        if (mod.type === 'catalogo') {
+          return <CatalogModule key={`catalogo-${i}`} slug={partner.slug} config={mod} fallbackHref={fallbackHref} />
+        }
+        return null
+      })}
 
       <footer className="partner-footer">
         <p className="partner-footer-line">Un objeto, un gesto, una experiencia.</p>
@@ -100,6 +77,31 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
         </a>
       </footer>
     </main>
+  )
+}
+
+function LinkButton({ link, primary = false }: { link: PartnerLink; primary?: boolean }) {
+  // Un link a una seccion de la misma pagina (ej. "#catalog-<slug>") baja
+  // hasta ahi; abrirlo en otra pestana no tendria sentido.
+  const internal = link.href.startsWith('#')
+  return (
+    <a
+      className={primary ? 'partner-link partner-link--primary' : 'partner-link'}
+      href={link.href}
+      target={internal ? undefined : '_blank'}
+      rel={internal ? undefined : 'noreferrer noopener'}
+    >
+      <span className="partner-link-icon">
+        <PartnerIcon kind={link.kind} />
+      </span>
+      <span className="partner-link-text">
+        <span className="partner-link-label">{link.label}</span>
+        {link.detail ? <span className="partner-link-detail">{link.detail}</span> : null}
+      </span>
+      <span className="partner-link-chevron" aria-hidden="true">
+        →
+      </span>
+    </a>
   )
 }
 

@@ -274,3 +274,143 @@
     transform: none;
   }
 }
+
+/* --- Modulo Catalogo --- */
+
+.partner-catalog {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 460px);
+}
+
+.partner-catalog-head {
+  display: grid;
+  gap: 4px;
+  padding: 0 2px;
+}
+
+.partner-catalog-title {
+  margin: 0;
+  color: #17383a;
+  font: 700 0.62rem 'Space Mono', monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.partner-catalog-note {
+  margin: 0;
+  color: #587d78;
+  font-size: 0.82rem;
+}
+
+.partner-catalog-grid {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partner-product {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid rgba(23, 56, 58, 0.2);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.partner-product--off {
+  opacity: 0.6;
+}
+
+.partner-product-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 2px;
+  object-fit: cover;
+  background: rgba(23, 56, 58, 0.07);
+}
+
+.partner-product-photo--empty {
+  background:
+    repeating-linear-gradient(45deg, rgba(23, 56, 58, 0.08) 0 1px, transparent 1px 10px),
+    rgba(23, 56, 58, 0.05);
+}
+
+.partner-product-body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.partner-product-name {
+  margin: 0;
+  color: #17383a;
+  font-size: 0.98rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.partner-product-desc {
+  margin: 0;
+  color: #315f63;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.partner-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.partner-product-price {
+  color: #17383a;
+  font: 700 0.72rem 'Space Mono', monospace;
+  letter-spacing: 0.04em;
+}
+
+.partner-product--off .partner-product-price {
+  color: #587d78;
+}
+
+.partner-product-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid #17383a;
+  border-radius: 2px;
+  background: #17383a;
+  color: #eef1e8;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.18s ease;
+}
+
+.partner-product-cta:hover {
+  border-color: var(--partner-accent);
+}
+
+.partner-product-cta span {
+  color: var(--partner-accent);
+}
+
+@media (max-width: 360px) {
+  .partner-product {
+    grid-template-columns: 72px 1fr;
+  }
+  .partner-product-photo {
+    width: 72px;
+    height: 72px;
+  }
+}

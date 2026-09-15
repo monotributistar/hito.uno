@@ -21,24 +21,130 @@ npm run deploy
 `hito.uno`. Para desplegar se necesita una sesión de Wrangler autenticada con
 acceso a la cuenta de Cloudflare que administra el dominio.
 
+`npm run check` corre, en este orden: el verificador de rutas, `tsc`, el build y
+un `wrangler deploy --dry-run`.
+
+## Los dos entornos
+
+| Rama | Se despliega en | Qué es |
+| --- | --- | --- |
+| `dev` | [dev.hito.uno](https://dev.hito.uno) | Donde se prueba. Cada push despliega solo. |
+| `main` | [hito.uno](https://hito.uno) | Producción. Solo entra por PR. |
+
+Son **dos Workers distintos** (`hito-uno-dev` y `hito-uno`): lo que pasa en uno
+no toca al otro. El flujo para trabajar sin exponer nada a medio hacer:
+
+```bash
+git checkout dev
+git pull                     # dev tiene que arrancar igualada con main
+# ...trabajar, commitear...
+git push                     # se despliega en dev.hito.uno
+```
+
+Cuando está listo, PR de `dev` a `main`.
+
+**No agregar páginas “escondidas” tipo `/v03.html` para probar.** Eso ya se hizo
+con `v01.html` y `v02.html` y terminó en carpetas duplicadas que divergieron en
+silencio: `v02` mandaba el formulario al Apps Script mientras `v01` seguía con un
+`mailto:` que nadie leía. Un `noindex` no oculta nada: el archivo se buildea, se
+publica y entra cualquiera que sepa la URL. Para eso está `dev.hito.uno`.
+
+`dev.hito.uno` es público para quien conozca el subdominio. Si hace falta que sea
+privado de verdad, hay que ponerle Cloudflare Access por delante.
+
+## Verificación de rutas
+
+`scripts/check-paths.mjs` (`npm run check:paths`) falla si:
+
+- quedan restos del versionado viejo (`v01`, `v02`, `LandingV0x`) en código o config;
+- el `src` de un `<script>` o una entrada de `vite.config.ts` apunta a un archivo
+  que no existe;
+- **una foto declarada en `landing-data.ts` no está en `public/`**.
+
+Ese último es el que más rinde: una ruta mal escrita compila, buildea y se
+despliega sin una sola queja, y solo deja un hueco en el carrusel. También avisa
+—sin frenar el build— de fotos que están en `public/` y nadie usa.
+
 ## Perfiles partner (`/p/<slug>`)
 
-Cada objeto NFC de un cliente apunta a `hito.uno/p/<slug>`: una página estática
-y liviana con sus canales de contacto (WhatsApp, Instagram, Facebook). No carga
-el mapa 3D, porque el visitante llega desde el celular y buscando resolver algo
-en un gesto.
+Cada objeto de un cliente (tarjeta, llavero, porta tarjetas) abre
+`hito.uno/p/<slug>`: una página estática y liviana con sus canales de contacto
+(WhatsApp, Instagram, Facebook). No carga el mapa 3D, porque el visitante llega
+desde el celular y buscando resolver algo en un gesto.
 
-Para dar de alta un partner nuevo:
+Para dar de alta un partner nuevo hay **un solo paso**: agregar su entrada en
+`src/partner/partners.json`. Los links de WhatsApp llevan `phone` y los de
+Instagram `handle`; el módulo `partners.ts` arma los `href` y falla el build con
+un mensaje claro si falta un dato. No hace falta crear HTML ni tocar
+`vite.config.ts`: hay una sola entrada (`p/index.html`) y el Worker
+(`worker/index.ts`) la sirve para cualquier `/p/<slug>` que no exista como
+archivo. El slug se lee de la URL en el cliente.
 
-1. Agregar su objeto `Partner` en `src/partner/partners.ts`. Los links de
-   WhatsApp e Instagram se arman con los helpers `whatsappHref()` e
-   `instagramHref()`, que normalizan el número y el `@usuario`.
-2. Crear `p/<slug>/index.html` copiando el de un partner existente y cambiando
-   el `data-partner`, el `<title>` y los `og:*`.
-3. Sumar esa entrada a `build.rollupOptions.input` en `vite.config.ts`.
+Los perfiles con `"sandbox": true` son del equipo (Stephano, Javier) y sirven para
+probar cambios sin tocar el de un cliente.
 
-El paso 3 no es opcional: sin la entrada de build la URL no existe como asset y
-Cloudflare devuelve la landing principal por el `not_found_handling` del Worker.
+## Módulos del perfil
+
+Un perfil puede declarar `modules` en `partners.json`: secciones debajo de los
+links. Son lo que diferencia un escalón de otro en la oferta.
+
+### Catálogo (`type: "catalogo"`)
+
+Lista de productos leída de una planilla de Google que edita el cliente. No hay
+backend: la página descarga la planilla como CSV desde el navegador.
+
+```json
+{ "type": "catalogo", "title": "Catálogo", "sheetId": "<id de la planilla>", "whatsapp": "+54 9 ..." }
+```
+
+- La planilla tiene que estar compartida como **"cualquiera con el enlace: lector"**.
+  Si no, Google devuelve un login y la página muestra "no disponible".
+- Primera fila = cabecera. Columnas: `nombre` (obligatoria), `precio`,
+  `descripcion`, `foto`, `disponible`. Orden, mayúsculas y acentos no importan.
+  Plantilla en `public/catalogos/ejemplo.csv`.
+- `precio` vacío muestra "Consultar"; `disponible` = `no` muestra "Sin stock" y
+  oculta el botón. Un número se formatea como `$ 12.500`.
+- `foto` acepta cualquier URL de imagen o un link de Drive compartido con enlace.
+- "Lo quiero" abre WhatsApp al número del módulo con el producto ya escrito. Sin
+  `whatsapp`, usa el link destacado del perfil.
+- Si la planilla falla, la página muestra la última lectura buena guardada en el
+  dispositivo. Google cachea la exportación unos minutos: un cambio tarda eso en verse.
+- `csvUrl` en vez de `sheetId` sirve para pruebas o un catálogo servido desde el sitio.
+
+## Puertos: redirecciones de objetos (`/o/<id>`)
+
+Los objetos físicos no llevan impresa la URL del perfil sino `hito.uno/o/<id>`.
+El Worker la redirige (302, sin cache) al destino que diga `worker/objects.json`.
+Así un QR ya impreso se puede reapuntar cambiando una línea de esa tabla: la
+tarjeta del paquete puede llevar este mes a "lo nuevo" y el mes que viene a las
+reseñas. Un id que no está en la tabla va a la landing con `?o=<id>`, nunca a un
+error.
+
+Cada redirección se cuenta en Analytics Engine (binding `TOQUES`, dataset
+`hito_toques` en producción y `hito_toques_dev` en dev) **cuando el binding está
+activo**. Hay que habilitar Analytics Engine una vez en el panel de Cloudflare
+(Workers & Pages → Analytics Engine → Enable) y descomentar los dos bloques
+`analytics_engine_datasets` en `wrangler.jsonc`; sin eso el deploy falla con el
+error 10089. El dataset aparece con el primer toque. Se consulta con SQL desde la API de
+Cloudflare cuando haya que mostrar métricas por objeto.
+
+**Destinos editables sin deploy (dashboard mínimo):** el Worker mira primero la
+clave `to:<id>` en el KV `PUERTOS` y, si no existe, usa `objects.json`. El
+binding está comentado en `wrangler.jsonc` hasta que se cree el namespace:
+
+```bash
+npx wrangler login
+npx wrangler kv namespace create PUERTOS
+npx wrangler kv namespace create PUERTOS --env dev
+```
+
+Pegar los ids en los dos bloques `kv_namespaces` (raíz y `env.dev`). Reapuntar
+un objeto es entonces `npx wrangler kv key put --binding PUERTOS "to:t-dana-01" "/p/danaarx"`
+(con `--env dev` para dev), sin tocar el repo.
+
+Para probar Worker y perfiles juntos en local: `npm run dev:worker` (buildea y
+levanta wrangler en `localhost:8787`). El `npm run dev` de Vite no ejecuta el
+Worker: ahí los perfiles se prueban con `localhost:5173/p/?p=<slug>`.
 
 Los perfiles llevan `noindex, nofollow` — se llega por el objeto o por el link
 directo, no por buscadores.

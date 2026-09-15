@@ -2,10 +2,34 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "hito-uno",
   "compatibility_date": "2026-08-24",
+  // El Worker resuelve los perfiles /p/<slug> y las redirecciones de objetos
+  // /o/<id>. Ver worker/index.ts.
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Sin esto, una navegacion del navegador a /p/<slug> (que no existe como
+    // archivo) recibe el fallback SPA —la landing— antes de que el Worker
+    // llegue a correr. Con estas rutas el Worker corre primero y decide.
+    "run_worker_first": ["/p/*", "/o/*"]
   },
+  // Conteo de toques por objeto (Analytics Engine). El dataset aparece solo
+  // con el primer dato, pero la cuenta tiene que tener Analytics Engine
+  // habilitado UNA vez desde el panel, si no el deploy falla con el error
+  // 10089. Para activarlo:
+  //   1. https://dash.cloudflare.com/dd0c1cd27f121745346add33faf4eceb/workers/analytics-engine
+  //      -> Enable.
+  //   2. Descomentar este bloque y el de env.dev.
+  // Mientras tanto el Worker funciona igual, sin contar.
+  // "analytics_engine_datasets": [{ "binding": "TOQUES", "dataset": "hito_toques" }],
+  // Destinos editables en caliente (dashboard minimo). Para activarlo:
+  //   npx wrangler login
+  //   npx wrangler kv namespace create PUERTOS
+  //   npx wrangler kv namespace create PUERTOS --env dev
+  // y pegar los ids que devuelve en los dos bloques `kv_namespaces` (aca y en
+  // env.dev). Mientras no esten, el Worker usa solo worker/objects.json.
+  // "kv_namespaces": [{ "binding": "PUERTOS", "id": "<id de produccion>" }],
   "routes": [
     {
       "pattern": "hito.uno",
@@ -15,6 +39,9 @@
   "env": {
     "dev": {
       "name": "hito-uno-dev",
+      // Los bindings no se heredan entre entornos: hay que repetirlos aca.
+      // "analytics_engine_datasets": [{ "binding": "TOQUES", "dataset": "hito_toques_dev" }],
+      // "kv_namespaces": [{ "binding": "PUERTOS", "id": "<id de dev>" }],
       "routes": [
         {
           "pattern": "dev.hito.uno",

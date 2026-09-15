@@ -59,7 +59,7 @@ export const experiences: Experience[] = [
     focus: [350, 315],
     zoom: 9.8,
     products: [
-      { label: 'Packaging interactivo', description: 'Recompra y contenido desde la caja.', marker: [379, 295] },
+      { label: 'Tarjeta en la caja', description: 'Recompra y contenido desde la caja.', marker: [379, 295] },
       { label: 'Apoyavasos NFC', description: 'Menú y promociones del día.', marker: [352, 311] },
       { label: 'Tarjeta de beneficios', description: 'Una porción más para quienes vuelven.', marker: [284, 339] },
     ],
@@ -89,7 +89,7 @@ export const experiences: Experience[] = [
     products: [
       { label: 'Tótem de reseñas', description: 'La opinión llega en dos segundos.', marker: [156, 533] },
       { label: 'Tarjeta de fidelidad', description: 'Beneficios sin formularios eternos.', marker: [188, 538] },
-      { label: 'Packaging NFC', description: 'Origen, cuidados y recompra.', marker: [196, 488] },
+      { label: 'Tarjeta en el paquete', description: 'Origen, cuidados y recompra.', marker: [196, 488] },
     ],
   },
   {

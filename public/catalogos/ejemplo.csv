@@ -1,0 +1,4 @@
+nombre,precio,descripcion,foto,disponible
+Producto de ejemplo,12500,Copiá esta planilla para armar tu catálogo. Una fila por producto.,https://hito.uno/images/products/tarjeta/tarjeta-03.webp,si
+"Otro producto, con coma en el nombre",,Sin precio se muestra "Consultar".,https://hito.uno/images/products/llavero/llavero-02.webp,si
+Producto agotado,8000,Con disponible = no se muestra sin stock y sin botón.,https://hito.uno/images/products/apoyavasos/apoyavasos-01.webp,no
