@@ -179,3 +179,103 @@ export const stepsWithout = [
   'Encontrar la sección',
   'Hacer la acción',
 ]
+
+/* --- Tres puertas ---
+   Orientan por contexto antes de que el visitante lea nada mas. Cada puerta
+   lleva a una seccion que ya existe y deja el carrusel en el soporte que
+   corresponde: no hay contenido nuevo que mantener detras. */
+export type DoorKey = 'personal' | 'local' | 'objeto'
+
+export type Door = {
+  key: DoorKey
+  label: string
+  title: string
+  description: string
+  /** Que hay hoy para ese contexto, en pocas palabras. */
+  examples: string
+  /** Seccion de la landing a la que baja. */
+  href: string
+  /** Soporte que queda seleccionado en el carrusel al elegir la puerta. */
+  object: ObjectKey
+  /** Estado honesto: lo que se puede pedir hoy vs lo que se esta armando. */
+  status: 'Disponible hoy' | 'Foco comercial' | 'En desarrollo'
+}
+
+export const doors: Door[] = [
+  {
+    key: 'personal',
+    label: 'Personal',
+    title: 'Tu información, siempre a mano.',
+    description: 'Una tarjeta que deja tu contacto guardado y una página tuya que vive en hito.uno.',
+    examples: 'Tarjeta · llavero · página personal',
+    href: '#demo',
+    object: 'tarjeta',
+    status: 'Disponible hoy',
+  },
+  {
+    key: 'local',
+    label: 'Local',
+    title: 'Hacé más simple tu espacio.',
+    description: 'Objetos en la mesa, la pared o el mostrador que abren el menú, el Wi-Fi o las reseñas sin que nadie pregunte.',
+    examples: 'Apoyavasos · placa · recibidor',
+    href: '#soportes',
+    object: 'apoyavasos',
+    status: 'Foco comercial',
+  },
+  {
+    key: 'objeto',
+    label: 'Objeto',
+    title: 'Dale una capa digital a las cosas.',
+    description: 'Llaves, productos y equipos que cuentan lo que hay que saber de ellos al acercar el celular.',
+    examples: 'Llave · producto · equipo',
+    href: '#soportes',
+    object: 'llavero',
+    status: 'En desarrollo',
+  },
+]
+
+/* --- ¿Que queres simplificar? ---
+   Explica el valor por necesidad, no por tecnologia. */
+export type Need = { label: string; description: string }
+
+export const needs: Need[] = [
+  { label: 'Contacto', description: 'Tu número y tus redes guardados sin tipear.' },
+  { label: 'Wi-Fi', description: 'Conectarse sin pedir la clave.' },
+  { label: 'Reseñas', description: 'La opinión, en el momento en que la persona quiere darla.' },
+  { label: 'Información', description: 'Horarios, servicios, instrucciones: lo que todos preguntan.' },
+  { label: 'Catálogo', description: 'Tus productos con precio y un botón para pedirlos.' },
+  { label: 'Ficha', description: 'Una propiedad, un producto o un equipo, con todo lo suyo.' },
+]
+
+/* --- Que incluye Hito ---
+   Las tres capas del sistema y la escalera de la oferta. Sin precios hasta
+   que esten definidos; el dashboard aparece como proximamente a proposito. */
+export type Layer = { label: string; title: string; description: string; note?: string }
+
+export const layers: Layer[] = [
+  {
+    label: 'Objeto',
+    title: 'La pieza física.',
+    description: 'Tarjeta, llavero, apoyavasos, placa o recibidor. Impresos en 3D, con NFC y código QR. Se paga una vez.',
+  },
+  {
+    label: 'Destino',
+    title: 'Lo que se abre al tocar.',
+    description: 'Tu página en hito.uno con tus canales, tu catálogo o tu ficha. Vive mientras tu membresía esté activa.',
+  },
+  {
+    label: 'Servicio',
+    title: 'Nosotros lo configuramos.',
+    description: 'Cargamos tu contenido, lo mantenemos y lo cambiamos cuando pedís. Sin app, sin cuenta, sin instalar nada.',
+    note: 'Próximamente: panel con métricas de toques por objeto.',
+  },
+]
+
+export type Tier = { label: string; object: string; destination: string; status: 'Disponible hoy' | 'Próximamente' | 'A medida' }
+
+export const tiers: Tier[] = [
+  { label: 'Lite', object: 'Tarjeta plana con QR', destination: 'Página personal con tus canales', status: 'Disponible hoy' },
+  { label: 'Hito', object: 'Porta tarjetas con NFC', destination: 'Página personal + cambios incluidos', status: 'Próximamente' },
+  { label: 'Hito +', object: 'Tarjeta + llavero', destination: 'Página con catálogo, propiedades o servicios', status: 'Próximamente' },
+  { label: 'A medida', object: 'Los objetos que el caso pida', destination: 'Web, catálogo o base de datos propia', status: 'A medida' },
+]

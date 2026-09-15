@@ -1,12 +1,16 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
 import {
+  doors,
   finishes,
+  layers,
+  needs,
   objects,
   shapes,
   sizes,
   stepsWithout,
   tapActions,
+  tiers,
   useCases,
   type ObjectKey,
   type TapActionKey,
@@ -43,6 +47,16 @@ export default function Landing({ onSceneFocusChange }: Props) {
   // Sincronizar foco del visor 3D al montar el componente
   useEffect(() => {
     onSceneFocusChange(useCases[useCase].sceneId)
+  }, [])
+
+  // CTA sticky (solo se ve en mobile por CSS): aparece cuando el hero ya
+  // quedo atras, asi el "Pedi tu Hito" acompaña todo el recorrido.
+  const [stickyVisible, setStickyVisible] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setStickyVisible(window.scrollY > window.innerHeight * 0.8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   const selectUseCase = (key: UseCaseKey) => {
@@ -128,9 +142,9 @@ export default function Landing({ onSceneFocusChange }: Props) {
           hito<span>.uno</span>
         </a>
         <nav className="site-nav" aria-label="Navegación principal">
-          <a href="#demo">Pedí tu demo</a>
-          <a href="#pasos">Reducimos pasos</a>
+          <a href="#demo">Pedí tu Hito</a>
           <a href="#soportes">Soportes</a>
+          <a href="#incluye">Qué incluye</a>
           <a className="nav-cta" href="#hablemos">Hablemos</a>
         </nav>
       </header>
@@ -151,7 +165,7 @@ export default function Landing({ onSceneFocusChange }: Props) {
           </p>
           <div className="hero-actions">
             <a className="primary-action" href="#demo">
-              Pedí tu demo
+              Pedí tu Hito
               <span aria-hidden="true">↘</span>
             </a>
             <a className="secondary-action" href="#pasos">
@@ -165,9 +179,36 @@ export default function Landing({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
+      {/* Tres puertas: orientan por contexto y dejan el carrusel en el
+          soporte que corresponde. Cada una baja a una seccion que ya existe. */}
+      <section className="hito-doors" id="puertas" aria-label="Elegí tu contexto">
+        <p className="card-eyebrow">Tres puertas / ¿cuál es la tuya?</p>
+        <div className="hito-doors-grid">
+          {doors.map((door) => (
+            <a
+              key={door.key}
+              className={door.status === 'Foco comercial' ? 'hito-door hito-door--focus' : 'hito-door'}
+              href={door.href}
+              onClick={() => selectObject(door.object)}
+            >
+              <div className="hito-door-head">
+                <p className="hito-door-label">{door.label}</p>
+                <span className="hito-door-status">{door.status}</span>
+              </div>
+              <h3>{door.title}</h3>
+              <p>{door.description}</p>
+              <span className="hito-door-examples">{door.examples}</span>
+              <span className="hito-door-arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+
       <section className="hito-configurator" id="demo" aria-labelledby="configurator-title">
         <aside className="experience-rail">
-          <p className="kicker">PEDÍ TU DEMO / CONFIGURADOR</p>
+          <p className="kicker">PEDÍ TU HITO / CONFIGURADOR</p>
           <h2 id="configurator-title">
             Diseñamos
             <br />
@@ -312,7 +353,7 @@ export default function Landing({ onSceneFocusChange }: Props) {
                       className="primary-action hito-submit"
                       disabled={status === 'submitting'}
                     >
-                      {status === 'submitting' ? 'Enviando...' : 'Pedir mi demo'}
+                      {status === 'submitting' ? 'Enviando...' : 'Pedir mi Hito'}
                       <span aria-hidden="true">↗</span>
                     </button>
 
@@ -393,12 +434,26 @@ export default function Landing({ onSceneFocusChange }: Props) {
                 </span>
               </li>
             </ol>
-            <p className="mock-note">
-              Los cinco pasos colapsan sobre el punto coral al entrar en viewport. Mismo gesto que la
-              activación del objeto.
-            </p>
           </div>
         </div>
+      </section>
+
+      {/* Explica el valor por necesidad, no por tecnologia. */}
+      <section className="hito-needs" id="simplificar" aria-labelledby="needs-title">
+        <p className="card-eyebrow">¿Qué querés simplificar?</p>
+        <h2 id="needs-title">
+          Lo que todos preguntan,
+          <br />
+          <em>resuelto en el objeto.</em>
+        </h2>
+        <ul className="hito-needs-grid">
+          {needs.map((need) => (
+            <li key={need.label} className="hito-need">
+              <strong>{need.label}</strong>
+              <span>{need.description}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="hito-supports" id="soportes" aria-labelledby="supports-title">
@@ -494,6 +549,56 @@ export default function Landing({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
+      {/* Las tres capas del sistema y la escalera. Sin precios hasta que
+          esten definidos; el panel de metricas es proximamente a proposito. */}
+      <section className="hito-includes" id="incluye" aria-labelledby="includes-title">
+        <p className="card-eyebrow">Qué incluye Hito / las tres capas</p>
+        <h2 id="includes-title">
+          Un objeto, un destino
+          <br />
+          <em>y alguien que lo mantiene.</em>
+        </h2>
+        <ol className="hito-layers">
+          {layers.map((layer, index) => (
+            <li key={layer.label} className="hito-layer">
+              <span className="hito-layer-index" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <p className="kicker" style={{ margin: 0 }}>{layer.label.toUpperCase()}</p>
+              <h3>{layer.title}</h3>
+              <p>{layer.description}</p>
+              {layer.note ? <span className="hito-layer-note">{layer.note}</span> : null}
+            </li>
+          ))}
+        </ol>
+
+        <div className="hito-tiers" role="table" aria-label="Escalera de planes">
+          <div className="hito-tiers-head" role="row">
+            <span role="columnheader">Plan</span>
+            <span role="columnheader">Objeto</span>
+            <span role="columnheader">Destino</span>
+            <span role="columnheader">Estado</span>
+          </div>
+          {tiers.map((tier) => (
+            <div key={tier.label} className="hito-tier" role="row">
+              <strong role="cell">{tier.label}</strong>
+              <span role="cell">{tier.object}</span>
+              <span role="cell">{tier.destination}</span>
+              <span
+                role="cell"
+                className={tier.status === 'Disponible hoy' ? 'hito-tier-status hito-tier-status--now' : 'hito-tier-status'}
+              >
+                {tier.status}
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="hito-tiers-note">
+          El objeto se paga una vez. El destino y el servicio van por membresía mensual. Los precios se
+          definen con vos según el caso.
+        </p>
+      </section>
+
       <section className="hito-cases" id="casos" aria-labelledby="cases-title">
         <p className="card-eyebrow">Casos / microhistorias</p>
         <h2 id="cases-title">
@@ -565,9 +670,17 @@ export default function Landing({ onSceneFocusChange }: Props) {
           <em>reducir a un toque?</em>
         </h2>
         <a className="primary-action" href="#demo">
-          Pedí tu demo <span aria-hidden="true">↗</span>
+          Pedí tu Hito <span aria-hidden="true">↗</span>
         </a>
       </section>
+
+      <a className={stickyVisible ? 'hito-sticky-cta is-visible' : 'hito-sticky-cta'} href="#demo">
+        <strong>
+          Pedí tu Hito
+          <small>Tu página en 24 horas · sin app</small>
+        </strong>
+        <span aria-hidden="true">↗</span>
+      </a>
     </>
   )
 }
