@@ -14,12 +14,15 @@
     // llegue a correr. Con estas rutas el Worker corre primero y decide.
     "run_worker_first": ["/p/*", "/o/*"]
   },
-  // Conteo de toques por objeto. Analytics Engine no necesita crear nada por
-  // adelantado: el dataset aparece con el primer dato. Se consulta con SQL
-  // desde la API de Cloudflare cuando haya que mostrar metricas.
-  "analytics_engine_datasets": [
-    { "binding": "TOQUES", "dataset": "hito_toques" }
-  ],
+  // Conteo de toques por objeto (Analytics Engine). El dataset aparece solo
+  // con el primer dato, pero la cuenta tiene que tener Analytics Engine
+  // habilitado UNA vez desde el panel, si no el deploy falla con el error
+  // 10089. Para activarlo:
+  //   1. https://dash.cloudflare.com/dd0c1cd27f121745346add33faf4eceb/workers/analytics-engine
+  //      -> Enable.
+  //   2. Descomentar este bloque y el de env.dev.
+  // Mientras tanto el Worker funciona igual, sin contar.
+  // "analytics_engine_datasets": [{ "binding": "TOQUES", "dataset": "hito_toques" }],
   // Destinos editables en caliente (dashboard minimo). Para activarlo:
   //   npx wrangler login
   //   npx wrangler kv namespace create PUERTOS
@@ -37,9 +40,7 @@
     "dev": {
       "name": "hito-uno-dev",
       // Los bindings no se heredan entre entornos: hay que repetirlos aca.
-      "analytics_engine_datasets": [
-        { "binding": "TOQUES", "dataset": "hito_toques_dev" }
-      ],
+      // "analytics_engine_datasets": [{ "binding": "TOQUES", "dataset": "hito_toques_dev" }],
       // "kv_namespaces": [{ "binding": "PUERTOS", "id": "<id de dev>" }],
       "routes": [
         {

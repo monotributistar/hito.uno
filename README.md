@@ -93,8 +93,11 @@ reseñas. Un id que no está en la tabla va a la landing con `?o=<id>`, nunca a 
 error.
 
 Cada redirección se cuenta en Analytics Engine (binding `TOQUES`, dataset
-`hito_toques` en producción y `hito_toques_dev` en dev). No hay que crear nada:
-el dataset aparece con el primer toque. Se consulta con SQL desde la API de
+`hito_toques` en producción y `hito_toques_dev` en dev) **cuando el binding está
+activo**. Hay que habilitar Analytics Engine una vez en el panel de Cloudflare
+(Workers & Pages → Analytics Engine → Enable) y descomentar los dos bloques
+`analytics_engine_datasets` en `wrangler.jsonc`; sin eso el deploy falla con el
+error 10089. El dataset aparece con el primer toque. Se consulta con SQL desde la API de
 Cloudflare cuando haya que mostrar métricas por objeto.
 
 **Destinos editables sin deploy (dashboard mínimo):** el Worker mira primero la
