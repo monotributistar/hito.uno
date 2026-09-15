@@ -191,6 +191,12 @@ export const objects: Record<ObjectKey, HitoObject> = {
         focus: '55% 45%',
       },
     ],
+    resultPhoto: {
+      src: '/images/products/placa/placa-resultado.webp',
+      alt: 'La misma placa Hito.uno en la pared del hotel, ahora con una mano que acerca un celular cuya pantalla muestra la página de bienvenida con los botones Wi-Fi, Servicios y Escribinos',
+      caption: 'Después del toque',
+      focus: '60% 50%',
+    },
   },
   recibidor: {
     label: 'Recibidor',

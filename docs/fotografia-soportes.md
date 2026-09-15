@@ -23,7 +23,7 @@ Para generar las fotos que faltan del carrusel de la sección Soportes.
 | Llavero | 4 ✅ | 1 ✅ |
 | Apoyavasos | 1 (faltan 3) | falta |
 | Recibidor | 1 (faltan 3) | falta |
-| Placa | 1 (faltan 3) | falta |
+| Placa | 1 (faltan 3) | 1 ✅ |
 
 También conviene reemplazar `tarjeta-04` (la de la mano): la mano ocupa todo el tercio
 izquierdo.
