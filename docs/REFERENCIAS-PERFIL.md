@@ -28,10 +28,10 @@ Linktree. La categoría se está concentrando.
 | Acción principal destacada | Sí | **Sí** (WhatsApp) | Parejo. |
 | Links secundarios con ícono | Sí | **Sí** | Parejo. |
 | Carga rápida, sin app | Sí (varía) | **Sí** (6 kB de JS) | Ventaja nuestra: muchos cargan una app entera. |
-| **Guardar contacto (vCard)** | **Sí, en todos** | **No** | **El hueco más grande.** Ver sección 3. |
+| **Guardar contacto (vCard)** | **Sí, en todos** | **Sí** (2026-09-15) | Servido desde la página, no desde el chip. Ver sección 3. |
 | **Intercambio de datos** (el visitante deja el suyo) | Sí (Popl, V1CE, QRCodeChimp) | No | Ver sección 4. |
 | Métricas por link | Sí | No (contamos el toque del objeto, no el clic del link) | Ver sección 5. |
-| Compartir la propia página | Sí (QR en pantalla, share nativo) | No | Ver sección 6. |
+| Compartir la propia página | Sí (QR en pantalla, share nativo) | **Sí** (share nativo, 2026-09-15). QR en pantalla: no | Ver sección 6. |
 | Pase para Apple/Google Wallet | Sí (V1CE, QR Tiger, SoCard) | No | Pesado: requiere certificado de Apple. Parkeado. |
 | Catálogo de productos con precio | Casi ninguno | **Sí** | **Ventaja nuestra**, viene del mundo link-in-bio. |
 | Video, PDF, galería | Sí (HiHello) | No | No urgente para la Lite. |
@@ -124,8 +124,8 @@ Dos formas distintas, y conviene no confundirlas:
 
 | # | Qué | Por qué ahora | Tamaño |
 | --- | --- | --- | --- |
-| 1 | **Guardar contacto (vCard)** | Es el hueco frente a todos los competidores y lo que la landing ya promete | Chico |
-| 2 | **Compartir nativo** | Una línea; le sirve al dueño todos los días | Muy chico |
+| 1 | ~~Guardar contacto (vCard)~~ **hecho 2026-09-15** | Es el hueco frente a todos los competidores y lo que la landing ya promete | Chico |
+| 2 | ~~Compartir nativo~~ **hecho 2026-09-15** | Una línea; le sirve al dueño todos los días | Muy chico |
 | 3 | **Clics por link** | Le da contenido al panel y razón a la membresía | Medio, con Analytics Engine |
 | 4 | **Dejame tu contacto** | Diferencia un escalón comercial; reusa la planilla de leads | Medio |
 | 5 | QR en pantalla | Útil, pero decidir antes lo del punto 6 | Chico |

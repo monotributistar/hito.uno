@@ -52,6 +52,19 @@ publica y entra cualquiera que sepa la URL. Para eso está `dev.hito.uno`.
 `dev.hito.uno` es público para quien conozca el subdominio. Si hace falta que sea
 privado de verdad, hay que ponerle Cloudflare Access por delante.
 
+## Guardar contacto y compartir
+
+Cada perfil ofrece dos acciones de utilidad debajo de sus canales:
+
+- **Guardar contacto** apunta a `/p/<slug>/contacto.vcf`, que arma el Worker desde
+  `partners.json` (`worker/vcard.ts`). Se sirve `inline` con `text/vcard` para que
+  el celular abra la ficha y ofrezca agregarla a la agenda. **No se escribe el vCard
+  en el chip**: ahí los datos quedan congelados y iOS no lo lee bien sin una app
+  abierta; desde la URL anda en todos y se puede cambiar sin reimprimir.
+  Formato vCard 3.0, sin foto. Ver `docs/REFERENCIAS-PERFIL.md`.
+- **Compartir** usa el menú del sistema cuando existe y, si no, copia el link al
+  portapapeles. Comparte `/p/<slug>`, nunca el puerto `/o/<id>`.
+
 ## Panel del cliente (`/panel/<token>`)
 
 El cliente abre un link secreto y ve **su Hito y a dónde apunta**. Cambia la URL,

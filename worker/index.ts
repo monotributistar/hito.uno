@@ -23,6 +23,7 @@ import objects from './objects.json'
 import partnersRegistry from '../src/partner/partners.json'
 import { instagramHref, whatsappHref } from '../src/partner/links'
 import { HitoStore, kindFromId, type ObjectRow } from './store'
+import { buildVCard, vcardFilename, type VCardPartner } from './vcard'
 
 export { HitoStore }
 
@@ -58,6 +59,7 @@ const PANEL_ENTRY = '/panel/'
 
 const OBJECT_ROUTE = /^\/o\/([A-Za-z0-9_-]{1,64})\/?$/
 const PARTNER_ROUTE = /^\/p\/[^/]+\/?$/
+const VCARD_ROUTE = /^\/p\/([^/]+)\/contacto\.vcf$/
 const PANEL_ROUTE = /^\/panel(\/[^/]*)?\/?$/
 const PANEL_OBJECT_API = /^\/api\/panel\/objects\/([A-Za-z0-9_-]{1,64})$/
 
@@ -283,6 +285,24 @@ export default {
 
     if (PANEL_ROUTE.test(url.pathname)) {
       return env.ASSETS.fetch(new Request(new URL(PANEL_ENTRY, url).toString(), request))
+    }
+
+    /* Archivo de contacto del perfil. Se sirve `inline`: con ese encabezado
+       Safari abre la ficha y ofrece agregarlo a la agenda, en vez de bajar un
+       archivo a Archivos; Android lo manda igual a Contactos. */
+    const vcardMatch = url.pathname.match(VCARD_ROUTE)
+    if (vcardMatch) {
+      const partner = PARTNERS.find((p) => p.slug === vcardMatch[1].toLowerCase()) as
+        | VCardPartner
+        | undefined
+      if (!partner) return new Response('Perfil no encontrado', { status: 404 })
+      return new Response(buildVCard(partner, url.origin), {
+        headers: {
+          'Content-Type': 'text/vcard; charset=utf-8',
+          'Content-Disposition': `inline; filename="${vcardFilename(partner.name)}"`,
+          'Cache-Control': 'no-store',
+        },
+      })
     }
 
     if (PARTNER_ROUTE.test(url.pathname)) {

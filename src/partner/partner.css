@@ -414,3 +414,49 @@
     height: 72px;
   }
 }
+
+/* --- Acciones de utilidad (guardar contacto / compartir) --- */
+
+.partner-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.partner-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 48px;
+  padding: 10px 8px;
+  border: 1px solid rgba(23, 56, 58, 0.2);
+  border-radius: 2px;
+  background: transparent;
+  color: #315f63;
+  font: 400 0.71rem 'Space Mono', monospace;
+  letter-spacing: 0;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.partner-action:hover {
+  border-color: #17383a;
+  color: #17383a;
+}
+
+.partner-action svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--partner-accent);
+}
+
+@media (max-width: 380px) {
+  /* En pantallas angostas el texto de los dos botones no entra en una fila */
+  .partner-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

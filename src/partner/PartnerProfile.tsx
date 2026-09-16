@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import PartnerIcon from './PartnerIcon'
 import CatalogModule from './modules/CatalogModule'
 import type { Partner, PartnerLink } from './partners'
@@ -71,6 +71,8 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
             <LinkButton key={link.href} link={link} />
           ))}
         </nav>
+
+        <ProfileActions partner={partner} />
       </article>
 
       {partner.modules?.map((mod, i) => {
@@ -87,6 +89,58 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
         </a>
       </footer>
     </main>
+  )
+}
+
+/* Acciones de utilidad: guardar el contacto y compartir la pagina. Van
+   debajo de los canales y con menos peso visual, para no competir con la
+   accion principal del partner. */
+function ProfileActions({ partner }: { partner: Partner }) {
+  const [shareState, setShareState] = useState<'idle' | 'copiado' | 'error'>('idle')
+
+  const share = async () => {
+    const url = `${window.location.origin}/p/${partner.slug}`
+    const data = { title: partner.name, text: partner.tagline ?? partner.name, url }
+    try {
+      // En celular abre el menu de compartir del sistema; en escritorio casi
+      // nunca existe, asi que copiamos el link al portapapeles.
+      if (navigator.share) {
+        await navigator.share(data)
+        return
+      }
+      await navigator.clipboard.writeText(url)
+      setShareState('copiado')
+      setTimeout(() => setShareState('idle'), 2500)
+    } catch (err) {
+      // Cancelar el menu de compartir tambien entra por aca: no es un error.
+      if ((err as Error)?.name === 'AbortError') return
+      console.error('No se pudo compartir el perfil:', err)
+      setShareState('error')
+      setTimeout(() => setShareState('idle'), 2500)
+    }
+  }
+
+  return (
+    <div className="partner-actions">
+      {/* Sin `download`: dejamos que el navegador abra la ficha de contacto,
+          que es lo que hace iOS con un text/vcard servido inline. */}
+      <a className="partner-action" href={`/p/${partner.slug}/contacto.vcf`}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M19 8v6M22 11h-6" />
+        </svg>
+        Guardar contacto
+      </a>
+
+      <button type="button" className="partner-action" onClick={share}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+          <path d="M12 16V4M8 8l4-4 4 4" />
+        </svg>
+        {shareState === 'copiado' ? 'Link copiado' : shareState === 'error' ? 'No se pudo' : 'Compartir'}
+      </button>
+    </div>
   )
 }
 
