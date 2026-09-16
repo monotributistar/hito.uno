@@ -52,6 +52,32 @@ publica y entra cualquiera que sepa la URL. Para eso está `dev.hito.uno`.
 `dev.hito.uno` es público para quien conozca el subdominio. Si hace falta que sea
 privado de verdad, hay que ponerle Cloudflare Access por delante.
 
+## Formulario de la landing
+
+El formulario **no le habla a Google desde el navegador**. Manda la consulta a
+`POST /api/lead` de nuestro Worker, que:
+
+1. descarta el envío si viene con la trampa anti-spam (`hp`) completa;
+2. valida y recorta los campos, y frena más de 5 envíos por minuto desde la misma
+   IP (guarda un hash corto, nunca la IP);
+3. **guarda la consulta en el almacén antes de intentar nada más**;
+4. contesta al navegador enseguida y reenvía a la planilla en segundo plano.
+
+Por qué así:
+
+- Antes el navegador posteaba con `mode: 'no-cors'`, que impide leer la respuesta:
+  la página decía "enviado" aunque hubiera fallado. Pasó de verdad, semanas sin una
+  sola consulta y sin enterarse.
+- Si Google falla, la consulta ya está guardada y queda marcada con su error
+  (`pendingLeads()` en `worker/store.ts`).
+- El ida y vuelta a Apps Script tarda varios segundos: por eso va en segundo plano
+  con `ctx.waitUntil` y la persona ve la confirmación al instante.
+- El cuerpo se manda con los caracteres no ASCII escapados. Sin eso, en el salto de
+  redirección de Apps Script se pierde el charset y a la planilla llegan
+  "85 ? 54 mm" o "Identificaci?n". Verificado contra la planilla real.
+- La URL del Apps Script vive en `worker/leads.ts`. Antes viajaba en el código de la
+  página y la veía cualquiera.
+
 ## Guardar contacto y compartir
 
 Cada perfil ofrece dos acciones de utilidad debajo de sus canales:

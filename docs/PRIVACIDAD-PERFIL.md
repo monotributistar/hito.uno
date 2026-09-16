@@ -55,6 +55,10 @@ Medido con un navegador limpio contra `dev.hito.uno/p/<slug>`.
 | `static.cloudflareinsights.com` | Analítica de navegador que Cloudflare inyecta sola en el sitio | Métricas de carga; sin cookies, pero es un tercero |
 | `docs.google.com` | **Solo en perfiles con catálogo en planilla.** El navegador del visitante baja el CSV | IP del visitante |
 
+**Resuelto el 2026-09-15 en la landing:** el formulario ya no le pega a Google desde
+el navegador. Manda la consulta a nuestro Worker y el reenvío a la planilla lo hace
+el servidor. Falta hacer lo mismo con el catálogo (punto 3 de la lista de abajo).
+
 ---
 
 ## 3. Qué falta para poder decir "esta página no te rastrea"

@@ -65,6 +65,27 @@ export class HitoStore {
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
       )
     `)
+    /* Consultas del formulario de la landing. Se guardan ANTES de intentar
+       mandarlas a la planilla: si Google falla, la consulta no se pierde y se
+       puede recuperar de aca. `forwarded` dice si la planilla la confirmo. */
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS leads (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        payload TEXT NOT NULL,
+        forwarded INTEGER NOT NULL DEFAULT 0,
+        error TEXT
+      )
+    `)
+    /* Freno de spam por ventana de tiempo. Guarda un hash corto, nunca la IP:
+       alcanza para contar y no identifica a nadie. Las filas viejas se borran. */
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS rate (
+        bucket TEXT PRIMARY KEY,
+        count INTEGER NOT NULL,
+        started_at INTEGER NOT NULL
+      )
+    `)
 
     // INSERT OR IGNORE: la semilla no pisa lo que el cliente ya cambio.
     for (const [id, entry] of Object.entries(objectsSeed.objects)) {
@@ -123,6 +144,48 @@ export class HitoStore {
     return true
   }
 
+  /** Guarda la consulta y devuelve su id, para marcarla despues. */
+  saveLead(payload: string): number {
+    this.sql.exec('INSERT INTO leads (payload) VALUES (?)', payload)
+    const rows = this.sql.exec<{ id: number }>('SELECT last_insert_rowid() AS id').toArray()
+    return rows.length ? rows[0].id : 0
+  }
+
+  /** Anota si la planilla acepto la consulta, y si no, por que. */
+  markLead(id: number, forwarded: boolean, error?: string): void {
+    this.sql.exec('UPDATE leads SET forwarded = ?, error = ? WHERE id = ?', forwarded ? 1 : 0, error ?? null, id)
+  }
+
+  /** Consultas que la planilla nunca confirmo: son las que hay que recuperar. */
+  pendingLeads(limit = 50): { id: number; created_at: string; payload: string; error: string | null }[] {
+    return this.sql
+      .exec<{ id: number; created_at: string; payload: string; error: string | null }>(
+        'SELECT id, created_at, payload, error FROM leads WHERE forwarded = 0 ORDER BY id DESC LIMIT ?',
+        limit,
+      )
+      .toArray()
+  }
+
+  /** Cuenta un intento. Devuelve false cuando se pasa del limite en la ventana. */
+  allow(bucket: string, limit: number, windowMs: number): boolean {
+    const now = Date.now()
+    this.sql.exec('DELETE FROM rate WHERE started_at < ?', now - windowMs * 10)
+    const rows = this.sql
+      .exec<{ count: number; started_at: number }>('SELECT count, started_at FROM rate WHERE bucket = ?', bucket)
+      .toArray()
+    if (!rows.length || now - rows[0].started_at > windowMs) {
+      this.sql.exec(
+        'INSERT INTO rate (bucket, count, started_at) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET count = 1, started_at = excluded.started_at',
+        bucket,
+        now,
+      )
+      return true
+    }
+    if (rows[0].count >= limit) return false
+    this.sql.exec('UPDATE rate SET count = count + 1 WHERE bucket = ?', bucket)
+    return true
+  }
+
   /* El binding de Durable Object habla por fetch. Cada ruta es una operacion;
      el cuerpo y la respuesta son JSON. */
   async fetch(request: Request): Promise<Response> {
@@ -146,6 +209,22 @@ export class HitoStore {
       if (url.pathname === '/set-destination' && request.method === 'POST') {
         const body = (await request.json()) as { owner: string; id: string; to: string }
         return json({ ok: this.setDestination(body.owner, body.id, body.to) })
+      }
+      if (url.pathname === '/lead' && request.method === 'POST') {
+        const body = (await request.json()) as { payload: string }
+        return json({ id: this.saveLead(body.payload) })
+      }
+      if (url.pathname === '/lead-mark' && request.method === 'POST') {
+        const body = (await request.json()) as { id: number; forwarded: boolean; error?: string }
+        this.markLead(body.id, body.forwarded, body.error)
+        return json({ ok: true })
+      }
+      if (url.pathname === '/leads-pending') {
+        return json({ leads: this.pendingLeads() })
+      }
+      if (url.pathname === '/allow' && request.method === 'POST') {
+        const body = (await request.json()) as { bucket: string; limit: number; windowMs: number }
+        return json({ allowed: this.allow(body.bucket, body.limit, body.windowMs) })
       }
     } catch (err) {
       return json({ error: String(err) }, 500)

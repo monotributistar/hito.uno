@@ -25,6 +25,7 @@ import { instagramHref, whatsappHref } from '../src/partner/links'
 import { HitoStore, kindFromId, type ObjectRow } from './store'
 import { buildVCard, vcardFilename, type VCardPartner } from './vcard'
 import { withProfileMeta, type MetaPartner } from './meta'
+import { handleLead } from './leads'
 
 export { HitoStore }
 
@@ -272,9 +273,27 @@ async function handlePanelApi(request: Request, env: Env, url: URL): Promise<Res
   return json({ error: 'not found' }, 404)
 }
 
+/** Lo minimo del contexto de ejecucion que usamos: dejar seguir una promesa
+    despues de contestar. */
+type Ctx = { waitUntil(promise: Promise<unknown>): void }
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(request.url)
+
+    /* Formulario de la landing. El navegador ya no le habla a Google: manda
+       la consulta aca y recibe un si o un no de verdad. Ver worker/leads.ts. */
+    if (url.pathname === '/api/lead') {
+      if (request.method !== 'POST') return json({ error: 'metodo no permitido' }, 405)
+      const result = await handleLead(
+        request,
+        (path, init) => ask(env, path, init),
+        (promise) => ctx.waitUntil(promise),
+      )
+      return result.ok
+        ? json({ ok: true })
+        : json({ ok: false, error: result.error }, result.status)
+    }
 
     const apiResponse = await handlePanelApi(request, env, url)
     if (apiResponse) return apiResponse

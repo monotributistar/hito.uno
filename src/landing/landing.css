@@ -1072,3 +1072,14 @@
     height: calc(var(--stage-w) * 0.75);
   }
 }
+
+/* Trampa anti-spam del formulario: tiene que estar en el DOM y ser invisible
+   para una persona. Fuera de pantalla en vez de display:none, porque algunos
+   bots ignoran los campos ocultos con display. */
+.hito-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
