@@ -28,7 +28,8 @@
           "detail": "Dana por el Mundo",
           "href": "https://www.facebook.com/61582912405547/"
         }
-      ]
+      ],
+      "photoOg": "/images/partners/danaarx/perfil-og.jpg"
     },
     {
       "slug": "stephano",
@@ -57,8 +58,9 @@
           "href": "https://hito.uno"
         }
       ],
-      "bio": "Hacemos objetos que abren tu página, tu catálogo o tu WhatsApp. Este perfil es uno de ellos.",
-      "photo": "/images/partners/stephano/perfil.webp"
+      "bio": "Soy uno de los que armó Hito. Si tenés una tarjeta mía, esto es lo que abre.",
+      "photo": "/images/partners/stephano/perfil.webp",
+      "photoOg": "/images/partners/stephano/perfil-og.jpg"
     },
     {
       "slug": "javier",

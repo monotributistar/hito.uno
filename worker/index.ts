@@ -24,6 +24,7 @@ import partnersRegistry from '../src/partner/partners.json'
 import { instagramHref, whatsappHref } from '../src/partner/links'
 import { HitoStore, kindFromId, type ObjectRow } from './store'
 import { buildVCard, vcardFilename, type VCardPartner } from './vcard'
+import { withProfileMeta, type MetaPartner } from './meta'
 
 export { HitoStore }
 
@@ -137,7 +138,16 @@ function countHit(env: Env, request: Request, id: string, target: string, owner:
 /* --- Panel --------------------------------------------------------------- */
 
 type RawLink = { kind: string; label: string; phone?: string; handle?: string; href?: string }
-type RawPartner = { slug: string; name: string; links?: RawLink[]; modules?: { type: string }[] }
+type RawPartner = {
+  slug: string
+  name: string
+  tagline?: string
+  location?: string
+  bio?: string
+  photo?: string
+  links?: RawLink[]
+  modules?: { type: string }[]
+}
 
 const PARTNERS = partnersRegistry.partners as RawPartner[]
 
@@ -306,7 +316,16 @@ export default {
     }
 
     if (PARTNER_ROUTE.test(url.pathname)) {
-      return env.ASSETS.fetch(new Request(new URL(PARTNER_ENTRY, url).toString(), request))
+      const response = await env.ASSETS.fetch(
+        new Request(new URL(PARTNER_ENTRY, url).toString(), request),
+      )
+      /* El <head> del HTML es generico: se personaliza aca para que al
+         compartir el link aparezcan el nombre y la foto del partner, y no
+         "Perfil · hito.uno". WhatsApp y los buscadores no ejecutan React. */
+      const slug = url.pathname.split('/').filter(Boolean)[1]?.toLowerCase()
+      const partner = PARTNERS.find((p) => p.slug === slug) as MetaPartner | undefined
+      if (!partner || !response.ok) return response
+      return withProfileMeta(response, partner, url.origin)
     }
 
     return env.ASSETS.fetch(request)
