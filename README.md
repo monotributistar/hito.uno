@@ -3,6 +3,9 @@
 Una aplicación React mínima publicada como Cloudflare Worker en
 [hito.uno](https://hito.uno).
 
+Cómo se reparte el trabajo entre chats de Claude Code (ORQ, UX, PLAT, SEC) y el
+flujo de PRs: [`docs/EQUIPO.md`](docs/EQUIPO.md).
+
 ## Desarrollo local
 
 ```bash
