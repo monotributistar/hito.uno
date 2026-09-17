@@ -36,19 +36,11 @@ function esc(value: string): string {
     .replace(/\r?\n/g, '\\n')
 }
 
-/** El formato pide cortar a los 75 octetos y continuar con un espacio. Las
-    agendas modernas toleran lineas largas, pero las viejas no. */
-function fold(line: string): string {
-  if (line.length <= 74) return line
-  const parts = [line.slice(0, 74)]
-  let rest = line.slice(74)
-  while (rest.length > 73) {
-    parts.push(' ' + rest.slice(0, 73))
-    rest = rest.slice(73)
-  }
-  if (rest) parts.push(' ' + rest)
-  return parts.join('\r\n')
-}
+/* Sin cortar lineas largas a proposito. El formato sugiere cortar a los 75
+   octetos y seguir con un espacio, pero Contactos de Google (Android, probado
+   el 2026-09-17) no une bien la continuacion: el final de la NOTE aparecia
+   pegado, dos veces, en la direccion. Las agendas actuales leen lineas largas
+   sin problema; la que no, pierde un campo en vez de mezclarlos. */
 
 /** "Stephano Arcella" -> { nombre: "Stephano", apellido: "Arcella" } */
 function splitName(full: string): { given: string; family: string } {
@@ -121,7 +113,7 @@ export function buildVCard(partner: VCardPartner, origin: string): string {
   lines.push('END:VCARD')
 
   // CRLF: lo pide el formato y algunas agendas se plantan sin el.
-  return lines.map(fold).join('\r\n') + '\r\n'
+  return lines.join('\r\n') + '\r\n'
 }
 
 /** Nombre de archivo seguro: "Stephano Arcella" -> "stephano-arcella.vcf" */
