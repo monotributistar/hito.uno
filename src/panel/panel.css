@@ -35,6 +35,12 @@
   text-decoration: none;
 }
 
+/* El ".uno" en coral, como en la landing: el panel es una pantalla nuestra
+   y la marca va completa. En el perfil del cliente no, ver partner.css. */
+.panel-brand span {
+  color: #ed8068;
+}
+
 .panel-who {
   color: #587d78;
   font: 400 0.66rem 'Space Mono', monospace;
