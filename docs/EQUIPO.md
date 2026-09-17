@@ -44,6 +44,7 @@ Cada chat tiene un **código de área** y un **número de sesión**.
 | **UX** | UX/UI y contenido | Lo que se ve y lo que se lee |
 | **PLAT** | Plataforma | Servidor, almacén, APIs, build y CI |
 | **SEC** | Seguridad | Levanta capas de protección y las ataca en dev |
+| **MOD** | Módulos del perfil | Explora plantillas de módulo y las documenta. No toca código |
 | **OFE** | Oferta y clientes | Precios, tiers, altas y seguimiento de clientes |
 | **FAB** | Producción física | Modelado 3D, NFC, medidas y costos por pieza |
 
@@ -52,6 +53,15 @@ seguridad. Cuando se llena o conviene arrancar limpio, se abre SEC 2. Así, si u
 dice "SEC 1", se sabe qué conversación tiene el porqué completo.
 
 OFE y FAB se abren cuando haya trabajo real para ellos.
+
+**Para que dos chats no hagan lo mismo:**
+
+- **El código va siempre en el título del chat.** Un chat sin código no sabe qué es.
+- **Un solo chat activo por código.** Si se abre otro de la misma área, el anterior se
+  archiva o se renumera.
+- Los chats terminados se archivan. La lista de chats no es un archivo histórico.
+- Si un chat encuentra trabajo de otra área, **no lo deriva por su cuenta**: se lo
+  plantea a Stephano, que decide quién lo hace.
 
 ---
 
@@ -201,6 +211,24 @@ que llegue a ORQ, que decide el orden. Un solo lugar define las prioridades.
    pedidos: saturarlo deja el sitio sin servicio hasta el día siguiente) y activar
    alertas de consumo.
 5. Primera ronda de ataque sobre dev, con registro en `docs/SEGURIDAD.md`.
+
+### MOD — Módulos del perfil
+
+- **Misión:** explorar qué secciones nuevas puede tener un perfil (lo que en la charla
+  aparece como "widgets") y dejarlas documentadas para que otro las construya.
+- **Nombre:** en el código ya existen y se llaman **módulos** (`modules` en
+  `src/partner/partners.json`; el catálogo es el primero). Usar ese nombre, no
+  "widget", para que los chats hablen el mismo idioma.
+- **Lee primero:** `docs/DISENO.md`, `docs/OFERTA.md`, `docs/REFERENCIAS-PERFIL.md`,
+  `src/partner/modules/` y la sección "Módulos del perfil" del README.
+- **Entrega:** `docs/MODULOS.md`, un catálogo con una entrada por plantilla:
+  qué resuelve, qué datos le pide al cliente, qué necesita del servidor, a qué escalón
+  de la oferta pertenece y qué tan caro es construirla.
+- **No toca código.** Explorar y construir se llevan mal en el mismo chat: uno necesita
+  divagar y el otro necesita no cambiar de idea. La interfaz la hace UX, el servidor
+  PLAT, el precio lo decide Stephano.
+- **Ojo:** no mezclar segmentos (ver reglas comunes) y respetar que el perfil de un
+  cliente no lleva contenido comercial de Hito.
 
 ### OFE — Oferta y clientes (a abrir)
 
