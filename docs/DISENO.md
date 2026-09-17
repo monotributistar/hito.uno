@@ -224,6 +224,11 @@ cifras. El equipo configura todo por el cliente.
 | 2026-09-14 | Dashboard: se quiere; aparece como próximamente en "Qué incluye". |
 | 2026-09-14 | Entran NFC y QR, impresión 3D propia, software a medida en servidores propios. Packaging descartado. |
 | 2026-09-14 | Los bocetos generados por IA son inspiración, no spec. La landing actual va por donde queremos; se le suman ideas rescatadas (tres puertas, plantilla /p/ comercio), no se reemplaza. |
+| 2026-09-15 | **Perfil de Dana en hold:** no se trabaja más sobre él por ahora. Su página sigue publicada y sin cambios, porque ya puede estar en uso. |
+| 2026-09-15 | **`/p/stephano` es la muestra visual para la tarjeta Lite y emprendedores:** cofundador de Hito y un catálogo solo con objetos personales (tarjeta Lite y llavero), sin precios, con "Quiero uno" a WhatsApp. Se demuestra en vivo cambiando el destino desde el panel. |
+| 2026-09-15 | **No mezclar segmentos en una misma pieza:** lo que se muestra a personas y emprendedores (Lite, llavero) no incluye objetos de local (apoyavasos, placa, recibidor). Cada audiencia ve solo lo suyo; lo demás es ruido. |
+| 2026-09-15 | **El perfil de un cliente no lleva contenido comercial de Hito.** Solo sus datos y su contenido; lo único nuestro es la línea del pie. Si el visitante sospecha que su propia página va a tener publicidad ajena, se cae la venta. Ver `PRIVACIDAD-PERFIL.md`. |
+| 2026-09-15 | **El perfil se diseña con la privacidad primero:** mínimo de terceros, sin cookies, sin cuentas, `noindex`. Lo comercial vive en la landing. |
 
 ### Pendientes de decisión
 

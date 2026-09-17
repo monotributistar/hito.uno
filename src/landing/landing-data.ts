@@ -1,10 +1,32 @@
 import type { ExperienceId } from '../experience-data'
 
-export type UseCaseKey = 'networking' | 'ventas' | 'identificacion' | 'producto' | 'evento'
-export type TapActionKey = 'guardar-contacto' | 'abrir-pagina' | 'mostrar-informacion' | 'iniciar-conversacion'
+/* Configurador "Pedí tu Hito": dos preguntas, y las opciones de la segunda
+   dependen de la primera. Asi quien quiere presentarse no ve "Wi-Fi del local"
+   y cada opcion ilustra un Hito real de la oferta (ver docs/OFERTA.md):
+   la tarjeta Lite, la Vitrina con catalogo, el Local, el llavero de una
+   propiedad. No mezclar segmentos en una misma lista (DISENO.md). */
+export type UseCaseKey = 'presentarme' | 'vender' | 'local' | 'propiedad'
+export type TapActionKey =
+  | 'guardar-contacto'
+  | 'abrir-whatsapp'
+  | 'mi-perfil'
+  | 'mi-catalogo'
+  | 'menu'
+  | 'wifi'
+  | 'resena'
+  | 'ficha'
+  | 'asesor'
 export type ObjectKey = 'tarjeta' | 'llavero' | 'apoyavasos' | 'placa' | 'recibidor'
 
-type UseCase = { label: string; description: string; sceneId: ExperienceId }
+type UseCase = {
+  label: string
+  description: string
+  sceneId: ExperienceId
+  /** El Hito que le proponemos para ese uso. Se lee en la vista previa. */
+  object: string
+  /** Acciones que tienen sentido para este uso, en orden de relevancia. */
+  actions: TapActionKey[]
+}
 type TapAction = { label: string; promise: string }
 
 /** El alt describe la escena (es el texto que reemplaza a la foto), el caption
@@ -38,38 +60,46 @@ type HitoObject = {
 }
 
 export const useCases: Record<UseCaseKey, UseCase> = {
-  networking: {
-    label: 'Networking',
-    description: 'Una presentación que no depende de recordar el nombre ni de tipear un mail.',
+  presentarme: {
+    label: 'Presentarme',
+    description: 'Una presentación que no depende de recordar tu nombre ni de tipear un número.',
     sceneId: 'estudio-juridico',
+    object: 'Tarjeta Lite',
+    actions: ['guardar-contacto', 'abrir-whatsapp', 'mi-perfil'],
   },
-  ventas: {
-    label: 'Ventas',
-    description: 'El contacto queda guardado en el momento exacto en que hay interés.',
+  vender: {
+    label: 'Vender por Instagram',
+    description: 'Tus productos con precio y un botón para pedirlos, sin contestar "precio?" por mensaje.',
     sceneId: 'comercio',
+    object: 'Tarjeta con catálogo',
+    actions: ['mi-catalogo', 'abrir-whatsapp', 'mi-perfil'],
   },
-  identificacion: {
-    label: 'Identificación',
-    description: 'Acceso y perfil validados sin planillas ni credenciales de un día.',
-    sceneId: 'alojamiento',
-  },
-  producto: {
-    label: 'Producto',
-    description: 'La pieza física acompaña la postventa: origen, cuidados y recompra.',
-    sceneId: 'pizzeria',
-  },
-  evento: {
-    label: 'Evento',
-    description: 'Un objeto por invitado que abre programa, beneficios y contacto.',
+  local: {
+    label: 'Mi local',
+    description: 'Un objeto en la mesa o en la pared que resuelve lo que todos preguntan al llegar.',
     sceneId: 'bar',
+    object: 'Apoyavasos o placa',
+    actions: ['menu', 'wifi', 'resena'],
+  },
+  propiedad: {
+    label: 'Una propiedad',
+    description: 'La ficha, las fotos y el contacto del asesor, viajando con la llave.',
+    sceneId: 'inmobiliaria',
+    object: 'Llavero',
+    actions: ['ficha', 'asesor'],
   },
 }
 
 export const tapActions: Record<TapActionKey, TapAction> = {
-  'guardar-contacto': { label: 'Guardar contacto', promise: 'Contacto guardado, sin tipear.' },
-  'abrir-pagina': { label: 'Abrir una página', promise: 'La página correcta, sin buscar.' },
-  'mostrar-informacion': { label: 'Mostrar información', promise: 'La información justa, en el momento justo.' },
-  'iniciar-conversacion': { label: 'Iniciar conversación', promise: 'Una conversación que empieza en el objeto.' },
+  'guardar-contacto': { label: 'Guardar mi contacto', promise: 'Tu contacto guardado, sin tipear.' },
+  'abrir-whatsapp': { label: 'Abrir mi WhatsApp', promise: 'La conversación empieza en el objeto.' },
+  'mi-perfil': { label: 'Mostrar mi perfil', promise: 'Todo lo tuyo, en un toque.' },
+  'mi-catalogo': { label: 'Mostrar mi catálogo', promise: 'Tus productos, listos para pedir.' },
+  menu: { label: 'Abrir el menú', promise: 'La carta en la mesa, sin pedirla.' },
+  wifi: { label: 'Conectar al Wi-Fi', promise: 'Nadie vuelve a preguntar la clave.' },
+  resena: { label: 'Pedir una reseña', promise: 'La opinión, en el momento justo.' },
+  ficha: { label: 'Mostrar la ficha', promise: 'Fotos y datos de la propiedad, en la visita.' },
+  asesor: { label: 'Contactar al asesor', promise: 'El asesor, a un toque de distancia.' },
 }
 
 export const objects: Record<ObjectKey, HitoObject> = {
@@ -216,9 +246,6 @@ export const objects: Record<ObjectKey, HitoObject> = {
   },
 }
 
-export const shapes = ['Rectangular', 'Esquinas redondeadas', 'Troquelada']
-export const sizes = ['85 × 54 mm', '90 × 50 mm', 'Mini 65 × 40 mm']
-export const finishes = ['Mate', 'Soft touch', 'Metal', 'Madera']
 
 export const stepsWithout = [
   'Buscar información',

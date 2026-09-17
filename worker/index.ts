@@ -23,6 +23,9 @@ import objects from './objects.json'
 import partnersRegistry from '../src/partner/partners.json'
 import { instagramHref, whatsappHref } from '../src/partner/links'
 import { HitoStore, kindFromId, type ObjectRow } from './store'
+import { buildVCard, vcardFilename, type VCardPartner } from './vcard'
+import { withProfileMeta, type MetaPartner } from './meta'
+import { handleLead } from './leads'
 
 export { HitoStore }
 
@@ -58,6 +61,7 @@ const PANEL_ENTRY = '/panel/'
 
 const OBJECT_ROUTE = /^\/o\/([A-Za-z0-9_-]{1,64})\/?$/
 const PARTNER_ROUTE = /^\/p\/[^/]+\/?$/
+const VCARD_ROUTE = /^\/p\/([^/]+)\/contacto\.vcf$/
 const PANEL_ROUTE = /^\/panel(\/[^/]*)?\/?$/
 const PANEL_OBJECT_API = /^\/api\/panel\/objects\/([A-Za-z0-9_-]{1,64})$/
 
@@ -135,7 +139,16 @@ function countHit(env: Env, request: Request, id: string, target: string, owner:
 /* --- Panel --------------------------------------------------------------- */
 
 type RawLink = { kind: string; label: string; phone?: string; handle?: string; href?: string }
-type RawPartner = { slug: string; name: string; links?: RawLink[]; modules?: { type: string }[] }
+type RawPartner = {
+  slug: string
+  name: string
+  tagline?: string
+  location?: string
+  bio?: string
+  photo?: string
+  links?: RawLink[]
+  modules?: { type: string }[]
+}
 
 const PARTNERS = partnersRegistry.partners as RawPartner[]
 
@@ -260,9 +273,27 @@ async function handlePanelApi(request: Request, env: Env, url: URL): Promise<Res
   return json({ error: 'not found' }, 404)
 }
 
+/** Lo minimo del contexto de ejecucion que usamos: dejar seguir una promesa
+    despues de contestar. */
+type Ctx = { waitUntil(promise: Promise<unknown>): void }
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(request.url)
+
+    /* Formulario de la landing. El navegador ya no le habla a Google: manda
+       la consulta aca y recibe un si o un no de verdad. Ver worker/leads.ts. */
+    if (url.pathname === '/api/lead') {
+      if (request.method !== 'POST') return json({ error: 'metodo no permitido' }, 405)
+      const result = await handleLead(
+        request,
+        (path, init) => ask(env, path, init),
+        (promise) => ctx.waitUntil(promise),
+      )
+      return result.ok
+        ? json({ ok: true })
+        : json({ ok: false, error: result.error }, result.status)
+    }
 
     const apiResponse = await handlePanelApi(request, env, url)
     if (apiResponse) return apiResponse
@@ -285,8 +316,35 @@ export default {
       return env.ASSETS.fetch(new Request(new URL(PANEL_ENTRY, url).toString(), request))
     }
 
+    /* Archivo de contacto del perfil. Se sirve `inline`: con ese encabezado
+       Safari abre la ficha y ofrece agregarlo a la agenda, en vez de bajar un
+       archivo a Archivos; Android lo manda igual a Contactos. */
+    const vcardMatch = url.pathname.match(VCARD_ROUTE)
+    if (vcardMatch) {
+      const partner = PARTNERS.find((p) => p.slug === vcardMatch[1].toLowerCase()) as
+        | VCardPartner
+        | undefined
+      if (!partner) return new Response('Perfil no encontrado', { status: 404 })
+      return new Response(buildVCard(partner, url.origin), {
+        headers: {
+          'Content-Type': 'text/vcard; charset=utf-8',
+          'Content-Disposition': `inline; filename="${vcardFilename(partner.name)}"`,
+          'Cache-Control': 'no-store',
+        },
+      })
+    }
+
     if (PARTNER_ROUTE.test(url.pathname)) {
-      return env.ASSETS.fetch(new Request(new URL(PARTNER_ENTRY, url).toString(), request))
+      const response = await env.ASSETS.fetch(
+        new Request(new URL(PARTNER_ENTRY, url).toString(), request),
+      )
+      /* El <head> del HTML es generico: se personaliza aca para que al
+         compartir el link aparezcan el nombre y la foto del partner, y no
+         "Perfil · hito.uno". WhatsApp y los buscadores no ejecutan React. */
+      const slug = url.pathname.split('/').filter(Boolean)[1]?.toLowerCase()
+      const partner = PARTNERS.find((p) => p.slug === slug) as MetaPartner | undefined
+      if (!partner || !response.ok) return response
+      return withProfileMeta(response, partner, url.origin)
     }
 
     return env.ASSETS.fetch(request)

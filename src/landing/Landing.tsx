@@ -2,12 +2,9 @@ import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
 import {
   doors,
-  finishes,
   layers,
   needs,
   objects,
-  shapes,
-  sizes,
   stepsWithout,
   tapActions,
   tiers,
@@ -21,8 +18,11 @@ type Props = {
   onSceneFocusChange: (id: ExperienceId) => void
 }
 
-const GOOGLE_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbzPbTpdaGcOrutc0u86gnerx_d0Bm5GOVZ8uQQrmQN33kqPaXSA_HLmIYb8y1N72Qzxiw/exec'
+/* El formulario le habla a nuestro Worker (`/api/lead`), no a Google. El
+   Worker guarda la consulta y despues se la reenvia a la planilla desde el
+   servidor, asi que esta respuesta se puede leer de verdad: si dice que si,
+   la consulta esta guardada. Ver worker/leads.ts. */
+const LEAD_ENDPOINT = '/api/lead'
 
 /* Encuadre calibrado por foto (ver Photo en landing-data.ts). object-position
    va inline; zoom y nudge viajan como custom properties que lee el CSS. */
@@ -37,11 +37,8 @@ function photoStyle(photo: { focus?: string; zoom?: number; nudge?: string }): C
 
 export default function Landing({ onSceneFocusChange }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1)
-  const [useCase, setUseCase] = useState<UseCaseKey>('networking')
+  const [useCase, setUseCase] = useState<UseCaseKey>('presentarme')
   const [tapAction, setTapAction] = useState<TapActionKey>('guardar-contacto')
-  const [shape, setShape] = useState(shapes[0])
-  const [size, setSize] = useState(sizes[0])
-  const [finish, setFinish] = useState(finishes[0])
   const [activeObject, setActiveObject] = useState<ObjectKey>('tarjeta')
   const [tapped, setTapped] = useState(false)
   const [photoIndex, setPhotoIndex] = useState(0)
@@ -52,8 +49,12 @@ export default function Landing({ onSceneFocusChange }: Props) {
     company: '',
     contact: '',
     notes: '',
+    /* Trampa anti-spam: el campo esta escondido y una persona no lo ve. Si
+       viene con algo, lo completo un bot y el Worker descarta el envio. */
+    hp: '',
   })
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [errorText, setErrorText] = useState<string | null>(null)
 
   // Sincronizar foco del visor 3D al montar el componente
   useEffect(() => {
@@ -72,6 +73,9 @@ export default function Landing({ onSceneFocusChange }: Props) {
 
   const selectUseCase = (key: UseCaseKey) => {
     setUseCase(key)
+    // Las acciones dependen del uso: si la elegida no aplica al uso nuevo,
+    // se toma la mas relevante de ese uso.
+    if (!useCases[key].actions.includes(tapAction)) setTapAction(useCases[key].actions[0])
     setStep(2)
     onSceneFocusChange(useCases[key].sceneId)
   }
@@ -120,28 +124,25 @@ export default function Landing({ onSceneFocusChange }: Props) {
     const payload = {
       useCase: useCases[useCase].label,
       tapAction: tapActions[tapAction].label,
-      shape,
-      size,
-      finish,
+      // El Hito propuesto viaja en la columna "forma" de la planilla, que
+      // quedo libre al sacar forma, tamano y terminacion del formulario.
+      shape: useCases[useCase].object,
       ...contactData,
       pageUrl: window.location.pathname,
-      submittedAt: new Date().toISOString(),
     }
 
     try {
-      // no-cors: Apps Script Web Apps no devuelven header Access-Control-Allow-Origin,
-      // así que el navegador bloquea la lectura de la respuesta aunque el POST sí llegue
-      // y el script lo ejecute. Con no-cors el fetch resuelve (respuesta opaca, no legible)
-      // en vez de rechazar por CORS — es la única señal disponible para este patrón.
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(LEAD_ENDPOINT, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      const data = (await response.json()) as { ok?: boolean; error?: string }
+      if (!response.ok || !data.ok) throw new Error(data.error ?? `HTTP ${response.status}`)
       setStatus('success')
     } catch (err) {
       console.error('Error al enviar la solicitud:', err)
+      setErrorText(err instanceof Error ? err.message : null)
       setStatus('error')
     }
   }
@@ -234,7 +235,7 @@ export default function Landing({ onSceneFocusChange }: Props) {
             <em>tu primer hito.</em>
           </h2>
           <p className="rail-intro">
-            Tres preguntas antes de pedirte un dato personal. Con eso preparamos una propuesta
+            Dos preguntas antes de pedirte un dato personal. Con eso preparamos una propuesta
             concreta de objeto y experiencia.
           </p>
 
@@ -252,9 +253,9 @@ export default function Landing({ onSceneFocusChange }: Props) {
           </div>
 
           <h3 className="hito-question">
-            {step === 1 && '¿Para qué la querés?'}
-            {step === 2 && '¿Qué querés que pase al tocarla?'}
-            {step === 3 && 'Detalles del objeto y tu contacto'}
+            {step === 1 && '¿Para qué lo querés?'}
+            {step === 2 && '¿Qué querés que pase al tocarlo?'}
+            {step === 3 && '¿Cómo te contactamos?'}
           </h3>
 
           <div aria-live="polite">
@@ -276,15 +277,15 @@ export default function Landing({ onSceneFocusChange }: Props) {
 
             {step === 2 && (
               <div className="business-selector">
-                {Object.entries(tapActions).map(([key, item]) => (
+                {useCases[useCase].actions.map((key) => (
                   <button
                     type="button"
                     key={key}
                     className={tapAction === key ? 'is-active' : ''}
                     aria-pressed={tapAction === key}
-                    onClick={() => selectTapAction(key as TapActionKey)}
+                    onClick={() => selectTapAction(key)}
                   >
-                    {item.label}
+                    {tapActions[key].label}
                   </button>
                 ))}
               </div>
@@ -299,39 +300,6 @@ export default function Landing({ onSceneFocusChange }: Props) {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="hito-object-form">
-                    <label className="hito-field">
-                      <span>Forma</span>
-                      <select value={shape} onChange={(e) => setShape(e.target.value)}>
-                        {shapes.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className="hito-field">
-                      <span>Tamaño</span>
-                      <select value={size} onChange={(e) => setSize(e.target.value)}>
-                        {sizes.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className="hito-field">
-                      <span>Terminación</span>
-                      <select value={finish} onChange={(e) => setFinish(e.target.value)}>
-                        {finishes.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
                     <label className="hito-field">
                       <span>Tu nombre *</span>
                       <input
@@ -367,6 +335,22 @@ export default function Landing({ onSceneFocusChange }: Props) {
                       />
                     </label>
 
+                    {/* Trampa anti-spam: fuera de pantalla y fuera del
+                        recorrido del teclado. Una persona no la ve nunca. */}
+                    <div className="hito-hp" aria-hidden="true">
+                      <label>
+                        No completar este campo
+                        <input
+                          type="text"
+                          name="hp"
+                          tabIndex={-1}
+                          autoComplete="off"
+                          value={contactData.hp}
+                          onChange={handleInputChange}
+                        />
+                      </label>
+                    </div>
+
                     <button
                       type="submit"
                       className="primary-action hito-submit"
@@ -377,7 +361,9 @@ export default function Landing({ onSceneFocusChange }: Props) {
                     </button>
 
                     {status === 'error' && (
-                      <p className="hito-error-text">Hubo un error al enviar. Intentá nuevamente.</p>
+                      <p className="hito-error-text">
+                        {errorText ?? 'Hubo un error al enviar. Intentá nuevamente.'}
+                      </p>
                     )}
                   </form>
                 )}
@@ -399,22 +385,22 @@ export default function Landing({ onSceneFocusChange }: Props) {
             <li>
               <span className="marker-number">01</span>
               <span>
-                <strong>{shape} · {size}</strong>
-                <small>Terminación {finish.toLowerCase()}</small>
+                <strong>{useCases[useCase].object}</strong>
+                <small>El objeto que te proponemos</small>
               </span>
             </li>
             <li>
               <span className="marker-number">02</span>
               <span>
                 <strong>{tapActions[tapAction].label}</strong>
-                <small>Acción al activar el objeto</small>
+                <small>Qué pasa al tocarlo</small>
               </span>
             </li>
             <li>
               <span className="marker-number">03</span>
               <span>
                 <strong>{useCases[useCase].label}</strong>
-                <small>Contexto de uso declarado</small>
+                <small>Para qué lo usás</small>
               </span>
             </li>
           </ol>

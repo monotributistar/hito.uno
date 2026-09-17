@@ -124,6 +124,14 @@ for (const p of registro.partners ?? []) {
   if (p.photo && !existsSync(join('public', p.photo))) {
     errores.push(`partners.json — la foto de "${p.slug}" no existe: ${p.photo}`)
   }
+  // La copia JPEG es la que ve WhatsApp al compartir el link: si falta, la
+  // vista previa sale sin imagen y nadie se entera hasta que alguien comparte.
+  if (p.photoOg && !existsSync(join('public', p.photoOg))) {
+    errores.push(`partners.json — la foto de vista previa de "${p.slug}" no existe: ${p.photoOg}`)
+  }
+  if (p.photo && !p.photoOg) {
+    avisos.push(`partners.json — "${p.slug}" tiene foto pero no photoOg: al compartir el link puede no verse la imagen`)
+  }
   const primarios = (p.links ?? []).filter((l) => l.primary).length
   if (primarios > 1) avisos.push(`partners.json — "${p.slug}" tiene ${primarios} links primarios; la pagina espera uno`)
   for (const l of p.links ?? []) {

@@ -28,12 +28,13 @@
           "detail": "Dana por el Mundo",
           "href": "https://www.facebook.com/61582912405547/"
         }
-      ]
+      ],
+      "photoOg": "/images/partners/danaarx/perfil-og.jpg"
     },
     {
       "slug": "stephano",
       "name": "Stephano Arcella",
-      "tagline": "Producto y diseño · hito.uno",
+      "tagline": "Cofundador · hito.uno",
       "location": "Cariló, Argentina",
       "monogram": "SA",
       "sandbox": true,
@@ -52,20 +53,14 @@
         },
         {
           "kind": "web",
-          "label": "Alquilo",
-          "detail": "Casas y departamentos en la costa",
-          "href": "#catalog-stephano"
+          "label": "Conocé Hito",
+          "detail": "hito.uno",
+          "href": "https://hito.uno"
         }
       ],
-      "modules": [
-        {
-          "type": "catalogo",
-          "title": "Alquilo",
-          "sheetId": "1eAsKFUsY71rs8vDIY83HTtLMmcfCJFiNtfSA-Z9nOTo",
-          "whatsapp": "+5492254590762",
-          "cta": "Consultar"
-        }
-      ]
+      "bio": "Acerco herramientas útiles a mi comunidad. Menos pasos, más cosas resueltas.",
+      "photo": "/images/partners/stephano/perfil.webp",
+      "photoOg": "/images/partners/stephano/perfil-og.jpg"
     },
     {
       "slug": "javier",
