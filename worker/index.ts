@@ -50,6 +50,10 @@ export interface Env {
   PUERTOS?: KVBinding
   /** Conteo de toques. Opcional por si se quita el binding. */
   TOQUES?: AnalyticsBinding
+  /** `"off"` apaga el reenvio de consultas a la planilla. Lo declara solo
+      `env.dev` en wrangler.jsonc: dev comparte la planilla con produccion y
+      las pruebas de carga no pueden ensuciarla. */
+  REENVIO_CONSULTAS?: string
 }
 
 const SEED = objects.objects as Record<string, SeedEntry>
@@ -289,6 +293,7 @@ export default {
         request,
         (path, init) => ask(env, path, init),
         (promise) => ctx.waitUntil(promise),
+        env.REENVIO_CONSULTAS !== 'off',
       )
       return result.ok
         ? json({ ok: true })

@@ -40,6 +40,13 @@
   "env": {
     "dev": {
       "name": "hito-uno-dev",
+      // dev NO le reenvia las consultas a la planilla. Es la misma planilla
+      // que produccion, asi que una prueba de carga contra dev.hito.uno le
+      // meteria renglones de mentira al lugar donde miramos los pedidos
+      // reales. Con esto la consulta se guarda igual en el almacen de dev
+      // (de ahi se leen las pruebas) y el viaje a Google no se hace.
+      // Produccion no declara esta variable, asi que reenvia como siempre.
+      "vars": { "REENVIO_CONSULTAS": "off" },
       // Los bindings no se heredan entre entornos: hay que repetirlos aca.
       "durable_objects": {
         "bindings": [{ "name": "STORE", "class_name": "HitoStore" }]

@@ -68,6 +68,10 @@ export async function handleLead(
   request: Request,
   ask: Ask,
   waitUntil: WaitUntil,
+  /** Si el entorno reenvia a la planilla. En dev va apagado (ver
+      `REENVIO_CONSULTAS` en wrangler.jsonc): la consulta se guarda pero no
+      sale de nuestro servidor. */
+  reenviar = true,
 ): Promise<LeadResult> {
   let raw: Record<string, unknown>
   try {
@@ -109,7 +113,7 @@ export async function handleLead(
   /* El viaje a Apps Script tarda varios segundos. No se hace esperar a la
      persona por eso: la consulta ya esta guardada, asi que se contesta ya y
      el reenvio sigue en segundo plano. */
-  waitUntil(forward(payload, id, ask))
+  waitUntil(reenviar ? forward(payload, id, ask) : anotarSinReenvio(id, ask))
 
   /* Para quien completo el formulario esto es un exito: su consulta esta
      guardada y la vamos a ver. Si no llega a la planilla queda anotada con su
@@ -121,6 +125,22 @@ export async function handleLead(
 function toAsciiJson(value: unknown): string {
   return JSON.stringify(value).replace(/[-￿]/g, (char) => {
     return '\\u' + char.charCodeAt(0).toString(16).padStart(4, '0')
+  })
+}
+
+/* Entorno sin reenvio: la consulta queda anotada con el motivo. Sin esto
+   aparece en `pendingLeads` como una consulta que Google rechazo y no se
+   distingue de una que hay que recuperar a mano. */
+async function anotarSinReenvio(id: number, ask: Ask): Promise<void> {
+  if (!id) return
+  console.log(`Consulta ${id} guardada sin reenviar: este entorno no le habla a la planilla.`)
+  await ask('/lead-mark', {
+    method: 'POST',
+    body: JSON.stringify({
+      id,
+      forwarded: false,
+      error: 'Reenvio apagado en este entorno (REENVIO_CONSULTAS=off).',
+    }),
   })
 }
 
