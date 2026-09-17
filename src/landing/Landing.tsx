@@ -335,6 +335,22 @@ export default function Landing({ onSceneFocusChange }: Props) {
                       />
                     </label>
 
+                    {/* Opcional y ultimo: el que ya sabe que quiere (cantidad,
+                        un uso puntual) lo escribe, y el resto lo saltea. El
+                        campo existia en el payload y en el Worker, pero no
+                        habia donde escribirlo: viajaba siempre vacio. */}
+                    <label className="hito-field">
+                      <span>Algo más que quieras contarnos</span>
+                      <textarea
+                        name="notes"
+                        rows={3}
+                        maxLength={2000}
+                        value={contactData.notes}
+                        onChange={handleInputChange}
+                        placeholder="Ej. necesito 50 para el local, para fin de mes"
+                      />
+                    </label>
+
                     {/* Trampa anti-spam: fuera de pantalla y fuera del
                         recorrido del teclado. Una persona no la ve nunca. */}
                     <div className="hito-hp" aria-hidden="true">

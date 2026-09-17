@@ -88,6 +88,21 @@
   font: 500 0.8rem 'DM Sans', sans-serif;
 }
 
+/* El textarea no hereda nada del input (que usa el estilo del navegador):
+   sin esto sale con otra tipografia y ancho propio. Solo vertical para que
+   nadie lo estire fuera de la tarjeta. */
+.hito-field textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(23, 56, 58, 0.2);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #17383a;
+  font: 400 0.8rem 'DM Sans', sans-serif;
+  line-height: 1.45;
+  resize: vertical;
+}
+
 .hito-submit {
   margin-top: 8px;
   width: fit-content;

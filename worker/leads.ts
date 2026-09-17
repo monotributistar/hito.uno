@@ -17,16 +17,16 @@ const APPS_SCRIPT_URL =
   'https://script.google.com/macros/s/AKfycbzPbTpdaGcOrutc0u86gnerx_d0Bm5GOVZ8uQQrmQN33kqPaXSA_HLmIYb8y1N72Qzxiw/exec'
 
 /** Campos que acepta el formulario. `hp` es la trampa anti-spam. */
+/* Los campos que el formulario manda hoy. "shape" lleva el Hito propuesto:
+   la columna quedo libre al sacar forma, tamano y terminacion del
+   configurador, y se reusa en vez de tocar la planilla. */
 const FIELDS = [
   'useCase',
   'tapAction',
   'shape',
-  'size',
-  'finish',
   'name',
   'company',
   'contact',
-  'quantity',
   'notes',
   'pageUrl',
 ] as const
