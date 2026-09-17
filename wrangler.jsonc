@@ -22,6 +22,14 @@
     "bindings": [{ "name": "STORE", "class_name": "HitoStore" }]
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["HitoStore"] }],
+  // Reenvio de las consultas del formulario a la planilla de Google.
+  // Solo reenvia el entorno que lo diga con "on", y hoy ese es produccion y
+  // nadie mas. Un entorno que no lo declare —dev, uno nuevo, el worker local—
+  // guarda la consulta y no le habla a Google. Es a proposito: la planilla es
+  // una sola y compartida, asi que un entorno que reenvia sin querer ensucia
+  // el lugar donde miramos los pedidos reales, y eso no se ve hasta que ya
+  // paso. Ver docs/SEGURIDAD.md.
+  "vars": { "REENVIO_CONSULTAS": "on" },
   // Conteo de toques por objeto (Analytics Engine). El dataset aparece solo
   // con el primer dato, pero la cuenta tiene que tener Analytics Engine
   // habilitado UNA vez desde el panel, si no el deploy falla con el error
@@ -40,12 +48,10 @@
   "env": {
     "dev": {
       "name": "hito-uno-dev",
-      // dev NO le reenvia las consultas a la planilla. Es la misma planilla
-      // que produccion, asi que una prueba de carga contra dev.hito.uno le
-      // meteria renglones de mentira al lugar donde miramos los pedidos
-      // reales. Con esto la consulta se guarda igual en el almacen de dev
-      // (de ahi se leen las pruebas) y el viaje a Google no se hace.
-      // Produccion no declara esta variable, asi que reenvia como siempre.
+      // dev NO reenvia. Va escrito aunque "off" ya sea lo que pasa sin
+      // declarar nada: que se lea aca evita que alguien lo prenda por error
+      // creyendo que falta. La consulta se guarda igual en el almacen de dev,
+      // que es de donde se leen las pruebas de carga.
       "vars": { "REENVIO_CONSULTAS": "off" },
       // Los bindings no se heredan entre entornos: hay que repetirlos aca.
       "durable_objects": {

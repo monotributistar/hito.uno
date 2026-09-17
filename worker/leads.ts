@@ -68,10 +68,11 @@ export async function handleLead(
   request: Request,
   ask: Ask,
   waitUntil: WaitUntil,
-  /** Si el entorno reenvia a la planilla. En dev va apagado (ver
-      `REENVIO_CONSULTAS` en wrangler.jsonc): la consulta se guarda pero no
-      sale de nuestro servidor. */
-  reenviar = true,
+  /** Si este entorno reenvia a la planilla. Sin valor por omision a
+      proposito: quien llame tiene que decidirlo mirando el entorno, no
+      heredar el que reenvia por descuido (ver `REENVIO_CONSULTAS` en
+      wrangler.jsonc). */
+  reenviar: boolean,
 ): Promise<LeadResult> {
   let raw: Record<string, unknown>
   try {
@@ -139,7 +140,7 @@ async function anotarSinReenvio(id: number, ask: Ask): Promise<void> {
     body: JSON.stringify({
       id,
       forwarded: false,
-      error: 'Reenvio apagado en este entorno (REENVIO_CONSULTAS=off).',
+      error: 'Este entorno no reenvia a la planilla (REENVIO_CONSULTAS no esta en "on").',
     }),
   })
 }
