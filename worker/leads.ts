@@ -10,6 +10,8 @@
    primero y despues se la reenvia a la planilla desde el servidor, donde si
    puede leer la respuesta. Si Google falla, la consulta ya esta guardada. */
 
+import { readJson } from './body'
+
 /** Web App de Apps Script ("Hito Leads") que escribe en la planilla.
     Vive aca y no en el cliente: antes viajaba en el bundle y la veia
     cualquiera que mirara el codigo de la pagina. */
@@ -33,6 +35,12 @@ const FIELDS = [
 
 const MAX_LENGTH: Record<string, number> = { notes: 2000, pageUrl: 200 }
 const DEFAULT_MAX = 200
+
+/* Tope del cuerpo entero, antes de leerlo. Con los recortes de arriba una
+   consulta completa ocupa unos 3.400 caracteres; con acentos y emojis, que
+   pesan hasta 4 bytes, no llega a 14 KB. 16 KB deja margen para una consulta
+   real y corta cualquier cosa que no lo sea. */
+const LEAD_BODY_MAX = 16 * 1024
 
 export type LeadResult =
   | { ok: true; stored: number; forwarded: boolean }
@@ -74,12 +82,18 @@ export async function handleLead(
       wrangler.jsonc). */
   reenviar: boolean,
 ): Promise<LeadResult> {
-  let raw: Record<string, unknown>
-  try {
-    raw = (await request.json()) as Record<string, unknown>
-  } catch {
+  const body = await readJson<unknown>(request, LEAD_BODY_MAX)
+  if (!body.ok) {
+    return body.status === 413
+      ? { ok: false, status: 413, error: 'El formulario es demasiado largo.' }
+      : { ok: false, status: 400, error: 'No pudimos leer el formulario.' }
+  }
+  /* `null`, un numero o una lista tambien son JSON valido, y sin este control
+     `raw.hp` revienta y el Worker contesta 500 en vez de un 400 claro. */
+  if (typeof body.data !== 'object' || body.data === null || Array.isArray(body.data)) {
     return { ok: false, status: 400, error: 'No pudimos leer el formulario.' }
   }
+  const raw = body.data as Record<string, unknown>
 
   /* Trampa: el campo esta escondido, una persona no lo completa nunca. Al bot
      se le contesta que si para que no reintente, pero no se guarda ni se
