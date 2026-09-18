@@ -450,7 +450,9 @@
 .partner-action-note {
   grid-column: 1 / -1;
   margin: 2px 0 0;
-  color: #587d78;
+  /* Es una instruccion para seguir, no texto accesorio: va en el gris que
+     se lee (ver la cabecera de este archivo). */
+  color: #315f63;
   font-size: 0.78rem;
   line-height: 1.45;
   text-align: center;
