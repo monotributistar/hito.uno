@@ -64,7 +64,14 @@ El formulario **no le habla a Google desde el navegador**. Manda la consulta a
 2. valida y recorta los campos, y frena más de 5 envíos por minuto desde la misma
    IP (guarda un hash corto, nunca la IP);
 3. **guarda la consulta en el almacén antes de intentar nada más**;
-4. contesta al navegador enseguida y reenvía a la planilla en segundo plano.
+4. contesta al navegador enseguida y reenvía a la planilla en segundo plano,
+   **pero solo en producción**.
+
+**En `dev.hito.uno` la consulta no llega a la planilla.** Se guarda en el almacén
+de dev y queda marcada con el motivo. Reenvía únicamente el entorno que declara
+`REENVIO_CONSULTAS: "on"` en `wrangler.jsonc`, y ese es producción: la planilla es
+una sola, así que un entorno de prueba que reenvíe ensucia el lugar donde miramos
+los pedidos reales. Ver `docs/SEGURIDAD.md`.
 
 Por qué así:
 
