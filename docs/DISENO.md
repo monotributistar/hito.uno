@@ -103,6 +103,19 @@ navy o naranja: es estructural, no define color.
 **Logo:** siempre `Hito.uno` completo, con `.uno` en coral. Nunca `Hito` solo ni
 `HITO` en mayúsculas como marca. Vale el lockup horizontal y el vertical.
 
+**Cómo se escribe el nombre** (decidido 2026-09-17; antes el sitio escribía
+`hito.uno` en minúscula y el documento pedía mayúscula):
+
+| Caso | Se escribe | Ejemplo |
+| --- | --- | --- |
+| La marca, en pantalla o en texto | `Hito.uno` | "Activado con Hito.uno" |
+| El producto o el objeto | `Hito`, `Hitos` | "Pedí tu Hito", "Tus Hitos" |
+| Una dirección web | minúscula, como se tipea | "tu página vive en hito.uno/p/dana" |
+
+El `.uno` va en coral en la landing y en el panel, que son pantallas nuestras.
+En el perfil de un cliente la marca va sin color de acento: es la firma del pie,
+no un logo puesto encima de su página (ver `PRIVACIDAD-PERFIL.md`).
+
 **Firma visual:** el mapa isométrico real de Cariló (37.1611° S · 56.8998° O).
 Es el eje visual de la landing y no se reemplaza por mockups genéricos de celular.
 

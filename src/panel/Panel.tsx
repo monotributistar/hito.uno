@@ -41,7 +41,7 @@ export default function Panel({ token }: Props) {
     <main className="panel-shell">
       <header className="panel-topbar">
         <a className="panel-brand" href="https://hito.uno">
-          hito.uno
+          Hito<span>.uno</span>
         </a>
         {me ? <span className="panel-who">{me.name}</span> : null}
       </header>

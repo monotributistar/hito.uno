@@ -150,8 +150,8 @@ export default function Landing({ onSceneFocusChange }: Props) {
   return (
     <>
       <header className="site-header">
-        <a className="brand" href="#inicio" aria-label="hito.uno — Inicio">
-          hito<span>.uno</span>
+        <a className="brand" href="#inicio" aria-label="Hito.uno — Inicio">
+          Hito<span>.uno</span>
         </a>
         <nav className="site-nav" aria-label="Navegación principal">
           <a href="#demo">Pedí tu Hito</a>

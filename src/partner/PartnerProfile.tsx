@@ -9,7 +9,7 @@ import type { Partner, PartnerLink } from './partners'
 export default function PartnerProfile({ partner }: { partner: Partner }) {
   // El titulo real se arma aca porque el HTML de entrada es generico.
   useEffect(() => {
-    document.title = `${partner.name} · hito.uno`
+    document.title = `${partner.name} · Hito.uno`
   }, [partner.name])
 
   // Un objeto puede apuntar a una seccion del perfil (ej. "Mi catalogo" es
@@ -39,7 +39,7 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
     <main className="partner-shell" style={theme}>
       <header className="partner-topbar">
         <a className="partner-brand" href="https://hito.uno">
-          hito.uno
+          Hito.uno
         </a>
       </header>
 
@@ -85,7 +85,7 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
       <footer className="partner-footer">
         <p className="partner-footer-line">Un objeto, un gesto, una experiencia.</p>
         <a className="partner-footer-link" href="https://hito.uno">
-          Activado con hito.uno
+          Activado con Hito.uno
         </a>
       </footer>
     </main>
@@ -173,14 +173,14 @@ function LinkButton({ link, primary = false }: { link: PartnerLink; primary?: bo
    preferimos decirlo antes que mostrar una pagina vacia. */
 export function PartnerNotFound({ slug }: { slug: string | null }) {
   useEffect(() => {
-    document.title = 'Perfil no encontrado · hito.uno'
+    document.title = 'Perfil no encontrado · Hito.uno'
   }, [])
 
   return (
     <main className="partner-shell">
       <header className="partner-topbar">
         <a className="partner-brand" href="https://hito.uno">
-          hito.uno
+          Hito.uno
         </a>
       </header>
 
@@ -194,7 +194,7 @@ export function PartnerNotFound({ slug }: { slug: string | null }) {
         </p>
         <a className="partner-link partner-link--primary" href="https://hito.uno">
           <span className="partner-link-text">
-            <span className="partner-link-label">Ir a hito.uno</span>
+            <span className="partner-link-label">Ir a Hito.uno</span>
           </span>
           <span className="partner-link-chevron" aria-hidden="true">
             →
