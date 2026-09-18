@@ -150,8 +150,8 @@ export default function Landing({ onSceneFocusChange }: Props) {
   return (
     <>
       <header className="site-header">
-        <a className="brand" href="#inicio" aria-label="hito.uno — Inicio">
-          hito<span>.uno</span>
+        <a className="brand" href="#inicio" aria-label="Hito.uno — Inicio">
+          Hito<span>.uno</span>
         </a>
         <nav className="site-nav" aria-label="Navegación principal">
           <a href="#demo">Pedí tu Hito</a>
@@ -332,6 +332,22 @@ export default function Landing({ onSceneFocusChange }: Props) {
                         value={contactData.contact}
                         onChange={handleInputChange}
                         placeholder="+54 9... o correo"
+                      />
+                    </label>
+
+                    {/* Opcional y ultimo: el que ya sabe que quiere (cantidad,
+                        un uso puntual) lo escribe, y el resto lo saltea. El
+                        campo existia en el payload y en el Worker, pero no
+                        habia donde escribirlo: viajaba siempre vacio. */}
+                    <label className="hito-field">
+                      <span>Algo más que quieras contarnos</span>
+                      <textarea
+                        name="notes"
+                        rows={3}
+                        maxLength={2000}
+                        value={contactData.notes}
+                        onChange={handleInputChange}
+                        placeholder="Ej. necesito 50 para el local, para fin de mes"
                       />
                     </label>
 
@@ -644,36 +660,34 @@ export default function Landing({ onSceneFocusChange }: Props) {
       </section>
 
       <section className="hito-platform" id="plataforma" aria-labelledby="platform-title">
-        <p className="card-eyebrow">Plataforma / vista conceptual, en desarrollo</p>
+        <p className="card-eyebrow">Plataforma / el panel que viene con tu Hito</p>
         <h2 id="platform-title">
           Vos decidís qué pasa
           <br />
           <em>después del toque.</em>
         </h2>
+        {/* Reproduce el panel real (`/panel/<token>`), no una maqueta con
+            numeros de fantasia: el objeto, el campo de destino y las
+            sugerencias son los que el cliente ve al entrar. */}
         <div className="hito-panel">
-          <nav className="hito-panel-nav" aria-label="Secciones del panel (maqueta)">
-            <span className="is-current">Mis hitos</span>
-            <span>Destinos</span>
-            <span>Contenido</span>
-            <span>Activaciones</span>
-          </nav>
-          <div className="hito-panel-body">
-            <div className="hito-metrics">
-              <div>
-                <p className="kicker">HITOS ACTIVOS</p>
-                <strong>24</strong>
-              </div>
-              <div>
-                <p className="kicker">ACTIVACIONES</p>
-                <strong>1.482</strong>
-              </div>
-              <div>
-                <p className="kicker">ACCIONES</p>
-                <strong className="is-accent">316</strong>
-              </div>
-            </div>
-            <div className="hito-panel-table">Lista de hitos · objeto / destino / estado</div>
+          <p className="kicker">TU HITO</p>
+          <p className="hito-panel-object">
+            Tarjeta Lite <span>t-tunombre-01</span>
+          </p>
+          <p className="hito-panel-label">Cuando alguien la toca, se abre:</p>
+          <div className="hito-panel-field">
+            <span>hito.uno/p/tunombre</span>
+            <span className="hito-panel-save">Guardar</span>
           </div>
+          <ul className="hito-panel-chips">
+            <li>Mi página</li>
+            <li>Mi WhatsApp</li>
+            <li>Mi Instagram</li>
+            <li>Mi catálogo</li>
+          </ul>
+          <p className="hito-panel-note">
+            Cambia en el próximo toque. Sin app, sin cuenta y sin contraseña.
+          </p>
         </div>
       </section>
 

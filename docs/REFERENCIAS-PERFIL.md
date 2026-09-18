@@ -64,6 +64,32 @@ Lo que dicen las guías del rubro:
 desde `partners.json`, y el perfil suma un botón "Guardar contacto". No hay que pedir
 nada a nadie ni tocar el chip.
 
+### El problema de Android (resuelto el 2026-09-17)
+
+El archivo alcanza en iOS, donde Safari abre la ficha de contacto y queda a un toque
+de guardarla. En Android no: Chrome lo descarga, y la persona tiene que ir a
+Descargas, abrir el archivo y elegir con qué app —donde Contactos no siempre es la
+primera opción—. Son cuatro pasos y una decisión, en un recorrido que existe
+justamente para no tener pasos.
+
+La web no puede escribir en la agenda, así que no hay forma de guardar el contacto
+sin pasar por el sistema. Lo que sí entiende Chrome en Android es `intent://`, que
+abre la pantalla "Crear contacto" del teléfono con los datos ya cargados: queda un
+toque, Guardar.
+
+Cómo quedó (`src/partner/contact.ts`):
+
+| Teléfono | Qué hace el botón |
+| --- | --- |
+| Android | Abre la agenda con el contacto cargado (`intent://`). Si el navegador no entiende el esquema —Firefox, algunos WebView—, `browser_fallback_url` lo devuelve al `.vcf`. |
+| iPhone | El `.vcf` de siempre: abre la ficha de contacto. |
+| Escritorio y el resto | El `.vcf` de siempre, con un aviso de que se descargó. |
+
+**Lo que se pierde en el camino de Android:** la pantalla de crear contacto no tiene
+campo para sitios web, así que Instagram y la web no viajan como links. Por eso la
+página del perfil va dentro de las notas: es el dato que se mantiene al día y desde
+ahí se vuelve a todo lo demás. El `.vcf` sigue llevando todo.
+
 ---
 
 ## 4. Intercambio de datos (el visitante deja el suyo)

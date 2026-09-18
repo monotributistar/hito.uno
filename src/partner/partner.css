@@ -2,6 +2,11 @@
    Tokens heredados: #17383a texto, #eef1e8 fondo, #ed8068 acento,
    #315f63 / #587d78 grises frios, DM Sans + Space Mono.
 
+   El gris claro (#587d78) solo se usa en texto accesorio. Todo lo que alguien
+   pueda querer leer de verdad —el rubro, la ciudad, el numero de telefono—
+   va en #315f63 y a 0.72rem o mas: #587d78 sobre el fondo claro queda en
+   ~3.3:1, por debajo del minimo de contraste, y a 10px en la calle no se lee.
+
    Pensada mobile-first: el 100% del trafico llega apoyando el celular sobre
    un objeto NFC, asi que no cargamos el mapa 3D ni nada por encima del
    contenido util. */
@@ -103,8 +108,8 @@
 
 .partner-tagline {
   margin: 0;
-  color: #587d78;
-  font: 700 0.62rem 'Space Mono', monospace;
+  color: #315f63;
+  font: 700 0.72rem 'Space Mono', monospace;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -114,8 +119,8 @@
   align-items: center;
   gap: 7px;
   margin: 2px 0 0;
-  color: #587d78;
-  font: 400 0.66rem 'Space Mono', monospace;
+  color: #315f63;
+  font: 400 0.76rem 'Space Mono', monospace;
   letter-spacing: 0.06em;
 }
 
@@ -210,8 +215,8 @@
 
 .partner-link-detail {
   overflow: hidden;
-  color: #587d78;
-  font: 400 0.66rem 'Space Mono', monospace;
+  color: #315f63;
+  font: 400 0.76rem 'Space Mono', monospace;
   letter-spacing: 0.04em;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -443,6 +448,19 @@
   text-decoration: none;
   cursor: pointer;
   transition: border-color 160ms ease, color 160ms ease;
+}
+
+/* Ayuda que aparece despues de tocar "Guardar contacto". Ocupa el ancho de
+   los dos botones y no empuja nada mientras no se usa. */
+.partner-action-note {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  /* Es una instruccion para seguir, no texto accesorio: va en el gris que
+     se lee (ver la cabecera de este archivo). */
+  color: #315f63;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: center;
 }
 
 .partner-action:hover {

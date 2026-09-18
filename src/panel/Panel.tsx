@@ -41,7 +41,7 @@ export default function Panel({ token }: Props) {
     <main className="panel-shell">
       <header className="panel-topbar">
         <a className="panel-brand" href="https://hito.uno">
-          hito.uno
+          Hito<span>.uno</span>
         </a>
         {me ? <span className="panel-who">{me.name}</span> : null}
       </header>
@@ -136,7 +136,6 @@ function ObjectCard({ token, object, suggestions }: CardProps) {
         )}
         <div className="panel-object-id">
           <strong>{object.label || info.label}</strong>
-          <span>{object.id}</span>
         </div>
       </div>
 
@@ -192,6 +191,13 @@ function ObjectCard({ token, object, suggestions }: CardProps) {
                 : 'Cambia en el próximo toque.'}
         </span>
       </div>
+
+      {/* El id impreso no le dice nada al cliente mientras todo funciona, pero
+          es lo primero que le vamos a pedir si nos escribe por un problema.
+          Por eso queda al pie, sin competir con el nombre del objeto. */}
+      <p className="panel-object-ref">
+        Código del objeto: <span>{object.id}</span>
+      </p>
     </section>
   )
 }
