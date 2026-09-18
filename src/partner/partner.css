@@ -450,6 +450,19 @@
   transition: border-color 160ms ease, color 160ms ease;
 }
 
+/* Ayuda que aparece despues de tocar "Guardar contacto". Ocupa el ancho de
+   los dos botones y no empuja nada mientras no se usa. */
+.partner-action-note {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  /* Es una instruccion para seguir, no texto accesorio: va en el gris que
+     se lee (ver la cabecera de este archivo). */
+  color: #315f63;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .partner-action:hover {
   border-color: #17383a;
   color: #17383a;

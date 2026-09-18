@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import PartnerIcon from './PartnerIcon'
+import { androidContactHref, detectPlatform, vcardUrl, type ContactPlatform } from './contact'
 import CatalogModule from './modules/CatalogModule'
 import type { Partner, PartnerLink } from './partners'
 
@@ -98,6 +99,21 @@ export default function PartnerProfile({ partner }: { partner: Partner }) {
 function ProfileActions({ partner }: { partner: Partner }) {
   const [shareState, setShareState] = useState<'idle' | 'copiado' | 'error'>('idle')
 
+  /* El destino del boton depende del telefono, y el user agent solo existe
+     en el navegador: hasta saberlo servimos el archivo, que funciona en
+     todos lados. */
+  const [platform, setPlatform] = useState<ContactPlatform>('otro')
+  const [contactHref, setContactHref] = useState(() => vcardUrl(partner))
+  const [saveHelp, setSaveHelp] = useState(false)
+
+  useEffect(() => {
+    const detected = detectPlatform(navigator.userAgent)
+    setPlatform(detected)
+    setContactHref(
+      detected === 'android' ? androidContactHref(partner, window.location.origin) : vcardUrl(partner),
+    )
+  }, [partner])
+
   const share = async () => {
     const url = `${window.location.origin}/p/${partner.slug}`
     const data = { title: partner.name, text: partner.tagline ?? partner.name, url }
@@ -123,8 +139,9 @@ function ProfileActions({ partner }: { partner: Partner }) {
   return (
     <div className="partner-actions">
       {/* Sin `download`: dejamos que el navegador abra la ficha de contacto,
-          que es lo que hace iOS con un text/vcard servido inline. */}
-      <a className="partner-action" href={`/p/${partner.slug}/contacto.vcf`}>
+          que es lo que hace iOS con un text/vcard servido inline. En Android
+          el destino es un intent que abre la agenda (ver contact.ts). */}
+      <a className="partner-action" href={contactHref} onClick={() => setSaveHelp(true)}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
           <circle cx="9" cy="7" r="4" />
@@ -140,6 +157,18 @@ function ProfileActions({ partner }: { partner: Partner }) {
         </svg>
         {shareState === 'copiado' ? 'Link copiado' : shareState === 'error' ? 'No se pudo' : 'Compartir'}
       </button>
+
+      {/* Solo si hizo falta: en iOS la ficha se abre sola y explicarlo sobra.
+          En Android aparece por si el navegador no entendio el intent y
+          termino bajando el archivo; en escritorio, para avisar que se
+          descargo algo. */}
+      {saveHelp && platform !== 'ios' ? (
+        <p className="partner-action-note" aria-live="polite">
+          {platform === 'android'
+            ? 'Si no se abrió tu agenda, la ficha quedó en Descargas: abrila y elegí Contactos.'
+            : 'Se descargó la ficha de contacto. Abrila para agregarla a tu agenda.'}
+        </p>
+      ) : null}
     </div>
   )
 }
