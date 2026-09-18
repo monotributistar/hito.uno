@@ -67,6 +67,9 @@ type RawLink = {
   phone?: string
   handle?: string
   href?: string
+  /** Solo WhatsApp: texto con el que se abre el chat. Sin esto se usa el
+      default de `defaultWhatsappMessage`. Un string vacio lo apaga. */
+  message?: string
 }
 
 type RawPartner = Omit<Partner, 'links'> & { links: RawLink[] }
@@ -74,12 +77,17 @@ type RawPartner = Omit<Partner, 'links'> & { links: RawLink[] }
 /* Convierte un link crudo del JSON en un link listo para renderizar.
    Falla con un mensaje claro si faltan datos: preferimos que el build se
    rompa a que un boton del perfil de un cliente lleve a ningun lado. */
-function buildLink(slug: string, raw: RawLink): PartnerLink {
+function buildLink(slug: string, name: string, raw: RawLink): PartnerLink {
   const base = { kind: raw.kind, label: raw.label, detail: raw.detail, primary: raw.primary }
 
   if (raw.kind === 'whatsapp') {
     if (!raw.phone) throw new Error(`Perfil "${slug}": el link de WhatsApp necesita "phone".`)
-    return { ...base, href: whatsappHref(raw.phone), detail: raw.detail ?? raw.phone }
+    const message = raw.message ?? defaultWhatsappMessage(name)
+    return {
+      ...base,
+      href: whatsappHref(raw.phone, message || undefined),
+      detail: raw.detail ?? raw.phone,
+    }
   }
   if (raw.kind === 'instagram') {
     if (!raw.handle) throw new Error(`Perfil "${slug}": el link de Instagram necesita "handle".`)
@@ -88,6 +96,18 @@ function buildLink(slug: string, raw: RawLink): PartnerLink {
   }
   if (!raw.href) throw new Error(`Perfil "${slug}": el link "${raw.label}" necesita "href".`)
   return { ...base, href: raw.href }
+}
+
+/* Abrir WhatsApp en blanco obliga a la persona a redactar el primer mensaje,
+   que es justo donde se cae la mayoria. Con el saludo puesto solo hay que
+   apretar enviar.
+
+   No nombra a hito.uno a proposito: el mensaje sale del telefono del visitante
+   y termina en el chat del cliente. No es lugar para nuestra marca (ver
+   docs/PRIVACIDAD-PERFIL.md). */
+function defaultWhatsappMessage(name: string): string {
+  const firstName = name.trim().split(/\s+/)[0]
+  return `Hola ${firstName}, vi tu perfil.`
 }
 
 function validateModule(slug: string, mod: PartnerModule): PartnerModule {
@@ -106,7 +126,7 @@ function buildPartner(raw: RawPartner): Partner {
   }
   return {
     ...raw,
-    links: raw.links.map((link) => buildLink(raw.slug, link)),
+    links: raw.links.map((link) => buildLink(raw.slug, raw.name, link)),
     modules: raw.modules?.map((mod) => validateModule(raw.slug, mod)),
   }
 }
