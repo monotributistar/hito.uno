@@ -45,6 +45,8 @@ Cada chat tiene un **código de área** y un **número de sesión**.
 | **PLAT** | Plataforma | Servidor, almacén, APIs, build y CI |
 | **SEC** | Seguridad | Levanta capas de protección y las ataca en dev |
 | **MOD** | Módulos del perfil | Explora plantillas de módulo y las documenta. No toca código |
+| **PAG** | Páginas de venta | Una página por segmento: software a medida, comercios, objetos |
+| **ARC** | Archivo | Documenta decisiones y estado. Trabaja local, fuera de GitHub |
 | **OFE** | Oferta y clientes | Precios, tiers, altas y seguimiento de clientes |
 | **FAB** | Producción física | Modelado 3D, NFC, medidas y costos por pieza |
 
@@ -62,6 +64,8 @@ OFE y FAB se abren cuando haya trabajo real para ellos.
 - Los chats terminados se archivan. La lista de chats no es un archivo histórico.
 - Si un chat encuentra trabajo de otra área, **no lo deriva por su cuenta**: se lo
   plantea a Stephano, que decide quién lo hace.
+- **SOÑADOR** es la sesión de charla estratégica de Stephano. No produce, no toca el
+  repo y ningún chat la lee ni toma tareas de ella: lo que sirva lo trae él.
 
 ---
 
@@ -229,6 +233,27 @@ que llegue a ORQ, que decide el orden. Un solo lugar define las prioridades.
   PLAT, el precio lo decide Stephano.
 - **Ojo:** no mezclar segmentos (ver reglas comunes) y respetar que el perfil de un
   cliente no lleva contenido comercial de Hito.
+
+### PAG — Páginas de venta
+
+- **Misión:** que cada tipo de conversación tenga su propia página para mandar por
+  WhatsApp, en vez de una sola landing que habla de todo.
+- **Lee primero:** `docs/DISENO.md`, `docs/OFERTA.md`, el molde común que documenta UX
+  en `DISENO.md`, y la hoja de planteo `SANDBOX/sonador/SEPARAR-PAGINA.md` (fuera del
+  repo).
+- **Toca:** las páginas por segmento y su contenido. Rama con prefijo `pag/`.
+- **No toca:** el perfil del cliente (UX), el Worker ni el build (PLAT).
+- **Molde común:** título con el problema de esa persona, qué incluye en lista corta,
+  una prueba real, precio o "consultá", y un solo botón a WhatsApp con el mensaje ya
+  escrito.
+- **Regla:** una página sin foto propia ni algo concreto que ofrecer no se abre.
+
+### ARC — Archivo
+
+- **Misión:** documentar decisiones, estado y contradicciones entre los documentos y el
+  código. Documenta lo que ya pasó; no decide ni toca código.
+- **Trabaja fuera de GitHub**, en `SANDBOX/ARC1`. Lo que tenga que entrar al repo lo
+  pasa como texto para que lo suba otro chat.
 
 ### OFE — Oferta y clientes (a abrir)
 
