@@ -81,8 +81,34 @@ for (const html of htmlsDelProyecto('.')) {
 
 // 3 · Las entradas de vite.config apuntan a HTML que existen -----------------
 const vite = readFileSync('vite.config.ts', 'utf8')
+/* Las rutas que el sitio sirve de verdad, deducidas de las entradas del build y
+   no de una lista escrita a mano: cuando se agregue la quinta pagina, esto se
+   mantiene solo. `index.html` es `/`, `software/index.html` es `/software`. */
+const rutasDelSitio = new Set(['/'])
 for (const m of vite.matchAll(/resolve\(__dirname,\s*'([^']+)'\)/g)) {
   if (!existsSync(m[1])) errores.push(`vite.config.ts — entrada de build inexistente: ${m[1]}`)
+  const carpeta = m[1].replace(/\/?index\.html$/, '')
+  if (carpeta) rutasDelSitio.add(`/${carpeta}`)
+}
+
+// 3.1 · Las paginas que se comparten no pueden llevar noindex ----------------
+// Los perfiles y el panel se quedan fuera de los buscadores a proposito; las
+// paginas comerciales son lo contrario: se mandan por WhatsApp y se buscan. Un
+// noindex copiado y pegado desde p/index.html las esconde sin que se note.
+const RUTAS_OCULTAS = ['/p', '/panel']
+for (const ruta of rutasDelSitio) {
+  if (ruta === '/' || RUTAS_OCULTAS.includes(ruta)) continue
+  const html = `${ruta.slice(1)}/index.html`
+  if (!existsSync(html)) continue
+  const contenido = readFileSync(html, 'utf8')
+  if (/name="robots"[^>]*noindex/.test(contenido)) {
+    errores.push(`${html} — tiene noindex y es una pagina que se comparte y se busca`)
+  }
+  // La vista previa de WhatsApp necesita una imagen propia, y en JPEG o PNG:
+  // webp no la muestra. No frena el build porque la pagina sirve igual.
+  if (!/property="og:image"/.test(contenido)) {
+    avisos.push(`${html} — sin og:image: al compartir el link no se ve ninguna imagen`)
+  }
 }
 
 // 4 · Cada foto declarada existe en public/ ----------------------------------
@@ -162,6 +188,20 @@ for (const [id, entry] of Object.entries(puertos.objects ?? {})) {
   if (!entry.to) errores.push(`objects.json — "${id}" no tiene destino "to"`)
   const m = (entry.to ?? '').match(/^\/p\/([^/?#]+)/)
   if (m && !slugs.has(m[1])) errores.push(`objects.json — "${id}" apunta a /p/${m[1]}, que no esta en partners.json`)
+
+  /* Destinos internos que no son perfiles: las paginas comerciales. Un puerto
+     ya impreso que apunte a una pagina que no existe manda a la persona al
+     fallback de la SPA, o sea a la landing, sin que nadie se entere. Se valida
+     contra las rutas deducidas de vite.config (paso 3), no contra una lista. */
+  const interno = (entry.to ?? '').startsWith('/') && !m
+  if (interno) {
+    const base = '/' + entry.to.split(/[?#]/)[0].split('/').filter(Boolean)[0]
+    if (!rutasDelSitio.has(base) && !['/o', '/api'].includes(base)) {
+      errores.push(
+        `objects.json — "${id}" apunta a ${entry.to}, que no es una pagina del sitio (rutas: ${[...rutasDelSitio].join(', ')})`,
+      )
+    }
+  }
 }
 
 // 8 · Tokens del panel (tokens.json) ---------------------------------------

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Esta pagina SI se busca y SI se comparte: no lleva noindex. El noindex
+         vive solo en los perfiles (p/index.html) y en el panel. -->
+    <meta name="theme-color" content="#eef1e8" />
+    <meta name="description" content="Tarjeta, llavero, porta tarjetas, apoyavasos, placa y recibidor." />
+    <!-- La vista previa al compartir por WhatsApp se arma con estas etiquetas, y
+         se resuelven en el build: WhatsApp no ejecuta React, asi que el texto
+         tiene que estar en el HTML. Falta og:image, que necesita un JPEG por
+         pagina: es un pedido a UX 1 (WhatsApp no muestra webp). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hito.uno/objetos" />
+    <meta property="og:title" content="Objetos · Hito.uno" />
+    <meta property="og:description" content="Tarjeta, llavero, porta tarjetas, apoyavasos, placa y recibidor." />
+    <title>Objetos · Hito.uno</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/paginas/main-pagina.tsx"></script>
+  </body>
+</html>

@@ -234,7 +234,8 @@ export class HitoStore {
 }
 
 /** Convencion de ids: `t-` tarjeta, `pt-` porta tarjetas, `ll-` llavero,
-    `ap-` apoyavasos, `pl-` placa, `re-` recibidor. */
+    `ap-` apoyavasos, `pl-` placa, `re-` recibidor, `pg-` pagina comercial
+    (no es un objeto fisico: es un QR que lleva a /software, /comercios...). */
 export function kindFromId(id: string): string {
   const prefix = id.split('-')[0]
   const map: Record<string, string> = {
@@ -244,6 +245,7 @@ export function kindFromId(id: string): string {
     ap: 'apoyavasos',
     pl: 'placa',
     re: 'recibidor',
+    pg: 'pagina',
   }
   return map[prefix] ?? 'tarjeta'
 }
