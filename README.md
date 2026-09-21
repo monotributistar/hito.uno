@@ -160,7 +160,7 @@ npx vitest        # se queda mirando los archivos, para trabajar
 ```
 
 Viven en `worker/pruebas/` y entran en `npm run check`, así que las corre la
-validación de GitHub en cada PR. Hoy son 13 y tardan alrededor de un segundo.
+validación de GitHub en cada PR. Hoy son 19 y tardan alrededor de un segundo.
 
 **No están para tener cobertura, sino para que no vuelva a pasar lo que ya
 pasó.** Cada una cuida una decisión que costó un celular en la mano o una
@@ -170,6 +170,11 @@ planilla con datos rotos, y el mensaje de error dice por qué la cosa estaba as�
   Android no une la continuación y mezcla los campos), que el archivo use CRLF,
   que el teléfono quede solo con dígitos, que las comas y los punto y coma se
   escapen, y que un perfil sin datos opcionales igual arme un archivo válido.
+- **`body.test.ts`** — el tope de tamaño de los cuerpos: que lo grande se
+  rechace con 413 y lo roto con 400, que un envío del tamaño exacto del tope
+  entre, y sobre todo **que sin `Content-Length` corte igual y deje de
+  descargar** apenas se pasa. Ese encabezado puede faltar o mentir, así que si
+  solo se mirara eso, un cuerpo enorme entraría entero en memoria.
 - **`leads.test.ts`** — **que con el reenvío apagado no salga nada hacia
   Google** (lo pidió SEC 1 antes de atacar el formulario en dev), que con el
   reenvío prendido el cuerpo viaje en ASCII puro (si no, a la planilla llegan
