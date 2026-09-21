@@ -13,6 +13,21 @@ npm install
 npm run dev
 ```
 
+**Las dependencias van con versión, no con `latest`.** Hasta el 2026-09-20
+`package.json` decía `"latest"` en casi todas: con `npm ci` el lockfile las
+sujetaba, pero cualquier `npm install` podía traerse una versión mayor nueva de
+React, de Vite o de Wrangler y romper el build sin que nadie hubiera tocado una
+línea del proyecto. Ahora cada una lleva `^` sobre la versión instalada, que deja
+entrar correcciones pero no versiones mayores.
+
+Dos van clavadas sin `^`: `three` y `@types/three`. Ese paquete está en `0.x` y
+rompe en cada versión menor, así que ahí `^` no protege de nada (para npm,
+`^0.185.1` solo acepta `0.185.x`, pero el proyecto publica cambios incompatibles
+en `0.186`). Actualizarlas es una decisión, no un arrastre.
+
+Para subir algo a propósito: `npm install <paquete>@latest`, y que el cambio
+entre por un PR con `npm run check` en verde.
+
 ## Validación y despliegue
 
 ```bash
