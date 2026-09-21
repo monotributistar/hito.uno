@@ -112,8 +112,17 @@ guarda, y el próximo toque ya va al destino nuevo. Sin cuenta, sin contraseña.
 - `worker/objects.json` es la **semilla**: se carga la primera vez y después manda
   la base. Si el almacén no responde, el toque cae al JSON y nunca a un error.
 - `worker/tokens.json` tiene los links secretos. **Solo de perfiles sandbox del
-  equipo**: un token de cliente real no se commitea. `npm run check` falla si
-  aparece uno que no sea sandbox.
+  equipo, y solo mientras el repositorio sea privado**: un token de cliente real no
+  se commitea nunca. `npm run check` falla si aparece uno que no sea sandbox.
+  **Hoy está vacío:** el 2026-09-21 se vio que el repositorio era público, y los
+  dos tokens sandbox (Stephano y Javier) se revocaron. Hasta que el repositorio
+  vuelva a ser privado, el panel no tiene ningún acceso.
+- **Revocar un token no es sacarlo de `tokens.json`.** La semilla entra con
+  `INSERT OR IGNORE` y no borra nada, así que un token sacado del archivo sigue
+  vivo en el almacén de producción y de dev. Para revocarlo, su hash va a
+  `worker/revocados.ts`: el almacén lo borra cada vez que arranca, y cada deploy
+  lo hace arrancar. No se reconcilia borrando "lo que no esté en el archivo":
+  el día que haya administración, los tokens de clientes no van a estar ahí.
 - El token viaja por header (`X-Hito-Token`), nunca en la URL de la API: la URL
   `/panel/<token>` solo carga la app.
 - Las sugerencias debajo del campo (Mi página, Mi WhatsApp, Mi Instagram, Mi
