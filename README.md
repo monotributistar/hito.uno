@@ -25,7 +25,22 @@ npm run deploy
 acceso a la cuenta de Cloudflare que administra el dominio.
 
 `npm run check` corre, en este orden: el verificador de rutas, `tsc`, el build y
-un `wrangler deploy --dry-run`.
+el verificador de entornos.
+
+`scripts/check-entornos.mjs` (`npm run check:entornos`) hace un
+`wrangler deploy --dry-run` de **los dos entornos**, no solo de producción, y
+verifica que cada uno quede con las variables que le corresponden:
+`REENVIO_CONSULTAS` en `"on"` en producción y en `"off"` en dev. Falla si una
+falta o tiene otro valor.
+
+Por qué se verifica eso y no alcanza con mirar el archivo: si alguien borra la de
+producción, el formulario sigue guardando la consulta pero deja de mandarla a la
+planilla y **no se nota**, porque hoy ninguna ruta lee las guardadas
+(`pendingLeads` en `worker/store.ts`); y si alguien pone dev en `"on"`, una
+prueba de carga escribe en la planilla donde miramos los pedidos reales. Las dos
+fallas son silenciosas. Además, antes el `--dry-run` era solo de producción: un
+error en el bloque `env.dev` de `wrangler.jsonc` pasaba la validación de GitHub y
+aparecía recién en el deploy, con el cambio ya en `dev.hito.uno`.
 
 ## Los dos entornos
 
