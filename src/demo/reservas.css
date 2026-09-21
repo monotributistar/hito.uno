@@ -1,0 +1,320 @@
+/* Demo de reservas. Celular primero: se abre desde un link por WhatsApp.
+
+   Identidad de docs/DISENO.md: tinta #17383a, coral #ed8068, fondo #eef1e8,
+   DM Sans. Los colores van como variables al principio para que UX 1 pueda
+   ajustar el pulido visual sin buscar valores sueltos por el archivo. Todo
+   queda bajo `.demo` para no pisar nada de la landing ni del perfil. */
+
+.demo {
+  --tinta: #17383a;
+  --coral: #ed8068;
+  --verde-medio: #587d78;
+  --verde-profundo: #315f63;
+  --fondo: #eef1e8;
+  --superficie: #f7f8f3;
+  --borde: #c9d3cc;
+  --error: #b3412c;
+  --radio: 12px;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--fondo);
+  color: var(--tinta);
+}
+
+/* La franja de demo: siempre visible, sin letra chica. */
+.demo-franja {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0.6rem 1rem;
+  background: var(--tinta);
+  color: var(--fondo);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.demo-cuerpo {
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+  flex: 1;
+}
+
+.demo-titulo {
+  margin: 1rem 0 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.demo-subtitulo {
+  margin: 0 0 0.5rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.demo-ubicacion {
+  margin: 0 0 1rem;
+  color: var(--verde-medio);
+}
+
+.demo-texto {
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+/* --- Fotos -------------------------------------------------------------- */
+
+.demo-fotos {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.demo-foto {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radio);
+  overflow: hidden;
+  background: var(--superficie);
+}
+
+.demo-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Sin foto todavia: el espacio queda reservado para que la pagina no salte. */
+.demo-foto--vacia {
+  background: linear-gradient(160deg, var(--superficie), var(--borde));
+}
+
+.demo-foto-nota {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(23 56 58 / 0.75);
+  color: var(--fondo);
+  font-size: 0.75rem;
+}
+
+/* --- Lo que tiene ------------------------------------------------------- */
+
+.demo-bloque {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.demo-lista {
+  margin: 0;
+  padding-left: 1.1rem;
+  line-height: 1.7;
+}
+
+.demo-lista--servicios {
+  margin-top: 0.75rem;
+  color: var(--verde-profundo);
+}
+
+/* --- Botones ------------------------------------------------------------ */
+
+.demo-boton {
+  display: block;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 0;
+  border-radius: var(--radio);
+  background: var(--coral);
+  color: var(--tinta);
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.demo-boton--secundario {
+  background: transparent;
+  border: 1.5px solid var(--verde-profundo);
+  color: var(--verde-profundo);
+}
+
+.demo-volver {
+  display: inline-block;
+  color: var(--verde-profundo);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+/* --- Formulario --------------------------------------------------------- */
+
+.demo-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.demo-grupo {
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  border-radius: var(--radio);
+  background: var(--superficie);
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Dos campos lado a lado (adultos y menores). */
+.demo-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Las fechas van una debajo de la otra en el celular: el selector de fecha de
+   Chrome tiene un ancho minimo propio (~175px) que no se achica, y en 375px
+   las dos casillas se pisaban. Lado a lado recien cuando entran. */
+.demo-fila--fechas {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 26rem) {
+  .demo-fila--fechas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.demo-casilla {
+  display: grid;
+  gap: 0.3rem;
+  /* Sin esto, un campo con ancho minimo propio desborda la grilla. */
+  min-width: 0;
+}
+
+/* La franja de demo queda fija arriba: al llevar a la persona a un campo con
+   error (o al titulo), que no quede tapado debajo de ella. */
+.demo :is(h1, input, select, textarea) {
+  scroll-margin-top: 4rem;
+}
+
+.demo-etiqueta {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.demo-casilla input,
+.demo-casilla select,
+.demo-casilla textarea {
+  width: 100%;
+  min-width: 0;
+  /* 16px: con menos, el iPhone hace zoom al tocar el campo. */
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.7rem 0.75rem;
+  border: 1.5px solid var(--borde);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--tinta);
+}
+
+.demo-casilla textarea {
+  resize: vertical;
+}
+
+.demo-casilla input:focus-visible,
+.demo-casilla select:focus-visible,
+.demo-casilla textarea:focus-visible {
+  outline: 2px solid var(--verde-profundo);
+  outline-offset: 1px;
+}
+
+.demo-casilla--error input,
+.demo-casilla--error select,
+.demo-casilla--error textarea {
+  border-color: var(--error);
+}
+
+.demo-error {
+  margin: 0;
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+.demo-tilde {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem; /* area tocable comoda */
+}
+
+.demo-tilde input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--verde-profundo);
+}
+
+.demo-ayuda {
+  margin: 0;
+  color: var(--verde-medio);
+  font-size: 0.9rem;
+}
+
+.demo-ayuda--centro {
+  text-align: center;
+}
+
+/* --- Resumen ------------------------------------------------------------ */
+
+.demo-aviso {
+  margin: 0.5rem 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--coral);
+  background: var(--superficie);
+}
+
+.demo-resumen {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.demo-resumen dt {
+  color: var(--verde-medio);
+}
+
+.demo-resumen dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* --- Pie ---------------------------------------------------------------- */
+
+.demo-pie {
+  padding: 1.25rem 1rem 2rem;
+  color: var(--verde-medio);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.demo-pie a {
+  color: var(--tinta);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.demo-marca-uno {
+  color: var(--coral);
+}

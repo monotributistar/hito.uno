@@ -1,0 +1,37 @@
+/* La propiedad de la demo. ES INVENTADA.
+
+   La demo existe para que un propietario de alquiler temporario vea como le
+   quedaria su propia pagina de reservas. Por eso esta propiedad no puede
+   parecerse a ninguna real: nombre inventado, sin direccion, sin precio y sin
+   telefono. Si alguien del equipo conoce un alojamiento real con este nombre,
+   se cambia aca y en ningun otro lado.
+
+   Las fotos no existen todavia: las genera Stephano. Cuando lleguen, van en
+   `fotos` y se muestran marcadas como ilustrativas. */
+
+export type Propiedad = {
+  nombre: string
+  /** Una o dos frases. */
+  descripcion: string
+  /** Zona general, nunca una direccion. */
+  ubicacion: string
+  /** Personas en total, contando adultos y menores. */
+  capacidad: number
+  ambientes: string[]
+  servicios: string[]
+  aceptaMascotas: boolean
+  /** Rutas en `public/`. Vacio mientras no haya fotos. */
+  fotos: { src: string; alt: string }[]
+}
+
+export const PROPIEDAD: Propiedad = {
+  nombre: 'Casa Viento Norte',
+  descripcion:
+    'Una casa entre pinos, a pocas cuadras del mar. Pensada para una familia o un grupo chico que quiere descansar.',
+  ubicacion: 'Cariló, a pocas cuadras del mar',
+  capacidad: 6,
+  ambientes: ['3 dormitorios', '2 baños', 'Living comedor con hogar', 'Cocina equipada'],
+  servicios: ['Wi-Fi', 'Parrilla', 'Cochera para un auto', 'Ropa de cama y toallas'],
+  aceptaMascotas: true,
+  fotos: [],
+}
