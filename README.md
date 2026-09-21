@@ -115,8 +115,20 @@ Por qué así:
 - El cuerpo se manda con los caracteres no ASCII escapados. Sin eso, en el salto de
   redirección de Apps Script se pierde el charset y a la planilla llegan
   "85 ? 54 mm" o "Identificaci?n". Verificado contra la planilla real.
-- La URL del Apps Script vive en `worker/leads.ts`. Antes viajaba en el código de la
-  página y la veía cualquiera.
+- **La dirección del Apps Script es un secreto de Cloudflare** (`APPS_SCRIPT_URL`),
+  no código. Primero viajaba en el código de la página; después pasó a
+  `worker/leads.ts`, y el 2026-09-21 se vio que el repositorio era público: cualquiera
+  podía escribir en la planilla sin pasar por el freno ni la trampa anti-spam. Se
+  carga una vez con `npx wrangler secret put APPS_SCRIPT_URL`.
+- Producción lo declara en `secrets.required` (`wrangler.jsonc`): **Cloudflare
+  rechaza el deploy si el secreto no está cargado.** Un deploy rechazado no tira el
+  sitio, sigue la versión anterior. El verificador de entornos falla si alguien
+  borra esa declaración. Dev no lo necesita porque no reenvía.
+- Si el secreto falta o no es una dirección de Apps Script (`/macros/s/.../exec`),
+  **el formulario no se rompe**: la consulta se guarda igual y queda anotada con el
+  error, que dice cómo cargarlo.
+- Sacar la dirección del código no la borra del historial de Git: para que la vieja
+  deje de servir hay que **republicar el Apps Script**, que le da una dirección nueva.
 
 ## Guardar contacto y compartir
 

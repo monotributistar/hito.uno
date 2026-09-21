@@ -10,7 +10,7 @@
    `fetch`. */
 
 import { test, expect, beforeEach, afterEach } from 'vitest'
-import { handleLead } from '../leads'
+import { handleLead, urlPlanilla } from '../leads'
 
 /** Almacen de mentira: anota cada llamada y contesta lo que haria el de verdad. */
 function almacenFalso() {
@@ -41,6 +41,9 @@ function consulta(campos: Record<string, unknown> = {}): Request {
   })
 }
 
+/** Direccion de Apps Script inventada, con la forma de las de verdad. */
+const PLANILLA = 'https://script.google.com/macros/s/AKfyPRUEBA_de-mentira_123/exec'
+
 /* `fetch` global: se reemplaza para ver si alguien sale a la red. */
 const fetchReal = globalThis.fetch
 let salidas: { url: string; cuerpo: string }[] = []
@@ -61,7 +64,7 @@ test('con el reenvio apagado no sale nada hacia Google', async () => {
   const almacen = almacenFalso()
   const bg = fondo()
 
-  const res = await handleLead(consulta(), almacen.ask, bg.waitUntil, false)
+  const res = await handleLead(consulta(), almacen.ask, bg.waitUntil, false, PLANILLA)
   await bg.terminar()
 
   expect(res).toEqual({ ok: true, stored: 7, forwarded: false })
@@ -78,7 +81,7 @@ test('con el reenvio prendido la consulta viaja en ASCII puro', async () => {
      llegan rotos a la planilla ("85 ? 54 mm", pasado de verdad contra la
      planilla real). Por eso el cuerpo se escapa como \uXXXX antes de salir. */
   const bg = fondo()
-  await handleLead(consulta({ notes: '85 × 54 mm, diseño' }), almacenFalso().ask, bg.waitUntil, true)
+  await handleLead(consulta({ notes: '85 × 54 mm, diseño' }), almacenFalso().ask, bg.waitUntil, true, PLANILLA)
   await bg.terminar()
 
   expect(salidas.length).toBe(1)
@@ -93,7 +96,7 @@ test('la trampa anti-spam no guarda ni reenvia', async () => {
   const almacen = almacenFalso()
   const bg = fondo()
 
-  const res = await handleLead(consulta({ hp: 'soy un bot' }), almacen.ask, bg.waitUntil, true)
+  const res = await handleLead(consulta({ hp: 'soy un bot' }), almacen.ask, bg.waitUntil, true, PLANILLA)
   await bg.terminar()
 
   // Al bot se le contesta que si para que no reintente, pero no se guarda nada.
@@ -106,7 +109,7 @@ test('sin nombre o sin forma de contacto no entra', async () => {
   const almacen = almacenFalso()
   const bg = fondo()
 
-  const res = await handleLead(consulta({ contact: '   ' }), almacen.ask, bg.waitUntil, true)
+  const res = await handleLead(consulta({ contact: '   ' }), almacen.ask, bg.waitUntil, true, PLANILLA)
   await bg.terminar()
 
   expect(res.ok).toBe(false)
@@ -122,7 +125,7 @@ test('el freno del almacen corta el envio', async () => {
     return almacen.ask<T>(ruta, init)
   }
 
-  const res = await handleLead(consulta(), askFrenado, bg.waitUntil, true)
+  const res = await handleLead(consulta(), askFrenado, bg.waitUntil, true, PLANILLA)
   await bg.terminar()
 
   expect(res.ok).toBe(false)
@@ -139,6 +142,7 @@ test('solo entran los campos esperados, y recortados', async () => {
     almacen.ask,
     bg.waitUntil,
     true,
+    PLANILLA,
   )
   await bg.terminar()
 
@@ -146,4 +150,69 @@ test('solo entran los campos esperados, y recortados', async () => {
   const guardado = JSON.parse(String(enviado?.cuerpo?.payload))
   expect('sorpresa' in guardado, 'se guardo un campo que el formulario no declara').toBe(false)
   expect(guardado.notes.length, 'las notas tienen que recortarse a 2000').toBe(2000)
+})
+
+/* --- La direccion de la planilla como secreto ---------------------------- */
+
+test('la consulta viaja a la direccion del secreto, y a ninguna otra', async () => {
+  const bg = fondo()
+  await handleLead(consulta(), almacenFalso().ask, bg.waitUntil, true, PLANILLA)
+  await bg.terminar()
+  expect(salidas.map((s) => s.url)).toEqual([PLANILLA])
+})
+
+test('sin el secreto, la consulta se guarda igual y queda anotada con el error', async () => {
+  /* Pedido de ORQ 1: si el secreto falta, el formulario no se rompe. La
+     persona ve "enviado" porque su consulta esta guardada; la falla es de
+     configuracion nuestra y queda escrita para recuperarla. */
+  const almacen = almacenFalso()
+  const bg = fondo()
+
+  const res = await handleLead(consulta(), almacen.ask, bg.waitUntil, true, undefined)
+  await bg.terminar()
+
+  expect(res).toEqual({ ok: true, stored: 7, forwarded: false })
+  expect(salidas, 'sin secreto no puede salir nada a la red').toEqual([])
+  expect(almacen.rutas()).toContain('/lead')
+  const marca = almacen.llamadas.find((l) => l.ruta === '/lead-mark')
+  expect(String(marca?.cuerpo?.error)).toMatch(/APPS_SCRIPT_URL/)
+})
+
+test('un secreto que no es de Apps Script no se usa', async () => {
+  // Un secreto mal cargado no puede mandar consultas de clientes a otro lado.
+  const almacen = almacenFalso()
+  const bg = fondo()
+
+  await handleLead(consulta(), almacen.ask, bg.waitUntil, true, 'https://otro-sitio.example/exec')
+  await bg.terminar()
+
+  expect(salidas).toEqual([])
+  const marca = almacen.llamadas.find((l) => l.ruta === '/lead-mark')
+  expect(String(marca?.cuerpo?.error)).toMatch(/APPS_SCRIPT_URL/)
+})
+
+test('con el reenvio apagado, ni siquiera se mira el secreto', async () => {
+  // Dev no tiene el secreto y no tiene por que: el motivo anotado tiene que ser
+  // el del reenvio apagado, no un falso "falta el secreto".
+  const almacen = almacenFalso()
+  const bg = fondo()
+
+  await handleLead(consulta(), almacen.ask, bg.waitUntil, false, undefined)
+  await bg.terminar()
+
+  const marca = almacen.llamadas.find((l) => l.ruta === '/lead-mark')
+  expect(String(marca?.cuerpo?.error)).toMatch(/REENVIO_CONSULTAS/)
+  expect(String(marca?.cuerpo?.error)).not.toMatch(/APPS_SCRIPT_URL/)
+})
+
+test('que direcciones se aceptan como planilla', () => {
+  expect(urlPlanilla(PLANILLA)).toBe(PLANILLA)
+  // Un espacio o un salto de linea al pegar el secreto se perdona.
+  expect(urlPlanilla(`  ${PLANILLA}\n`)).toBe(PLANILLA)
+  expect(urlPlanilla(undefined)).toBeNull()
+  expect(urlPlanilla('')).toBeNull()
+  // La de edicion del script no sirve para recibir consultas.
+  expect(urlPlanilla('https://script.google.com/macros/s/AKfyPRUEBA/dev')).toBeNull()
+  expect(urlPlanilla('http://script.google.com/macros/s/AKfyPRUEBA/exec')).toBeNull()
+  expect(urlPlanilla('https://script.google.com.otro.example/macros/s/AKfyPRUEBA/exec')).toBeNull()
 })
