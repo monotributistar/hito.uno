@@ -11,11 +11,12 @@
     "map:refresh": "node scripts/maps/fetch-map.mjs",
     "check:paths": "node scripts/check-paths.mjs",
     "check:entornos": "node scripts/check-entornos.mjs",
+    "check:placeholders": "node scripts/check-placeholders.mjs",
     "test": "vitest run",
     "deploy": "npm run build && wrangler deploy --env=\"\"",
     "deploy:dev": "npm run build && wrangler deploy --env dev",
     "deploy:production": "npm run deploy",
-    "check": "npm run check:paths && tsc -b && vite build && npm run test && npm run check:entornos"
+    "check": "npm run check:paths && npm run check:placeholders && tsc -b && vite build && npm run test && npm run check:entornos"
   },
   "dependencies": {
     "@react-three/fiber": "^9.7.0",
