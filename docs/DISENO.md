@@ -185,6 +185,57 @@ rescató de ahí el 2026-09-14, para sumar a la landing actual sin rediseñarla:
 - Toda foto declarada en `landing-data.ts` tiene que existir en `public/`.
   `npm run check` lo verifica y falla si no.
 
+### 4.4 Molde de las páginas comerciales (2026-09-21)
+
+Las páginas `/software`, `/comercios`, `/personal` y `/objetos` existen para tener
+**un link por conversación**: Stephano le manda a cada contacto la página que habla
+de lo suyo, no una landing que habla de todo. Las cuatro usan el mismo molde, así el
+diseño se mantiene en un solo lugar.
+
+| Pieza | Archivo | De quién |
+| --- | --- | --- |
+| Qué campos tiene una página (el contrato) | `src/paginas/paginas-data.ts`, tipos | PLAT |
+| El texto de cada página | `src/paginas/paginas-data.ts`, `PAGINAS` | UX (Personal) y PAG (Software, Comercios) |
+| Cómo se dibuja | `src/paginas/Pagina.tsx` + `pagina.css` | UX |
+| Entrada HTML, vista previa, `vite.config.ts` | `<ruta>/index.html` | PLAT |
+
+**El orden es fijo y no se reordena por página:**
+
+1. **Nombre** de la página arriba, chico y en coral (`Personal`, `Software a medida`).
+2. **Título con el problema de esa persona**, no con la tecnología. "Tu local listo
+   antes del verano", no "Soluciones NFC para comercios".
+3. **Entrada**: un párrafo corto, opcional.
+4. **Qué incluye**: lista corta y numerada, con el mismo círculo coral de la landing.
+   Cinco ítems como máximo; si hacen falta más, la página está hablando de dos cosas.
+5. **Prueba**: una foto real de un objeto (3:2, con epígrafe) o un enlace a algo que
+   funciona (un perfil de muestra, la demo de reservas). **Sin prueba, la página no se
+   abre** (regla de la hoja de planteo).
+6. **Precio**: el número o rango si está definido. Si no, `Consultá` con una línea que
+   dice por qué. "Consultá" no es un hueco: es la decisión tomada mientras no haya
+   precio.
+7. **Un solo botón**: WhatsApp con el mensaje ya escrito, armado con `whatsappHref`.
+   En celular queda fijo al pie de la pantalla; es el mismo botón, no una copia, así
+   nunca hay dos llamados compitiendo. En escritorio queda en su lugar.
+
+**Cómo se escribe cada campo:**
+
+- Título: lo que diría la persona, en segunda persona y en voseo. Sin signos de
+  exclamación, sin "soluciones", sin "innovador".
+- Qué incluye: sustantivos concretos ("Visita al local", "Tarjeta con NFC y QR"), no
+  beneficios abstractos.
+- Mensaje de WhatsApp: lo que la persona mandaría si escribiera ella, en primera
+  persona ("Hola, quiero mi tarjeta y mi página."). Así Stephano sabe de qué página
+  viene sin preguntar.
+- Nada de plazos (decidido el 2026-09-19, ver `OFERTA.md` 2.0d).
+- Un dato sin confirmar (foto que falta, texto que espera decisión, precio) lleva la
+  marca `PLACEHOLDER` en el código, en mayúsculas y siempre igual. Lo que la tenga no
+  pasa a producción (regla de Stephano, 2026-09-21).
+
+**Lo que el molde no tiene a propósito:** el mapa 3D (pesa y acá no explica nada),
+menú de navegación (la persona llegó por un link, no está recorriendo el sitio) y
+formulario (el único canal es WhatsApp). La marca arriba y el pie llevan a la home para
+quien quiera ver el resto.
+
 ---
 
 ## 5. Formulario de demo

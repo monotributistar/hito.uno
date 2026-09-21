@@ -1,0 +1,282 @@
+/* Molde de las paginas comerciales — extiende src/styles.css, no lo reemplaza.
+   Tokens heredados: #17383a tinta, #eef1e8 fondo, #ed8068 acento,
+   #315f63 gris que se lee, #587d78 solo texto accesorio, DM Sans + Space Mono.
+
+   Mobile-first: estas paginas se abren desde un link de WhatsApp, asi que lo
+   primero que se ve es una pantalla de celular. Sin mapa 3D: pesa y aca no
+   explica nada. La firma editorial queda en el fondo rayado y las lineas finas. */
+
+.pagina {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(237, 128, 104, 0.1), transparent 62%),
+    repeating-linear-gradient(45deg, rgba(23, 56, 58, 0.045) 0 1px, transparent 1px 26px),
+    #eef1e8;
+}
+
+/* --- Cabecera --- */
+
+.pagina-top {
+  width: min(100% - 40px, 640px);
+  margin: 0 auto;
+  padding: 24px 0 16px;
+  border-bottom: 1px solid rgba(23, 56, 58, 0.16);
+}
+
+.pagina-marca {
+  color: #17383a;
+  font: 700 1rem 'Space Mono', monospace;
+  letter-spacing: -0.08em;
+  text-decoration: none;
+}
+
+.pagina-marca span {
+  color: #ed8068;
+}
+
+/* --- Cuerpo --- */
+
+.pagina-cuerpo {
+  display: grid;
+  gap: 34px;
+  width: min(100% - 40px, 640px);
+  margin: 0 auto;
+  padding: 34px 0 40px;
+}
+
+.pagina-kicker {
+  margin: 0 0 14px;
+  color: #ed8068;
+  font: 700 0.68rem 'Space Mono', monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pagina-titulo {
+  margin: 0;
+  color: #17383a;
+  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.pagina-entrada {
+  max-width: 34em;
+  margin: 18px 0 0;
+  color: #315f63;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.pagina-subtitulo {
+  margin: 0 0 12px;
+  color: #315f63;
+  font: 700 0.72rem 'Space Mono', monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Que incluye: el mismo lenguaje que la lista numerada de la landing
+   (circulo coral y numero en mono), para que se lea como el mismo sitio. */
+.pagina-incluye {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pagina-incluye li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid rgba(23, 56, 58, 0.16);
+  color: #17383a;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.pagina-incluye li:last-child {
+  border-bottom: 1px solid rgba(23, 56, 58, 0.16);
+}
+
+.pagina-numero {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid #ed8068;
+  border-radius: 50%;
+  color: #ed8068;
+  font: 700 0.6rem 'Space Mono', monospace;
+}
+
+/* --- Prueba --- */
+
+.pagina-prueba-foto {
+  margin: 0;
+}
+
+.pagina-prueba-foto img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border: 1px solid rgba(23, 56, 58, 0.14);
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.pagina-prueba-foto figcaption {
+  margin-top: 8px;
+  color: #315f63;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.pagina-prueba-enlace {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 18px 20px;
+  border: 1px solid rgba(23, 56, 58, 0.2);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #17383a;
+  text-decoration: none;
+  transition: border-color 160ms ease;
+}
+
+.pagina-prueba-enlace:hover {
+  border-color: #17383a;
+}
+
+.pagina-prueba-etiqueta {
+  color: #ed8068;
+  font: 700 0.66rem 'Space Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pagina-prueba-texto {
+  grid-column: 1;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.pagina-prueba-flecha {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: #ed8068;
+  font-size: 1.2rem;
+}
+
+/* --- Precio --- */
+
+.pagina-precio-valor {
+  margin: 0;
+  color: #17383a;
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.pagina-precio-nota {
+  margin: 6px 0 0;
+  color: #315f63;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+/* --- El unico boton --- */
+
+/* En mobile queda fijo al pie: es el mismo boton, no una copia, asi nunca hay
+   dos llamados compitiendo. El pie de pagina deja lugar para que no tape nada. */
+.pagina-accion {
+  position: sticky;
+  z-index: 5;
+  bottom: 0;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(23, 56, 58, 0.14);
+  background: rgba(238, 241, 232, 0.94);
+  backdrop-filter: blur(6px);
+}
+
+.pagina-boton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: min(100%, 640px);
+  min-height: 56px;
+  margin: 0 auto;
+  padding: 0 22px;
+  border: 1px solid #17383a;
+  border-radius: 3px;
+  background: #17383a;
+  color: #eef1e8;
+  font: 700 0.8rem 'Space Mono', monospace;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: border-color 160ms ease;
+}
+
+.pagina-boton:hover {
+  border-color: #ed8068;
+}
+
+.pagina-boton-flecha {
+  color: #ed8068;
+  font-size: 1.2rem;
+}
+
+/* --- Pie --- */
+
+.pagina-pie {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(100% - 40px, 640px);
+  margin: 0 auto;
+  padding: 22px 0 28px;
+  color: #587d78;
+  font-size: 0.82rem;
+}
+
+.pagina-pie p {
+  margin: 0;
+}
+
+.pagina-pie a {
+  color: #315f63;
+  font: 700 0.8rem 'Space Mono', monospace;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+/* En escritorio el boton deja de ser fijo: hay pantalla de sobra para verlo
+   en su lugar, y una barra pegada abajo en un monitor se siente a publicidad. */
+@media (min-width: 900px) {
+  .pagina-cuerpo {
+    padding-top: 64px;
+  }
+
+  .pagina-accion {
+    position: static;
+    padding: 0 0 12px;
+    border-top: 0;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .pagina-boton {
+    width: min(100% - 40px, 640px);
+  }
+}
