@@ -23,6 +23,9 @@ export default defineConfig({
         comercios: resolve(__dirname, 'comercios/index.html'),
         personal: resolve(__dirname, 'personal/index.html'),
         objetos: resolve(__dirname, 'objetos/index.html'),
+        /* Demos: pruebas de lo que se vende, con datos inventados. Van con
+           noindex (lo exige check-paths) y no mandan nada a ningun lado. */
+        'demo-reservas': resolve(__dirname, 'demo/reservas/index.html'),
       },
     },
   },

@@ -152,15 +152,16 @@ guarda, y el próximo toque ya va al destino nuevo. Sin cuenta, sin contraseña.
 Probar en local: `npm run dev:worker` y abrir `localhost:8787/panel/<token>`.
 El `npm run dev` de Vite no ejecuta el Worker, así que ahí no hay API.
 
-## Pruebas del Worker
+## Pruebas
 
 ```bash
 npm test          # una corrida
 npx vitest        # se queda mirando los archivos, para trabajar
 ```
 
-Viven en `worker/pruebas/` y entran en `npm run check`, así que las corre la
-validación de GitHub en cada PR. Hoy son 19 y tardan alrededor de un segundo.
+Viven en `worker/pruebas/` (el servidor) y `src/demo/pruebas/` (la demo de
+reservas), y entran en `npm run check`, así que las corre la validación de GitHub
+en cada PR. Tardan alrededor de un segundo.
 
 **No están para tener cobertura, sino para que no vuelva a pasar lo que ya
 pasó.** Cada una cuida una decisión que costó un celular en la mano o una
@@ -200,7 +201,8 @@ prueba entero sin Cloudflare: se le pasa un almacén de mentira y se vigila
   que no existe;
 - **una foto declarada en `landing-data.ts` no está en `public/`**;
 - un puerto de `objects.json` apunta a una ruta interna que no existe como página;
-- una página comercial lleva `noindex` (ver más abajo).
+- una página comercial lleva `noindex`, o una demo (`/demo/...`) no lo lleva (ver
+  más abajo).
 
 El de las fotos es el que más rinde: una ruta mal escrita compila, buildea y se
 despliega sin una sola queja, y solo deja un hueco en el carrusel. También avisa
@@ -239,6 +241,31 @@ Cada página tiene además su **puerto** (`/o/pg-<nombre>` en `worker/objects.js
 para poder mandarla impresa o por QR y contar cuánta gente entró por ahí. Esos
 puertos van con dueño `hito`: no son objetos de un cliente y no aparecen en
 ningún panel.
+
+## Demo de reservas (`/demo/reservas`)
+
+La prueba que acompaña a la página de Software a medida: la página de una
+**propiedad inventada** (Casa Viento Norte) con su formulario de consulta. Un
+propietario de alquiler temporario la abre en el celular, hace una consulta de
+prueba y ve cómo le quedaría su propia página.
+
+**No guarda ni manda nada.** Ni a una planilla, ni al almacén del Worker, ni a
+Google: al enviar, la misma página muestra lo que quedó cargado. Es pública y la
+gente va a probar con sus datos reales, así que no hay que retenerlos; tampoco
+abre una puerta al spam ni carga el almacén. La franja de arriba lo dice siempre
+y el resumen dice "no se envió", nunca "enviado".
+
+- La propiedad vive en `src/demo/propiedad.ts`: nombre, capacidad, ambientes y
+  servicios. Sin dirección, sin precio y sin teléfono, para que nunca parezca un
+  alojamiento real. Las fotos van en `fotos` cuando existan, marcadas como
+  ilustrativas.
+- La validación está en `src/demo/validar.ts`, en funciones puras, con sus pruebas
+  en `src/demo/pruebas/`. El día de hoy se calcula con la hora **local** del
+  celular: con la hora universal, en Argentina después de las 21 ya sería mañana y
+  se rechazaría una llegada para hoy.
+- Lleva `noindex`, al revés que las páginas comerciales: una casa que no existe no
+  tiene que aparecer en Google. `check-paths` exige esa meta en todo lo que viva
+  bajo `/demo/`.
 
 ## Perfiles partner (`/p/<slug>`)
 

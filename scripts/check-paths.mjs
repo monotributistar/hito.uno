@@ -91,17 +91,26 @@ for (const m of vite.matchAll(/resolve\(__dirname,\s*'([^']+)'\)/g)) {
   if (carpeta) rutasDelSitio.add(`/${carpeta}`)
 }
 
-// 3.1 · Las paginas que se comparten no pueden llevar noindex ----------------
-// Los perfiles y el panel se quedan fuera de los buscadores a proposito; las
-// paginas comerciales son lo contrario: se mandan por WhatsApp y se buscan. Un
-// noindex copiado y pegado desde p/index.html las esconde sin que se note.
+// 3.1 · Quien va a los buscadores y quien no --------------------------------
+// Tres casos, y en los dos que importan el error no se nota nunca:
+// - las paginas comerciales se mandan por WhatsApp y se buscan: un noindex
+//   copiado y pegado desde p/index.html las esconde sin que nadie se entere;
+// - las demos (/demo/...) muestran cosas INVENTADAS, como una casa que no
+//   existe: sin noindex, Google la indexa y alguien la encuentra buscando
+//   alojamiento. Aca la meta es obligatoria;
+// - los perfiles y el panel tienen su propio noindex y no se miran aca.
 const RUTAS_OCULTAS = ['/p', '/panel']
+const TIENE_NOINDEX = /name="robots"[^>]*noindex/
 for (const ruta of rutasDelSitio) {
   if (ruta === '/' || RUTAS_OCULTAS.includes(ruta)) continue
   const html = `${ruta.slice(1)}/index.html`
   if (!existsSync(html)) continue
   const contenido = readFileSync(html, 'utf8')
-  if (/name="robots"[^>]*noindex/.test(contenido)) {
+  const esDemo = ruta.startsWith('/demo/')
+  if (esDemo && !TIENE_NOINDEX.test(contenido)) {
+    errores.push(`${html} — es una demo con datos inventados y le falta la meta robots noindex`)
+  }
+  if (!esDemo && TIENE_NOINDEX.test(contenido)) {
     errores.push(`${html} — tiene noindex y es una pagina que se comparte y se busca`)
   }
   // La vista previa de WhatsApp necesita una imagen propia, y en JPEG o PNG:
@@ -195,8 +204,13 @@ for (const [id, entry] of Object.entries(puertos.objects ?? {})) {
      contra las rutas deducidas de vite.config (paso 3), no contra una lista. */
   const interno = (entry.to ?? '').startsWith('/') && !m
   if (interno) {
-    const base = '/' + entry.to.split(/[?#]/)[0].split('/').filter(Boolean)[0]
-    if (!rutasDelSitio.has(base) && !['/o', '/api'].includes(base)) {
+    /* Se compara la ruta entera contra las del sitio, no solo el primer tramo:
+       con las demos hay rutas de dos niveles (/demo/reservas) y /demo solo no
+       existe. */
+    const ruta = entry.to.split(/[?#]/)[0].replace(/\/$/, '') || '/'
+    const existe = [...rutasDelSitio].some((r) => ruta === r || (r !== '/' && ruta.startsWith(`${r}/`)))
+    const base = '/' + ruta.split('/').filter(Boolean)[0]
+    if (!existe && !['/o', '/api'].includes(base)) {
       errores.push(
         `objects.json — "${id}" apunta a ${entry.to}, que no es una pagina del sitio (rutas: ${[...rutasDelSitio].join(', ')})`,
       )
