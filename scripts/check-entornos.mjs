@@ -35,16 +35,27 @@ const ENTORNOS = [
   {
     nombre: 'produccion',
     args: ['--env='],
+    env: undefined,
     variables: { REENVIO_CONSULTAS: 'on' },
     porque:
       'sin REENVIO_CONSULTAS="on" el formulario guarda la consulta pero no la manda a la planilla, y hoy nadie lee las guardadas',
+    /* Secretos que el entorno tiene que declarar como requeridos. Declararlo
+       hace que Cloudflare rechace el deploy si el secreto no esta cargado, que
+       es la unica verificacion que sabe si esta de verdad: este script no tiene
+       acceso a la cuenta. Lo que se cuida aca es que nadie borre la declaracion. */
+    secretos: ['APPS_SCRIPT_URL'],
+    porqueSecretos:
+      'sin declararlo, Cloudflare despliega aunque el secreto no este cargado, y las consultas dejan de llegar a la planilla sin que nadie lo note',
   },
   {
     nombre: 'dev',
     args: ['--env', 'dev'],
+    env: 'dev',
     variables: { REENVIO_CONSULTAS: 'off' },
     porque:
       'con REENVIO_CONSULTAS distinto de "off", una prueba en dev.hito.uno escribe en la planilla real',
+    secretos: [],
+    porqueSecretos: '',
   },
 ]
 
@@ -56,6 +67,20 @@ const errores = []
    GitHub, y encima usa la version del lockfile y no la que baje npx. */
 const require = createRequire(import.meta.url)
 const wrangler = join(dirname(require.resolve('wrangler/package.json')), 'bin', 'wrangler.js')
+
+/* Los secretos requeridos no aparecen en la salida del dry-run, asi que se
+   leen con el lector de configuracion de wrangler, que resuelve cada entorno
+   igual que el deploy (herencia incluida). Es una API "unstable": si una
+   version nueva la cambia, este check falla con un mensaje claro en vez de
+   pasar en silencio. */
+const { unstable_readConfig } = require('wrangler')
+function secretosRequeridos(env) {
+  if (typeof unstable_readConfig !== 'function') {
+    throw new Error('wrangler ya no exporta unstable_readConfig: hay que actualizar scripts/check-entornos.mjs')
+  }
+  const config = unstable_readConfig({ config: 'wrangler.jsonc', env }, { hideWarnings: true })
+  return config.secrets?.required ?? []
+}
 
 for (const entorno of ENTORNOS) {
   const proceso = spawnSync(
@@ -94,6 +119,19 @@ for (const entorno of ENTORNOS) {
         `${entorno.nombre} tiene ${variable}="${renglon[1]}" y tiene que ser "${esperado}": ${entorno.porque}.`,
       )
     }
+  }
+
+  try {
+    const declarados = secretosRequeridos(entorno.env)
+    for (const secreto of entorno.secretos) {
+      if (!declarados.includes(secreto)) {
+        errores.push(
+          `${entorno.nombre} no declara ${secreto} en "secrets.required": ${entorno.porqueSecretos}. Se arregla en wrangler.jsonc.`,
+        )
+      }
+    }
+  } catch (err) {
+    errores.push(`no se pudieron leer los secretos de ${entorno.nombre}: ${err.message}`)
   }
 
   console.log(`  · ${entorno.nombre}: configuracion valida`)

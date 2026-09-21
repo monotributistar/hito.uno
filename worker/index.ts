@@ -55,6 +55,10 @@ export interface Env {
       valor, o la variable ausente, lo deja apagado: un entorno reenvia solo
       si lo dice. Ver wrangler.jsonc y docs/SEGURIDAD.md. */
   REENVIO_CONSULTAS?: string
+  /** Secreto de Cloudflare: la direccion del Apps Script que escribe en la
+      planilla. Nunca en el codigo. Si falta, la consulta se guarda igual y
+      queda anotada con el error (ver worker/leads.ts). */
+  APPS_SCRIPT_URL?: string
 }
 
 const SEED = objects.objects as Record<string, SeedEntry>
@@ -311,6 +315,7 @@ export default {
         (path, init) => ask(env, path, init),
         (promise) => ctx.waitUntil(promise),
         env.REENVIO_CONSULTAS === 'on',
+        env.APPS_SCRIPT_URL,
       )
       return result.ok
         ? json({ ok: true })
