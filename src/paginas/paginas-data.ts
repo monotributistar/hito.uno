@@ -75,13 +75,37 @@ export const PAGINAS: Pagina[] = [
     whatsapp: { telefono: TELEFONO, mensaje: 'Hola, quiero reservar la visita para mi local.' },
   },
   {
+    /* Copy de UX 1 (2026-09-21). Le habla a quien se presenta o vende por su
+       cuenta: nada de objetos de local (apoyavasos, placas), por la regla de
+       segmentos. Parte del problema, que es el momento incomodo de dictar el
+       numero, y la tecnologia aparece solo como "como" en la lista. */
     ruta: '/personal',
     nombre: 'Personal',
-    titulo: 'Tu tarjeta y tu página, en un gesto',
-    entrada: 'Una tarjeta que abre tu página, y tu página con lo que quieras mostrar.',
-    incluye: ['Tarjeta con NFC y QR', 'Tu página en hito.uno', 'Catálogo, si vendés'],
+    // PLACEHOLDER: titulo y entrada esperan el OK de Stephano (tienen que sonar a el).
+    titulo: 'Que te agenden sin dictar tu número',
+    entrada:
+      'Una tarjeta que se apoya en el celular del otro y abre tu página: tu WhatsApp, tus redes y, si vendés, lo que ofrecés. La diseñamos, la imprimimos y la dejamos configurada.',
+    incluye: [
+      'Tarjeta con NFC y QR, impresa por nosotros',
+      'Tu página con tus canales',
+      'Guardar tu contacto con un toque',
+      'Catálogo, si vendés',
+      'Tu panel para cambiar a dónde lleva la tarjeta',
+    ],
+    /* La prueba es el perfil de muestra: una pagina real y limpia, que es
+       justo como va a quedar la de quien pregunta (DISENO.md, 2026-09-15). */
+    prueba: {
+      tipo: 'enlace',
+      texto: 'Así queda una página: la de Stephano, uno de los que hace Hito.',
+      href: '/p/stephano',
+    },
+    // Vacio a proposito: el precio de la Lite esta "a confirmar" en OFERTA.md.
+    // "Consultá" es la decision tomada mientras tanto, no un dato pendiente.
     precio: '',
-    whatsapp: { telefono: TELEFONO, mensaje: 'Hola, quiero mi tarjeta y mi página.' },
+    whatsapp: {
+      telefono: TELEFONO,
+      mensaje: 'Hola, vi la página Personal. Quiero mi tarjeta y mi página.',
+    },
   },
   {
     ruta: '/objetos',
