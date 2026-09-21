@@ -14,6 +14,7 @@
 
 import objectsSeed from './objects.json'
 import tokensSeed from './tokens.json'
+import { REVOCADOS, tokensRevocados } from './revocados'
 
 export type ObjectRow = {
   id: string
@@ -42,8 +43,28 @@ export class HitoStore {
   constructor(state: DurableObjectState) {
     this.sql = state.storage.sql
     // blockConcurrencyWhile: ninguna peticion entra hasta que el esquema
-    // exista y la semilla este cargada.
-    state.blockConcurrencyWhile(() => this.migrate())
+    // exista, la semilla este cargada y los tokens revocados esten borrados.
+    // Sin esto, un pedido con un token revocado podria colarse en el instante
+    // entre el arranque y el borrado.
+    state.blockConcurrencyWhile(async () => {
+      this.migrate()
+      await this.revocar()
+    })
+  }
+
+  /** Borra los tokens de la lista de revocados (ver revocados.ts). Corre
+      despues de la semilla a proposito: si alguien volviera a poner un token
+      revocado en tokens.json, la semilla lo insertaria y esto lo borra igual. */
+  private async revocar(): Promise<void> {
+    const todos = this.sql.exec<{ token: string }>('SELECT token FROM tokens').toArray().map((r) => r.token)
+    const aBorrar = await tokensRevocados(
+      todos,
+      REVOCADOS.map((r) => r.hash),
+    )
+    for (const token of aBorrar) {
+      this.sql.exec('DELETE FROM tokens WHERE token = ?', token)
+    }
+    if (aBorrar.length) console.log(`HitoStore: ${aBorrar.length} token(s) revocado(s) borrado(s).`)
   }
 
   private migrate(): void {
