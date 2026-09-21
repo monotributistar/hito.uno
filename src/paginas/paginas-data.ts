@@ -100,7 +100,7 @@ export const PAGINAS: Pagina[] = [
       href: '/p/stephano',
     },
     // Vacio a proposito: el precio de la Lite esta "a confirmar" en OFERTA.md.
-    // "Consultá" es la decision tomada mientras tanto, no un placeholder.
+    // "Consultá" es la decision tomada mientras tanto, no un dato pendiente.
     precio: '',
     whatsapp: {
       telefono: TELEFONO,
