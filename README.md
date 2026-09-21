@@ -39,8 +39,23 @@ npm run deploy
 `hito.uno`. Para desplegar se necesita una sesión de Wrangler autenticada con
 acceso a la cuenta de Cloudflare que administra el dominio.
 
-`npm run check` corre, en este orden: el verificador de rutas, `tsc`, el build y
-el verificador de entornos.
+`npm run check` corre, en este orden: el verificador de rutas, el de
+placeholders, `tsc`, el build, las pruebas y el verificador de entornos.
+
+**Placeholders** (`npm run check:placeholders`). Regla de Stephano del
+2026-09-21: lo que todavía no se sabe va como placeholder, marcado en el código con
+la palabra `PLACEHOLDER` (exacta, en mayúsculas), y **un placeholder no va a
+producción**. El verificador busca la marca en `src/`, `public/`, `worker/` y los
+HTML de entrada (deducidos de `vite.config.ts`), sin `docs/` ni archivos de prueba:
+
+- en un PR hacia `main` **falla** y lista archivo y línea de cada marca;
+- en cualquier otro caso (PRs a `dev`, una corrida local) **solo avisa**, porque
+  un placeholder en dev es lo esperado.
+
+Sabe a dónde va el PR por `GITHUB_BASE_REF`, que GitHub completa solo. Para
+probarlo a mano como si fuera el pase: `node scripts/check-placeholders.mjs
+--destino=main`. `main` no tiene protección de rama: una validación en rojo avisa,
+pero no impide mergear.
 
 `scripts/check-entornos.mjs` (`npm run check:entornos`) hace un
 `wrangler deploy --dry-run` de **los dos entornos**, no solo de producción, y
