@@ -152,6 +152,45 @@ guarda, y el próximo toque ya va al destino nuevo. Sin cuenta, sin contraseña.
 Probar en local: `npm run dev:worker` y abrir `localhost:8787/panel/<token>`.
 El `npm run dev` de Vite no ejecuta el Worker, así que ahí no hay API.
 
+## Pruebas del Worker
+
+```bash
+npm test          # una corrida
+npx vitest        # se queda mirando los archivos, para trabajar
+```
+
+Viven en `worker/pruebas/` y entran en `npm run check`, así que las corre la
+validación de GitHub en cada PR. Hoy son 19 y tardan alrededor de un segundo.
+
+**No están para tener cobertura, sino para que no vuelva a pasar lo que ya
+pasó.** Cada una cuida una decisión que costó un celular en la mano o una
+planilla con datos rotos, y el mensaje de error dice por qué la cosa estaba así:
+
+- **`vcard.test.ts`** — que ninguna línea se corte (Contactos de Google en
+  Android no une la continuación y mezcla los campos), que el archivo use CRLF,
+  que el teléfono quede solo con dígitos, que las comas y los punto y coma se
+  escapen, y que un perfil sin datos opcionales igual arme un archivo válido.
+- **`body.test.ts`** — el tope de tamaño de los cuerpos: que lo grande se
+  rechace con 413 y lo roto con 400, que un envío del tamaño exacto del tope
+  entre, y sobre todo **que sin `Content-Length` corte igual y deje de
+  descargar** apenas se pasa. Ese encabezado puede faltar o mentir, así que si
+  solo se mirara eso, un cuerpo enorme entraría entero en memoria.
+- **`leads.test.ts`** — **que con el reenvío apagado no salga nada hacia
+  Google** (lo pidió SEC 1 antes de atacar el formulario en dev), que con el
+  reenvío prendido el cuerpo viaje en ASCII puro (si no, a la planilla llegan
+  "85 ? 54 mm" y "Identificaci?n"), que la trampa anti-spam no guarde ni
+  reenvíe, que el freno corte el envío y que solo entren los campos declarados.
+
+Se corren con **Vitest**. La primera opción fue `node --test`, que no suma
+dependencias, pero el código del Worker importa sin extensión (`./body`,
+`./store`), como espera un empaquetador, y Node no resuelve eso sin escribirle
+un cargador a mano. Vitest reutiliza el Vite que el proyecto ya usa, entiende
+TypeScript sin configuración y no necesita nada más.
+
+`handleLead` recibe el almacén y el `waitUntil` como parámetros, así que se
+prueba entero sin Cloudflare: se le pasa un almacén de mentira y se vigila
+`fetch` para ver si alguien sale a la red.
+
 ## Verificación de rutas
 
 `scripts/check-paths.mjs` (`npm run check:paths`) falla si:
