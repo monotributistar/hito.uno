@@ -97,12 +97,19 @@ contraseñas ni cuentas. **Actualiza la decisión "dashboard: próximamente" de
 
 El cliente tiene que sentir que Hito ya funciona antes de que llegue el objeto.
 
-- **La página va primero.** Se contrata, se completa el formulario (el mismo
-  configurador de la landing) y **la página queda viva ese mismo día**. Se manda el
-  link por WhatsApp: ya lo puede poner como link en bio. El objeto llega después,
-  con la página ya funcionando.
-- **Promesa con número.** "Tu página en 24 horas. Tu tarjeta en X días." Elegir X
-  según la capacidad real de impresión y cumplirlo siempre.
+> **Decidido en contra el 2026-09-19 (Stephano): nada de promesas de tiempo en el
+> sitio.** Ni "en 24 horas", ni "el mismo día", ni un plazo para el objeto. Dar de
+> alta a alguien todavía pasa por un PR y un deploy, así que el plazo no se puede
+> sostener, y prometerlo genera una deuda desde el primer día. Se queda lo que sí es
+> verdad hoy: sin app, sin cuenta, sin instalar. Los dos puntos tachados de abajo se
+> dejan escritos para no volver a proponerlos.
+
+- ~~**La página va primero.** Se contrata, se completa el formulario (el mismo
+  configurador de la landing) y **la página queda viva ese mismo día**.~~ La página
+  sigue yendo primero, y el link se manda por WhatsApp para que lo use como link en
+  bio; lo que no se publica es en cuánto tiempo.
+- ~~**Promesa con número.** "Tu página en 24 horas. Tu tarjeta en X días."~~
+  Se retoma si alguna vez el alta es automática y el plazo se puede cumplir siempre.
 - **Vista previa instantánea.** El configurador de la landing ya muestra "Tu primer
   hito / preview". Extenderlo para que el visitante escriba su nombre y vea su página
   antes de contratar. Gratificación inmediata, cero costo de servicio.
@@ -273,7 +280,8 @@ online. Se cobra por transferencia o el medio que ya usen; se factura a mano.
 - Qué pasa al dar de baja: la página deja de existir, o queda con un aviso "Hito
   inactivo" y el objeto sigue apuntando ahí. Recomendación: aviso, para que el
   objeto no quede muerto y la reactivación sea un mensaje.
-- Plazo de entrega del objeto desde que se confirma.
+- Plazo de entrega del objeto desde que se confirma. Se maneja en la conversación,
+  uno por uno: no se publica en el sitio (decidido el 2026-09-19).
 - Si el primer comercio se hace gratis o a costo, y por cuánto tiempo.
 - Daniela: confirmar si es una clienta nueva o se refiere a Dana Arcella.
 
@@ -325,7 +333,8 @@ Orden real de ejecución, del primer paso al último. Cada etapa deja algo usabl
 6. Diseño de la tarjeta Lite (plana, QR a `/o/<id>`) y prototipo del porta tarjetas
    NFC en 3D. **La tarjeta queda pendiente hasta cerrar la etapa 0.**
 7. Precios de Lite y Hito 1; regla de "un cambio por trimestre".
-8. Promesa de tiempo: "tu página en 24 horas, tu objeto en X días".
+8. ~~Promesa de tiempo: "tu página en 24 horas, tu objeto en X días".~~ **Decidido en
+   contra el 2026-09-19:** ver la nota de la sección 2.0d.
 
 ### Etapa 2 — Base de clientes
 

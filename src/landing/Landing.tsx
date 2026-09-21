@@ -706,7 +706,7 @@ export default function Landing({ onSceneFocusChange }: Props) {
       <a className={stickyVisible ? 'hito-sticky-cta is-visible' : 'hito-sticky-cta'} href="#demo">
         <strong>
           Pedí tu Hito
-          <small>Tu página en 24 horas · sin app</small>
+          <small>Sin app · sin cuenta</small>
         </strong>
         <span aria-hidden="true">↗</span>
       </a>
