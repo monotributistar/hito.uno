@@ -47,6 +47,7 @@ Cada chat tiene un **código de área** y un **número de sesión**.
 | **MOD** | Módulos del perfil | Explora plantillas de módulo y las documenta. No toca código |
 | **PAG** | Páginas de venta | Una página por segmento: software a medida, comercios, objetos |
 | **ARC** | Archivo | Documenta decisiones y estado. Trabaja local, fuera de GitHub |
+| **WID** | Motor de módulos | Construye el motor de módulos del perfil (catálogo, propiedades, portfolio, eventos) |
 | **OFE** | Oferta y clientes | Precios, tiers, altas y seguimiento de clientes |
 | **FAB** | Producción física | Modelado 3D, NFC, medidas y costos por pieza |
 
@@ -247,6 +248,18 @@ que llegue a ORQ, que decide el orden. Un solo lugar define las prioridades.
   una prueba real, precio o "consultá", y un solo botón a WhatsApp con el mensaje ya
   escrito.
 - **Regla:** una página sin foto propia ni algo concreto que ofrecer no se abre.
+
+### WID — Motor de módulos
+
+- **Misión:** un solo motor de módulos del perfil con varias pieles (catálogo,
+  propiedades, portfolio, eventos), servido desde nuestro dominio. Primer caso real:
+  Propiedades en el perfil de Dana.
+- **Toca:** sus archivos nuevos (`worker/modulos/`, `src/partner/modules/`) y el
+  registro de su ruta en `worker/index.ts`, avisado en el PR. Rama con prefijo `wid/`.
+- **No toca:** `wrangler.jsonc`, `worker/store.ts`, el CI ni el check sin hablarlo con
+  PLAT; el diseño final de cada piel (UX); qué módulos existen (MOD).
+- **Regla:** el Worker nunca arma la dirección de la planilla con datos del pedido; el
+  ID sale de `partners.json`.
 
 ### ARC — Archivo
 
