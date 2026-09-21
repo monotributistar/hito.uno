@@ -14,9 +14,14 @@
    celular funcione como se espera:
      (sin hash)  la propiedad
      #consulta   el formulario
-     #resumen    lo que quedo cargado */
+     #resumen    asi le llegaria al propietario
+
+   Las consultas de la visita se acumulan en memoria para mostrar la planilla
+   creciendo renglon por renglon. Solo en memoria: ni localStorage ni nada que
+   sobreviva a cerrar la pestaña. */
 
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { COLUMNAS, filaPlanilla, type Fila } from './planilla'
 import { PROPIEDAD } from './propiedad'
 import {
   FORMULARIO_VACIO,
@@ -51,9 +56,13 @@ function fechaLarga(iso: string): string {
     .replace(',', '')
 }
 
+/** Una consulta completada en esta visita: lo que se cargo y su renglon. */
+type Consulta = { datos: FormularioReserva; fila: Fila }
+
 export default function Reservas() {
   const [vista, setVista] = useState<Vista>(() => vistaDeHash(window.location.hash))
   const [datos, setDatos] = useState<FormularioReserva>(FORMULARIO_VACIO)
+  const [consultas, setConsultas] = useState<Consulta[]>([])
 
   useEffect(() => {
     const alCambiar = () => setVista(vistaDeHash(window.location.hash))
@@ -61,10 +70,10 @@ export default function Reservas() {
     return () => window.removeEventListener('hashchange', alCambiar)
   }, [])
 
-  // Sin datos cargados no hay resumen que mostrar (por ejemplo, al recargar).
+  // Sin consultas no hay nada que mostrarle al propietario (por ejemplo, al recargar).
   useEffect(() => {
-    if (vista === 'resumen' && !datos.nombre) window.location.hash = '#consulta'
-  }, [vista, datos.nombre])
+    if (vista === 'resumen' && consultas.length === 0) window.location.hash = '#consulta'
+  }, [vista, consultas.length])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -82,13 +91,14 @@ export default function Reservas() {
           datos={datos}
           onCambio={setDatos}
           onListo={() => {
+            setConsultas((previas) => [...previas, { datos, fila: filaPlanilla(datos, new Date()) }])
             window.location.hash = '#resumen'
           }}
         />
       ) : null}
-      {vista === 'resumen' && datos.nombre ? (
+      {vista === 'resumen' && consultas.length ? (
         <VistaResumen
-          datos={datos}
+          consultas={consultas}
           onOtra={() => {
             setDatos(FORMULARIO_VACIO)
             window.location.hash = '#consulta'
@@ -433,49 +443,120 @@ function diaSiguiente(iso: string): string {
   return hoyLocal(new Date(a, m - 1, d + 1))
 }
 
-/* --- El resumen ---------------------------------------------------------- */
+/* --- Asi le llegaria al propietario -------------------------------------- */
 
-/* Provisorio: el PR siguiente lo reemplaza por la vista "asi le llega al
-   propietario" (el renglon de su planilla y el aviso). Por ahora muestra lo
-   cargado, y dice con todas las letras que no se envio. */
-function VistaResumen({ datos, onOtra }: { datos: FormularioReserva; onOtra: () => void }) {
-  const n = noches(datos.entrada, datos.salida)
-  const personas = Number(datos.adultos) + Number(datos.menores)
+/* Tres partes, en el orden en que el propietario las viviria: lo que pidio la
+   persona, el renglon que le cae en su planilla (junto con los de las pruebas
+   anteriores de esta visita) y el aviso. */
+function VistaResumen({ consultas, onOtra }: { consultas: Consulta[]; onOtra: () => void }) {
+  const ultima = consultas[consultas.length - 1]
   return (
     <main className="demo-cuerpo">
-      <h1 className="demo-titulo">Así quedó la consulta</h1>
+      <h1 className="demo-titulo">Así le llegaría al propietario</h1>
       <p className="demo-aviso">En esta demo no se envió nada: nadie la va a recibir.</p>
-      <dl className="demo-resumen">
-        <dt>Quién</dt>
-        <dd>
-          {datos.nombre} · {datos.contacto}
-        </dd>
-        <dt>Cuándo</dt>
-        <dd>
-          Del {fechaLarga(datos.entrada)} al {fechaLarga(datos.salida)} ({n} {n === 1 ? 'noche' : 'noches'})
-        </dd>
-        <dt>Cuántos</dt>
-        <dd>{quienesViajan(Number(datos.adultos), Number(datos.menores), personas)}</dd>
-        {datos.llegada ? (
-          <>
-            <dt>Llegada</dt>
-            <dd>{datos.llegada}</dd>
-          </>
-        ) : null}
-        <dt>Mascota</dt>
-        <dd>{datos.mascota ? datos.mascotaCual : 'No'}</dd>
-        <dt>Cochera</dt>
-        <dd>{datos.cochera ? 'Sí' : 'No'}</dd>
-        {datos.comentario ? (
-          <>
-            <dt>Comentario</dt>
-            <dd>{datos.comentario}</dd>
-          </>
-        ) : null}
-      </dl>
+
+      <section className="demo-seccion" aria-labelledby="demo-pidio">
+        <h2 id="demo-pidio" className="demo-subtitulo">
+          Lo que pidió
+        </h2>
+        <Pedido datos={ultima.datos} />
+      </section>
+
+      <section className="demo-seccion" aria-labelledby="demo-planilla">
+        <h2 id="demo-planilla" className="demo-subtitulo">
+          Su planilla
+        </h2>
+        <p className="demo-ayuda">
+          Cada consulta cae como un renglón nuevo, ya ordenada.
+          {consultas.length > 1
+            ? ` Esta visita lleva ${consultas.length} consultas de prueba.`
+            : ' Probá otra y mirá cómo se suma.'}
+        </p>
+        <Planilla filas={consultas.map((c) => c.fila)} />
+      </section>
+
+      {/* PLACEHOLDER: el aviso al propietario. Stephano decidio (2026-09-21) no
+          mostrar ningun canal (ni email ni WhatsApp) hasta definirlo: el bloque
+          queda visible, atenuado y sin promesa. Con esta marca, la demo no sube
+          a produccion. */}
+      <section className="demo-seccion demo-placeholder" aria-label="Aviso al propietario, a definir">
+        <p className="demo-placeholder-texto">Aviso al propietario · a definir</p>
+      </section>
+
       <button className="demo-boton demo-boton--secundario" type="button" onClick={onOtra}>
         Probar otra consulta
       </button>
+      <a className="demo-volver demo-volver--abajo" href="#">
+        Volver a {PROPIEDAD.nombre}
+      </a>
     </main>
+  )
+}
+
+/** La consulta como la leeria una persona: fechas largas, sin abreviar. */
+function Pedido({ datos }: { datos: FormularioReserva }) {
+  const n = noches(datos.entrada, datos.salida)
+  const personas = Number(datos.adultos) + Number(datos.menores)
+  return (
+    <dl className="demo-resumen">
+      <dt>Quién</dt>
+      <dd>
+        {datos.nombre} · {datos.contacto}
+      </dd>
+      <dt>Cuándo</dt>
+      <dd>
+        Del {fechaLarga(datos.entrada)} al {fechaLarga(datos.salida)} ({n} {n === 1 ? 'noche' : 'noches'})
+      </dd>
+      <dt>Cuántos</dt>
+      <dd>{quienesViajan(Number(datos.adultos), Number(datos.menores), personas)}</dd>
+      {datos.llegada ? (
+        <>
+          <dt>Llegada</dt>
+          <dd>{datos.llegada}</dd>
+        </>
+      ) : null}
+      <dt>Mascota</dt>
+      <dd>{datos.mascota ? datos.mascotaCual : 'No'}</dd>
+      <dt>Cochera</dt>
+      <dd>{datos.cochera ? 'Sí' : 'No'}</dd>
+      {datos.comentario ? (
+        <>
+          <dt>Comentario</dt>
+          <dd>{datos.comentario}</dd>
+        </>
+      ) : null}
+    </dl>
+  )
+}
+
+/** La planilla del propietario, con el renglon mas nuevo marcado.
+
+    Es ancha a proposito: tiene las columnas que tendria su Google Sheet. En
+    el celular se desliza de costado DENTRO de su caja, sin que la pagina entera
+    se corra. */
+function Planilla({ filas }: { filas: Fila[] }) {
+  return (
+    <div className="demo-planilla" role="region" aria-label="Planilla del propietario" tabIndex={0}>
+      <table>
+        <thead>
+          <tr>
+            {COLUMNAS.map((c) => (
+              <th key={c} scope="col">
+                {c}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {filas.map((fila, i) => (
+            <tr key={i} className={i === filas.length - 1 ? 'demo-planilla-nueva' : undefined}>
+              {COLUMNAS.map((c) => (
+                <td key={c}>{fila[c]}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

@@ -250,7 +250,11 @@ propietario de alquiler temporario la abre en el celular, hace una consulta de
 prueba y ve cómo le quedaría su propia página.
 
 **No guarda ni manda nada.** Ni a una planilla, ni al almacén del Worker, ni a
-Google: al enviar, la misma página muestra lo que quedó cargado. Es pública y la
+Google: al enviar, la misma página muestra **así le llegaría al propietario**:
+lo que pidió la persona, el renglón que le caería en su planilla y el lugar del
+aviso. Las consultas de la visita se acumulan en esa planilla de mentira para que
+se vea cómo ordena cada pedido; viven solo en memoria y se borran al cerrar la
+pestaña. Es pública y la
 gente va a probar con sus datos reales, así que no hay que retenerlos; tampoco
 abre una puerta al spam ni carga el almacén. La franja de arriba lo dice siempre
 y el resumen dice "no se envió", nunca "enviado".
@@ -263,6 +267,14 @@ y el resumen dice "no se envió", nunca "enviado".
   en `src/demo/pruebas/`. El día de hoy se calcula con la hora **local** del
   celular: con la hora universal, en Argentina después de las 21 ya sería mañana y
   se rechazaría una llegada para hoy.
+- El renglón lo arma `src/demo/planilla.ts`, con pruebas: fechas como las escribe
+  una planilla (`05/10/2026`), `Sí`/`No` y nunca `true`/`false`, vacío y nunca
+  `undefined`. Una planilla se filtra y se ordena, así que cada columna tiene que
+  salir siempre igual.
+- **Placeholders** (marcados `PLACEHOLDER` en el código, regla del 2026-09-21: lo
+  que no se sabe va como placeholder y no sube a producción): el nombre de la casa,
+  hasta confirmar que no coincide con una real, y el aviso al propietario, que no
+  muestra ningún canal hasta que se defina.
 - Lleva `noindex`, al revés que las páginas comerciales: una casa que no existe no
   tiene que aparecer en Google. `check-paths` exige esa meta en todo lo que viva
   bajo `/demo/`.
