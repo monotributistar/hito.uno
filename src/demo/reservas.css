@@ -300,6 +300,92 @@
   overflow-wrap: anywhere;
 }
 
+/* --- Asi le llegaria al propietario ------------------------------------- */
+
+.demo-seccion {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.demo-seccion .demo-resumen {
+  margin: 0;
+}
+
+/* La planilla: ancha a proposito, con las columnas de un Google Sheet. En el
+   celular se desliza de costado dentro de su caja; la pagina no se corre. */
+.demo-planilla {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: #fff;
+}
+
+.demo-planilla:focus-visible {
+  outline: 2px solid var(--verde-profundo);
+  outline-offset: 2px;
+}
+
+.demo-planilla table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.demo-planilla th,
+.demo-planilla td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--borde);
+  border-right: 1px solid var(--borde);
+  text-align: left;
+}
+
+.demo-planilla th {
+  background: var(--superficie);
+  color: var(--verde-medio);
+  font-weight: 600;
+}
+
+/* El comentario puede ser largo: que corte en vez de estirar la planilla. */
+.demo-planilla td:last-child {
+  min-width: 12rem;
+  max-width: 20rem;
+  white-space: normal;
+}
+
+.demo-planilla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* El renglon que acaba de caer. */
+.demo-planilla-nueva td {
+  background: rgb(237 128 104 / 0.12);
+}
+
+/* PLACEHOLDER visual: el aviso al propietario todavia no esta definido.
+   Atenuado y con borde punteado para que no se lea como algo que funciona. */
+.demo-placeholder {
+  padding: 1rem;
+  border: 1.5px dashed var(--borde);
+  border-radius: var(--radio);
+  background: transparent;
+}
+
+.demo-placeholder-texto {
+  margin: 0;
+  color: var(--verde-medio);
+  opacity: 0.8;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.demo-volver--abajo {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
+}
+
 /* --- Pie ---------------------------------------------------------------- */
 
 .demo-pie {

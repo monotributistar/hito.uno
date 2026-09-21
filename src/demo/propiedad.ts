@@ -25,6 +25,9 @@ export type Propiedad = {
 }
 
 export const PROPIEDAD: Propiedad = {
+  // PLACEHOLDER: nombre inventado, sin confirmar que no coincida con una casa
+  // real de la zona. Lo confirma Stephano. Hasta entonces la demo no sube a
+  // produccion (regla del 2026-09-21: un placeholder no va a main).
   nombre: 'Casa Viento Norte',
   descripcion:
     'Una casa entre pinos, a pocas cuadras del mar. Pensada para una familia o un grupo chico que quiere descansar.',
