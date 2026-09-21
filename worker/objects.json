@@ -1,4 +1,5 @@
 {
+  "$comment2": "Los puertos `pg-*` no son objetos fisicos: son las paginas comerciales, para poder mandarlas por QR (en un folleto, en una vidriera) y contar cuanta gente entro por cada una. Van con dueño `hito`, que no es el slug de ningun perfil ni tiene token, asi que no aparecen en el panel de ningun cliente.",
   "$comment": "Semilla de puertos: cada objeto fisico lleva impreso hito.uno/o/<id> y esta tabla dice a donde lleva la primera vez. Despues manda el almacen del panel (worker/store.ts), que el cliente edita desde /panel/<token>. Cambiar `to` aca solo afecta a un objeto que todavia no se guardo nunca desde el panel. `label` es lo que ve el cliente en su panel: escribirlo como se lo nombraria en una conversacion. `kind` define la foto y el icono.",
   "objects": {
     "t-dana-01": {
@@ -24,6 +25,30 @@
       "label": "Tarjeta Lite",
       "kind": "tarjeta",
       "owner": "javier"
+    },
+    "pg-software": {
+      "to": "/software",
+      "label": "Página Software a medida",
+      "kind": "pagina",
+      "owner": "hito"
+    },
+    "pg-comercios": {
+      "to": "/comercios",
+      "label": "Página Comercios",
+      "kind": "pagina",
+      "owner": "hito"
+    },
+    "pg-personal": {
+      "to": "/personal",
+      "label": "Página Personal",
+      "kind": "pagina",
+      "owner": "hito"
+    },
+    "pg-objetos": {
+      "to": "/objetos",
+      "label": "Página Objetos",
+      "kind": "pagina",
+      "owner": "hito"
     }
   }
 }

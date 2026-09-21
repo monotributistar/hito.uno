@@ -144,11 +144,47 @@ El `npm run dev` de Vite no ejecuta el Worker, así que ahí no hay API.
 - quedan restos del versionado viejo (`v01`, `v02`, `LandingV0x`) en código o config;
 - el `src` de un `<script>` o una entrada de `vite.config.ts` apunta a un archivo
   que no existe;
-- **una foto declarada en `landing-data.ts` no está en `public/`**.
+- **una foto declarada en `landing-data.ts` no está en `public/`**;
+- un puerto de `objects.json` apunta a una ruta interna que no existe como página;
+- una página comercial lleva `noindex` (ver más abajo).
 
-Ese último es el que más rinde: una ruta mal escrita compila, buildea y se
+El de las fotos es el que más rinde: una ruta mal escrita compila, buildea y se
 despliega sin una sola queja, y solo deja un hueco en el carrusel. También avisa
-—sin frenar el build— de fotos que están en `public/` y nadie usa.
+—sin frenar el build— de fotos que están en `public/` y nadie usa, y de páginas
+sin `og:image`.
+
+Las rutas que el sitio sirve no están escritas a mano en el verificador: se
+deducen de las entradas de `vite.config.ts`, así que agregar una página las
+actualiza solas.
+
+## Páginas comerciales (`/software`, `/comercios`, `/personal`, `/objetos`)
+
+Una página por conversación: cuando le escribís a alguien, le mandás el link que
+habla de lo suyo y no la landing, que habla de todo.
+
+Cada página es **una entrada estática propia** (`software/index.html` y
+compañía), no una ruta resuelta por el Worker. El motivo es la vista previa: esos
+links se mandan por WhatsApp, y **WhatsApp no ejecuta React**, así que el título y
+la descripción tienen que estar en el HTML desde el build. Por lo mismo no llevan
+`noindex`: estas páginas sí se buscan y sí se comparten, al revés que los perfiles
+y el panel.
+
+El contenido de las cuatro vive en `src/paginas/paginas-data.ts` y lo dibuja un
+solo componente (`src/paginas/Pagina.tsx`), con una sola entrada de código
+(`main-pagina.tsx`) que elige la página por la ruta, como `/p/<slug>` hace con el
+perfil.
+
+**Agregar una página** son tres pasos y ninguno es tocar el Worker:
+
+1. una entrada en `PAGINAS` (`src/paginas/paginas-data.ts`), con su `ruta`;
+2. el HTML de entrada (`<ruta>/index.html`), copiando uno existente y cambiando
+   título, descripción y `og:url`;
+3. la línea en `vite.config.ts`.
+
+Cada página tiene además su **puerto** (`/o/pg-<nombre>` en `worker/objects.json`)
+para poder mandarla impresa o por QR y contar cuánta gente entró por ahí. Esos
+puertos van con dueño `hito`: no son objetos de un cliente y no aparecen en
+ningún panel.
 
 ## Perfiles partner (`/p/<slug>`)
 
