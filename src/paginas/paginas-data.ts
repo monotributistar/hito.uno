@@ -76,7 +76,7 @@ export const PAGINAS: Pagina[] = [
       'Si alquilás tu casa o tus cabañas por temporada, o tenés un hotel chico, los pedidos llegan por WhatsApp, por Instagram y por teléfono, y cuesta tenerlos a la vista. Armamos una página para tu alojamiento con un formulario de reserva, y cada pedido entra ordenado a una planilla de Google que ya sabés usar.',
     imagen: {
       /* Criterio de Stephano: captura real de la demo, nada generado. */
-      // PLACEHOLDER: falta la captura; cuando exista, poner su ruta en `src`.
+      src: '/images/paginas/software-demo-doble.webp',
       descripcion:
         'Dos capturas reales de hito.uno/demo/reservas en un celular, lado a lado. Izquierda: el formulario de Casa Viento Norte completo (fechas, 4 personas, con mascota). Derecha: la vista "Así le llegaría al propietario" con esa misma consulta. Arriba de las dos se lee el aviso "Demo · propiedad ficticia".',
     },
