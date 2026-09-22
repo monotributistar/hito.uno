@@ -70,9 +70,31 @@
 
 /* --- Fotos -------------------------------------------------------------- */
 
+/* Las fotos van en fila y se deslizan de costado, como en cualquier aviso de
+   alquiler. Apiladas, dos fotos de 3:2 empujaban el nombre de la casa a mitad
+   de pantalla y el boton Consultar quedaba fuera de la primera vista en un
+   celular. La segunda asoma por el borde para que se entienda que hay mas. */
 .demo-fotos {
   display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 88%;
   gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.demo-fotos::-webkit-scrollbar {
+  display: none;
+}
+
+.demo-fotos > .demo-foto {
+  scroll-snap-align: start;
+}
+
+/* Con una sola foto, ocupa todo el ancho. */
+.demo-fotos:has(> .demo-foto:only-child) {
+  grid-auto-columns: 100%;
 }
 
 .demo-foto {
@@ -90,9 +112,36 @@
   object-fit: cover;
 }
 
-/* Sin foto todavia: el espacio queda reservado para que la pagina no salte. */
-.demo-foto--vacia {
-  background: linear-gradient(160deg, var(--superficie), var(--borde));
+/* Foto que todavia no existe: placeholder con la descripcion de lo que va a
+   mostrar. Borde punteado y sin fondo de foto, como el del aviso al
+   propietario, para que no se lea como una imagen real. */
+.demo-foto--pendiente {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border: 1.5px dashed var(--borde);
+  background: transparent;
+  text-align: center;
+}
+
+.demo-foto--pendiente figcaption {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 22rem;
+}
+
+.demo-foto-pendiente-rotulo {
+  color: var(--verde-medio);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.demo-foto-pendiente-texto {
+  color: var(--verde-medio);
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .demo-foto-nota {

@@ -152,21 +152,32 @@ function VistaPropiedad() {
   )
 }
 
-/** Lugar para una o dos fotos. Mientras no existan, un fondo neutro con el
-    espacio reservado: la pagina no salta cuando lleguen. */
+/** Una o dos fotos. Cada una ocupa su lugar con la misma proporcion haya o no
+    imagen, asi la pagina no salta cuando lleguen.
+
+    Una foto sin imagen se muestra como placeholder con la descripcion de lo
+    que va a mostrar, y el aviso "Imagen pendiente" a la vista: nunca como si
+    fuera una foto real. La marca de placeholder vive en el dato de cada foto
+    (propiedad.ts), no aca: este componente sirve igual el dia que esten todas,
+    y una marca aca frenaria el pase a produccion para siempre. */
 function Fotos() {
-  const fotos = PROPIEDAD.fotos
-  if (!fotos.length) {
-    return <div className="demo-foto demo-foto--vacia" aria-hidden="true" />
-  }
   return (
     <div className="demo-fotos">
-      {fotos.slice(0, 2).map((f) => (
-        <figure key={f.src} className="demo-foto">
-          <img src={f.src} alt={f.alt} loading="lazy" />
-          <figcaption className="demo-foto-nota">Imagen ilustrativa</figcaption>
-        </figure>
-      ))}
+      {PROPIEDAD.fotos.slice(0, 2).map((f) =>
+        f.src ? (
+          <figure key={f.descripcion} className="demo-foto">
+            <img src={f.src} alt={f.alt} loading="lazy" />
+            <figcaption className="demo-foto-nota">Imagen ilustrativa</figcaption>
+          </figure>
+        ) : (
+          <figure key={f.descripcion} className="demo-foto demo-foto--pendiente">
+            <figcaption>
+              <span className="demo-foto-pendiente-rotulo">Imagen pendiente</span>
+              <span className="demo-foto-pendiente-texto">{f.descripcion}</span>
+            </figcaption>
+          </figure>
+        ),
+      )}
     </div>
   )
 }
