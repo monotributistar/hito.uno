@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
+import Foto from '../compartido/Foto'
 import {
   doors,
   layers,
@@ -209,10 +210,11 @@ export default function Landing({ onSceneFocusChange }: Props) {
                 />
               ) : (
                 /* Sin imagen real todavia: se ve el hueco y que va a ir ahi. */
-                <div className="hito-door-photo hito-door-photo--pendiente" aria-hidden="true">
-                  <span>Imagen pendiente</span>
-                  {door.placeholder}
-                </div>
+                <Foto
+                  descripcion={door.placeholder ?? ''}
+                  proporcion="16 / 10"
+                  className="hito-door-photo"
+                />
               )}
               <div className="hito-door-head">
                 <p className="hito-door-label">{door.label}</p>
