@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
+import Foto from '../compartido/Foto'
 import {
   doors,
   layers,
@@ -191,26 +192,30 @@ export default function Landing({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      {/* Tres puertas: orientan por contexto y dejan el carrusel en el
-          soporte que corresponde. Cada una baja a una seccion que ya existe. */}
+      {/* Cuatro puertas: una por tipo de conversacion. Cada una lleva a su
+          pagina, que es el link que se manda por WhatsApp. */}
       <section className="hito-doors" id="puertas" aria-label="Elegí tu contexto">
-        <p className="card-eyebrow">Tres puertas / ¿cuál es la tuya?</p>
+        <p className="card-eyebrow">Cuatro puertas / ¿cuál es la tuya?</p>
         <div className="hito-doors-grid">
           {doors.map((door) => (
-            <a
-              key={door.key}
-              className={door.status === 'Foco comercial' ? 'hito-door hito-door--focus' : 'hito-door'}
-              href={door.href}
-              onClick={() => selectObject(door.object)}
-            >
-              <img
-                className="hito-door-photo"
-                src={door.photo.src}
-                alt={door.photo.alt}
-                loading="lazy"
-                decoding="async"
-                style={photoStyle(door.photo)}
-              />
+            <a key={door.key} className="hito-door" href={door.href}>
+              {door.photo ? (
+                <img
+                  className="hito-door-photo"
+                  src={door.photo.src}
+                  alt={door.photo.alt}
+                  loading="lazy"
+                  decoding="async"
+                  style={photoStyle(door.photo)}
+                />
+              ) : (
+                /* Sin imagen real todavia: se ve el hueco y que va a ir ahi. */
+                <Foto
+                  descripcion={door.placeholder ?? ''}
+                  proporcion="16 / 10"
+                  className="hito-door-photo"
+                />
+              )}
               <div className="hito-door-head">
                 <p className="hito-door-label">{door.label}</p>
                 <span className="hito-door-status">{door.status}</span>

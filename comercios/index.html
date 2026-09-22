@@ -10,12 +10,18 @@
     <meta name="description" content="Puesta a punto de tu local: visita, fotos, ficha de Google, carta digital y el objeto instalado." />
     <!-- La vista previa al compartir por WhatsApp se arma con estas etiquetas, y
          se resuelven en el build: WhatsApp no ejecuta React, asi que el texto
-         tiene que estar en el HTML. Falta og:image, que necesita un JPEG por
-         pagina: es un pedido a UX 1 (WhatsApp no muestra webp). -->
+         tiene que estar en el HTML. og:image va en JPEG porque WhatsApp no
+         muestra webp, y con su tamaño declarado para que no recorte. -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://hito.uno/comercios" />
     <meta property="og:title" content="Comercios · Hito.uno" />
     <meta property="og:description" content="Puesta a punto de tu local: visita, fotos, ficha de Google, carta digital y el objeto instalado." />
+    <!-- PLACEHOLDER: imagen provisoria, muestra una pieza que todavia no esta impresa. -->
+    <meta property="og:image" content="https://hito.uno/images/og/comercios.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Un apoyavasos Hito.uno sobre la barra de un bar, junto a un vaso y una vela" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Comercios · Hito.uno</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />

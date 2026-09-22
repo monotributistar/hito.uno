@@ -10,12 +10,17 @@
     <meta name="description" content="Desarrollo a medida y servidores propios, con mantenimiento por abono." />
     <!-- La vista previa al compartir por WhatsApp se arma con estas etiquetas, y
          se resuelven en el build: WhatsApp no ejecuta React, asi que el texto
-         tiene que estar en el HTML. Falta og:image, que necesita un JPEG por
-         pagina: es un pedido a UX 1 (WhatsApp no muestra webp). -->
+         tiene que estar en el HTML. og:image va en JPEG porque WhatsApp no
+         muestra webp, y con su tamaño declarado para que no recorte. -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://hito.uno/software" />
     <meta property="og:title" content="Software a medida · Hito.uno" />
     <meta property="og:description" content="Desarrollo a medida y servidores propios, con mantenimiento por abono." />
+    <meta property="og:image" content="https://hito.uno/images/og/software.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dos pantallas de la demo de reservas: el formulario del huesped y la vista con la consulta ya ordenada en la planilla del propietario" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Software a medida · Hito.uno</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />

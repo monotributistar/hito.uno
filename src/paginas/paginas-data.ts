@@ -76,7 +76,7 @@ export const PAGINAS: Pagina[] = [
       'Si alquilás tu casa o tus cabañas por temporada, o tenés un hotel chico, los pedidos llegan por WhatsApp, por Instagram y por teléfono, y cuesta tenerlos a la vista. Armamos una página para tu alojamiento con un formulario de reserva, y cada pedido entra ordenado a una planilla de Google que ya sabés usar.',
     imagen: {
       /* Criterio de Stephano: captura real de la demo, nada generado. */
-      // PLACEHOLDER: falta la captura; cuando exista, poner su ruta en `src`.
+      src: '/images/paginas/software-demo-doble.webp',
       descripcion:
         'Dos capturas reales de hito.uno/demo/reservas en un celular, lado a lado. Izquierda: el formulario de Casa Viento Norte completo (fechas, 4 personas, con mascota). Derecha: la vista "Así le llegaría al propietario" con esa misma consulta. Arriba de las dos se lee el aviso "Demo · propiedad ficticia".',
     },
@@ -114,7 +114,10 @@ export const PAGINAS: Pagina[] = [
     imagen: {
       /* Criterio de Stephano: foto de ambiente, sin piezas nuestras (ninguna
          esta impresa todavia). */
-      // PLACEHOLDER: foto a generar; cuando exista, poner su ruta en `src`.
+      // PLACEHOLDER: provisoria. Muestra un apoyavasos, que todavia no esta
+      // impreso; Stephano la deja para ver como queda la pagina y la cambia
+      // cuando pula los detalles (2026-09-22). La foto que va es esta:
+      src: '/images/products/apoyavasos/apoyavasos-01.webp',
       descripcion:
         'Foto de ambiente: el salón de un café chico de Pinamar a media mañana, antes de la temporada. Mesas de madera vacías, luz natural por el ventanal, el dueño acomodando sillas al fondo. Sin tarjetas, placas ni objetos Hito a la vista. Formato 3:2, tercio izquierdo despejado.',
     },
@@ -154,7 +157,7 @@ export const PAGINAS: Pagina[] = [
       /* Criterio de Stephano: la imagen de Personal es una captura real del
          perfil, no una escena armada. ORQ 1 la saca para la puerta de la home
          y la deja en public/images/puertas/; va la misma. */
-      // PLACEHOLDER: falta la captura; cuando exista, poner su ruta en `src`.
+      src: '/images/puertas/personal-perfil.webp',
       descripcion:
         'Captura real de la página hito.uno/p/stephano vista en un celular: la foto, el nombre, el botón de WhatsApp y Guardar contacto.',
     },
@@ -194,7 +197,10 @@ export const PAGINAS: Pagina[] = [
     imagen: {
       /* Criterio de Stephano: render, no foto, y solo de las dos piezas con
          diseño 3D. La descripcion lo dice para que nadie la genere como foto. */
-      // PLACEHOLDER: render a generar; cuando exista, poner su ruta en `src`.
+      // PLACEHOLDER: provisoria. Es una de las imagenes de producto que ya
+      // estaban en el sitio; ninguna pieza esta impresa. Se cambia por el
+      // render cuando exista (Stephano, 2026-09-22). El render que va es este:
+      src: '/images/products/tarjeta/tarjeta-06.webp',
       descripcion:
         'Render 3D, no foto: la tarjeta Lite con su código QR y el porta tarjetas con NFC, lado a lado sobre fondo crema #eef1e8, luz suave de estudio. Logo "Hito.uno" completo en las dos piezas. Nada de apoyavasos, placas ni llaveros: todavía no tienen diseño.',
     },
