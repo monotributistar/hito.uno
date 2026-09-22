@@ -309,8 +309,14 @@ export const doors: Door[] = [
     href: '/comercios',
     // PLACEHOLDER: estado a confirmar.
     status: 'Puesta a punto',
-    // PLACEHOLDER: imagen a generar al final.
-    placeholder: 'Foto de ambiente: la barra o una mesa de un local de Cariló con luz de tarde, sin ninguna pieza Hito a la vista.',
+    // PLACEHOLDER: provisoria, muestra una pieza que no esta impresa. Va hasta
+    // que exista la foto de ambiente descripta en /comercios.
+    photo: {
+      src: '/images/products/apoyavasos/apoyavasos-01.webp',
+      alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
+      caption: 'Apoyavasos · barra',
+      focus: '55% 62%',
+    },
   },
   {
     key: 'objetos',
@@ -321,8 +327,14 @@ export const doors: Door[] = [
     examples: 'Tarjeta · porta tarjetas · llavero',
     href: '/objetos',
     status: 'En diseño',
-    // PLACEHOLDER: imagen a generar al final.
-    placeholder: 'Render 3D de la tarjeta Lite y el porta tarjetas, presentado como render: todavía no hay piezas impresas.',
+    // PLACEHOLDER: provisoria, muestra una pieza que no esta impresa. Va hasta
+    // que exista el render descripto en /objetos.
+    photo: {
+      src: '/images/products/tarjeta/tarjeta-06.webp',
+      alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR',
+      caption: 'Tarjeta · frente y dorso',
+      focus: '50% 55%',
+    },
   },
   {
     key: 'software',
