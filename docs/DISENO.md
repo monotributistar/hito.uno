@@ -205,6 +205,17 @@ diseño se mantiene en un solo lugar.
 2. **Título con el problema de esa persona**, no con la tecnología. "Tu local listo
    antes del verano", no "Soluciones NFC para comercios".
 3. **Entrada**: un párrafo corto, opcional.
+   - **Foto principal**, opcional (campo `imagen`), dibujada con
+     `src/compartido/Foto.tsx`, el mismo componente que usan las puertas de la home y
+     cualquier otro hueco de foto del sitio. Con `src` se ve la foto (3:2 por defecto,
+     webp). **Sin `src` se ve un recuadro punteado con la proporción final y la
+     descripción de lo que va a ir adentro**: así el hueco se ve y ya está escrito el
+     pedido para generarla. Stephano decidió el 2026-09-21 que las imágenes se
+     generan al final; hasta entonces, toda imagen va así, y el renglón del dato lleva
+     la marca `PLACEHOLDER`. Criterio por página (Stephano, 2026-09-21): Software, captura
+     real de la demo; Personal, captura real del perfil; Objetos, render solo de la
+     Lite y el porta tarjetas, presentado como render; Comercios, un ambiente sin
+     piezas nuestras. Si es una foto de escena, sigue `fotografia-soportes.md`.
 4. **Qué incluye**: lista corta y numerada, con el mismo círculo coral de la landing.
    Cinco ítems como máximo; si hacen falta más, la página está hablando de dos cosas.
 5. **Prueba**: una foto real de un objeto (3:2, con epígrafe) o un enlace a algo que
