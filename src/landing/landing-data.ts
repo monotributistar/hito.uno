@@ -294,9 +294,8 @@ export const doors: Door[] = [
     status: 'Página disponible',
     photo: {
       src: '/images/puertas/personal-perfil.webp',
-      alt: 'Captura del perfil de muestra en un celular: foto, nombre, WhatsApp, Instagram y los botones Guardar contacto y Compartir',
+      alt: 'Primer plano del perfil de muestra en un celular: la foto, el nombre y el rubro',
       caption: 'Perfil de muestra · captura real',
-      focus: '50% 30%',
     },
   },
   {
@@ -347,9 +346,8 @@ export const doors: Door[] = [
     status: 'A medida',
     photo: {
       src: '/images/puertas/software-demo.webp',
-      alt: 'Captura de la demo de reservas en un celular: la consulta de un huésped y la planilla del propietario con dos renglones',
+      alt: 'Primer plano de la demo de reservas: "Así le llegaría al propietario", con el aviso de que en la demo no se envía nada',
       caption: 'Demo de reservas · captura real',
-      focus: '50% 20%',
     },
   },
 ]
