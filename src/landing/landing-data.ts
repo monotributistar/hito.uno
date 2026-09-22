@@ -316,7 +316,8 @@ export const doors: Door[] = [
     key: 'objetos',
     label: 'Objetos',
     title: 'Dale una capa digital a las cosas.',
-    description: 'Tarjetas, llaveros y piezas para el local que abren una página al acercar el celular.',
+    // Igual que /objetos: solo piezas personales (regla de segmentos).
+    description: 'Tarjeta, porta tarjetas y llavero: se apoyan en el celular y abren tu página.',
     examples: 'Tarjeta · porta tarjetas · llavero',
     href: '/objetos',
     status: 'En diseño',
