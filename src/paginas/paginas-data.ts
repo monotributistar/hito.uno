@@ -103,11 +103,14 @@ export const PAGINAS: Pagina[] = [
     },
   },
   {
-    // PLACEHOLDER: copy provisorio de PLAT 1, falta el de PAG 1.
+    /* Puesta a punto pre-temporada para un local de Cariló o Pinamar. El apuro
+       es el verano, pero no se promete llegar a tiempo: nada de plazos
+       (Stephano, 2026-09-19). Solo locales: nada de tarjetas personales. */
     ruta: '/comercios',
     nombre: 'Comercios · puesta a punto',
-    titulo: 'Tu local listo antes del verano',
-    entrada: 'Visita, fotos, ficha de Google, carta digital y el objeto instalado.',
+    titulo: 'En verano te buscan en el celular antes de pasar por la puerta',
+    entrada:
+      'Quien llega de vacaciones elige dónde comer o comprar mirando Google Maps, las reseñas y la carta. Vamos a tu local, lo dejamos bien presentado en todos esos lugares y le mostramos a tu equipo cómo mantenerlo.',
     imagen: {
       /* Criterio de Stephano: foto de ambiente, sin piezas nuestras (ninguna
          esta impresa todavia). */
@@ -116,14 +119,25 @@ export const PAGINAS: Pagina[] = [
         'Foto de ambiente: el salón de un café chico de Pinamar a media mañana, antes de la temporada. Mesas de madera vacías, luz natural por el ventanal, el dueño acomodando sillas al fondo. Sin tarjetas, placas ni objetos Hito a la vista. Formato 3:2, tercio izquierdo despejado.',
     },
     incluye: [
-      'Visita al local',
-      'Fotos del lugar',
-      'Ficha de Google al día',
-      'Carta digital',
-      'Objeto instalado y capacitación',
+      'Una visita al local para ver cómo trabajás',
+      'Fotos del lugar, para Google y para tu página',
+      'Tu ficha de Google al día: horarios, teléfono, fotos y reseñas',
+      'Tu carta o catálogo en el celular, que se cambia sin reimprimir',
+      /* PLACEHOLDER: ninguna pieza de local esta impresa (apoyavasos, placa y
+         recibidor son teoricos, 2026-09-19). Falta que Stephano diga que
+         objeto va y si se puede ofrecer ya. */
+      'Un objeto Hito instalado y probado en tu local',
+      'Una capacitación corta para tu equipo',
     ],
+    /* PLACEHOLDER: prueba. No hay todavia un local con la puesta a punto hecha.
+       Sin prueba la pagina no deberia abrirse (hoja de planteo). Opciones para
+       Stephano: una demo marcada como demo (como /demo/reservas), o el primer
+       local hecho a costo a cambio de mostrarlo (OFERTA.md, seccion 3). */
     precio: '',
-    whatsapp: { telefono: TELEFONO, mensaje: 'Hola, quiero reservar la visita para mi local.' },
+    whatsapp: {
+      telefono: TELEFONO,
+      mensaje: 'Hola, tengo un local y quiero dejarlo listo para la temporada.',
+    },
   },
   {
     /* Copy de UX 1 (2026-09-21). Le habla a quien se presenta o vende por su
