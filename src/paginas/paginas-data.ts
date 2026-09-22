@@ -101,7 +101,7 @@ export const PAGINAS: Pagina[] = [
       /* Criterio de Stephano: la imagen de Personal es una captura real del
          perfil, no una escena armada. ORQ 1 la saca para la puerta de la home
          y la deja en public/images/puertas/; va la misma. */
-      // PLACEHOLDER: falta la captura; cuando exista, poner su ruta en `src`.
+      src: '/images/puertas/personal-perfil.webp',
       descripcion:
         'Captura real de la página hito.uno/p/stephano vista en un celular: la foto, el nombre, el botón de WhatsApp y Guardar contacto.',
     },
