@@ -608,7 +608,7 @@
   }
 }
 
-/* --- Tres puertas ------------------------------------------------------- */
+/* --- Cuatro puertas ----------------------------------------------------- */
 
 .hito-doors {
   padding: 6vh 0 8vh;
@@ -616,7 +616,7 @@
 
 .hito-doors-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -636,10 +636,6 @@
 .hito-door:focus-visible {
   border-color: #17383a;
   transform: translateY(-2px);
-}
-
-.hito-door--focus {
-  border-color: #ed8068;
 }
 
 .hito-door-head {
@@ -665,11 +661,6 @@
   font: 400 0.56rem "Space Mono", monospace;
   letter-spacing: 0.06em;
   white-space: nowrap;
-}
-
-.hito-door--focus .hito-door-status {
-  border-color: #ed8068;
-  color: #ed8068;
 }
 
 .hito-door h3 {
@@ -984,6 +975,29 @@
   aspect-ratio: 16 / 10;
   object-fit: cover;
   border-bottom: 1px solid rgba(23, 56, 58, 0.18);
+}
+
+/* Puerta sin imagen real todavia: mismo tamaño que la foto, con la
+   descripcion de lo que va a ir. Se ve como hueco a proposito, no como
+   una foto de relleno. */
+.hito-door-photo--pendiente {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 18px 22px;
+  background:
+    repeating-linear-gradient(45deg, rgba(23, 56, 58, 0.06) 0 1px, transparent 1px 12px),
+    #e2e8df;
+  color: #315f63;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.hito-door-photo--pendiente span {
+  color: #17383a;
+  font: 700 0.62rem "Space Mono", monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* Stage del carrusel para un soporte sin fotos: trama cartografica y el

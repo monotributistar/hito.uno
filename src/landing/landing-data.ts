@@ -255,27 +255,31 @@ export const stepsWithout = [
   'Hacer la acción',
 ]
 
-/* --- Tres puertas ---
-   Orientan por contexto antes de que el visitante lea nada mas. Cada puerta
-   lleva a una seccion que ya existe y deja el carrusel en el soporte que
-   corresponde: no hay contenido nuevo que mantener detras. */
-export type DoorKey = 'personal' | 'local' | 'objeto'
+/* --- Cuatro puertas ---
+   Una por tipo de conversacion. Cada puerta lleva a su pagina (/personal,
+   /comercios, /objetos, /software), que es el link que Stephano manda por
+   WhatsApp: la home las presenta y la pagina cuenta el resto.
+
+   Imagenes, con el criterio que decidio Stephano (2026-09-21): solo capturas
+   reales de lo que existe (el perfil de muestra y la demo de reservas). Donde
+   no hay nada real que mostrar, un recuadro con la descripcion de lo que va a
+   ir, nunca una foto que haga parecer impresa una pieza que no existe. */
+export type DoorKey = 'personal' | 'comercio' | 'objetos' | 'software'
 
 export type Door = {
   key: DoorKey
   label: string
   title: string
   description: string
-  /** Que hay hoy para ese contexto, en pocas palabras. */
+  /** Que hay para ese contexto, en pocas palabras. */
   examples: string
-  /** Seccion de la landing a la que baja. */
+  /** Pagina a la que lleva. Tiene que ser una de las rutas del build. */
   href: string
-  /** Soporte que queda seleccionado en el carrusel al elegir la puerta. */
-  object: ObjectKey
-  /** Estado honesto: lo que se puede pedir hoy vs lo que se esta armando. */
-  status: 'Disponible hoy' | 'Foco comercial' | 'En desarrollo'
-  /** Foto arriba de la tarjeta. Reusa las de producto que ya estan en public/. */
-  photo: Photo
+  /** Estado honesto de lo que se ofrece en esa puerta. */
+  status: string
+  /** Captura real. Si no hay, va `placeholder` con la descripcion de la imagen. */
+  photo?: Photo
+  placeholder?: string
 }
 
 export const doors: Door[] = [
@@ -283,48 +287,56 @@ export const doors: Door[] = [
     key: 'personal',
     label: 'Personal',
     title: 'Tu información, siempre a mano.',
-    description: 'Una tarjeta que deja tu contacto guardado y una página tuya que vive en hito.uno.',
+    description: 'Una tarjeta que deja tu contacto guardado y una página tuya que vive en Hito.uno.',
     examples: 'Tarjeta · llavero · página personal',
-    href: '#demo',
-    object: 'tarjeta',
-    status: 'Disponible hoy',
+    href: '/personal',
+    // PLACEHOLDER: decia "Disponible hoy", pero no hay ninguna pieza impresa. La pagina si existe.
+    status: 'Página disponible',
     photo: {
-      src: '/images/products/tarjeta/tarjeta-06.webp',
-      alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR y la leyenda "acercá tu tarjeta para conectar"',
-      caption: 'Tarjeta · frente y dorso',
-      focus: '50% 55%',
+      src: '/images/puertas/personal-perfil.webp',
+      alt: 'Captura del perfil de muestra en un celular: foto, nombre, WhatsApp, Instagram y los botones Guardar contacto y Compartir',
+      caption: 'Perfil de muestra · captura real',
+      focus: '50% 30%',
     },
   },
   {
-    key: 'local',
-    label: 'Local',
-    title: 'Hacé más simple tu espacio.',
-    description: 'Objetos en la mesa, la pared o el mostrador que abren el menú, el Wi-Fi o las reseñas sin que nadie pregunte.',
-    examples: 'Apoyavasos · placa · recibidor',
-    href: '#soportes',
-    object: 'apoyavasos',
-    status: 'Foco comercial',
-    photo: {
-      src: '/images/products/apoyavasos/apoyavasos-01.webp',
-      alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
-      caption: 'Apoyavasos · barra',
-      focus: '55% 62%',
-    },
+    key: 'comercio',
+    label: 'Comercio',
+    // PLACEHOLDER: titulo y descripcion a confirmar con la pagina /comercios que escribe PAG 1.
+    title: 'Tu local, listo para la temporada.',
+    description: 'Ficha de Google, reseñas, carta o catálogo digital y un objeto instalado y probado en el local.',
+    examples: 'Ficha de Google · carta digital · reseñas',
+    href: '/comercios',
+    // PLACEHOLDER: estado a confirmar.
+    status: 'Puesta a punto',
+    // PLACEHOLDER: imagen a generar al final.
+    placeholder: 'Foto de ambiente: la barra o una mesa de un local de Cariló con luz de tarde, sin ninguna pieza Hito a la vista.',
   },
   {
-    key: 'objeto',
-    label: 'Objeto',
+    key: 'objetos',
+    label: 'Objetos',
     title: 'Dale una capa digital a las cosas.',
-    description: 'Llaves, productos y equipos que cuentan lo que hay que saber de ellos al acercar el celular.',
-    examples: 'Llave · producto · equipo',
-    href: '#soportes',
-    object: 'llavero',
-    status: 'En desarrollo',
+    description: 'Tarjetas, llaveros y piezas para el local que abren una página al acercar el celular.',
+    examples: 'Tarjeta · porta tarjetas · llavero',
+    href: '/objetos',
+    status: 'En diseño',
+    // PLACEHOLDER: imagen a generar al final.
+    placeholder: 'Render 3D de la tarjeta Lite y el porta tarjetas, presentado como render: todavía no hay piezas impresas.',
+  },
+  {
+    key: 'software',
+    label: 'Software a medida',
+    // PLACEHOLDER: titulo y descripcion a confirmar con la pagina /software que escribe PAG 1.
+    title: 'Tus reservas, ordenadas.',
+    description: 'Una página para tu alojamiento con un formulario que deja cada consulta en una planilla que ya sabés usar.',
+    examples: 'Reservas · formularios · planillas',
+    href: '/software',
+    status: 'A medida',
     photo: {
-      src: '/images/products/llavero/llavero-01.webp',
-      alt: 'Llavero Hito.uno azul colgado de una llave, sobre una superficie de piedra con luz cálida',
-      caption: 'Llavero · con la llave',
-      focus: '60% 55%',
+      src: '/images/puertas/software-demo.webp',
+      alt: 'Captura de la demo de reservas en un celular: la consulta de un huésped y la planilla del propietario con dos renglones',
+      caption: 'Demo de reservas · captura real',
+      focus: '50% 20%',
     },
   },
 ]
