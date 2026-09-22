@@ -167,11 +167,16 @@ export const PAGINAS: Pagina[] = [
     },
   },
   {
-    // PLACEHOLDER: copy provisorio de PLAT 1, falta el de PAG 1.
+    /* Solo piezas personales: la regla de segmentos (DISENO.md, 2026-09-15)
+       deja afuera apoyavasos, placa y recibidor, que ademas son teoricos. Si
+       algun dia existen, van en /comercios. Estado real (Stephano,
+       2026-09-19): ninguna pieza esta impresa; con diseño 3D solo la tarjeta
+       Lite y el porta tarjetas. Nada de esta pagina puede sugerir lo contrario. */
     ruta: '/objetos',
     nombre: 'Objetos',
-    titulo: 'Las piezas, una por una',
-    entrada: 'Tarjeta, llavero, porta tarjetas, apoyavasos, placa y recibidor.',
+    titulo: 'Un objeto que se apoya en el celular y abre lo tuyo',
+    entrada:
+      'Los diseñamos e imprimimos en 3D nosotros, en Cariló. Cada objeto lleva impresa una dirección que no cambia, y vos elegís a dónde lleva: tu página, tu WhatsApp o lo que quieras mostrar ese mes. Si cambiás de idea, no hay que reimprimir nada.',
     imagen: {
       /* Criterio de Stephano: render, no foto, y solo de las dos piezas con
          diseño 3D. La descripcion lo dice para que nadie la genere como foto. */
@@ -179,9 +184,21 @@ export const PAGINAS: Pagina[] = [
       descripcion:
         'Render 3D, no foto: la tarjeta Lite con su código QR y el porta tarjetas con NFC, lado a lado sobre fondo crema #eef1e8, luz suave de estudio. Logo "Hito.uno" completo en las dos piezas. Nada de apoyavasos, placas ni llaveros: todavía no tienen diseño.',
     },
-    incluye: ['Tarjeta', 'Llavero', 'Porta tarjetas', 'Apoyavasos', 'Placa', 'Recibidor'],
+    incluye: [
+      'Tarjeta Lite: plana, con código QR, para repartir',
+      'Porta tarjetas: lleva el chip y tus tarjetas adentro; se abre acercando el celular',
+      // PLACEHOLDER: el llavero esta listo para hacer pero sin prototipo. Falta que Stephano diga si se ofrece ya.
+      'Llavero: con chip, para tener tu página siempre encima',
+      'Tu panel para cambiar a dónde lleva cada objeto',
+    ],
+    /* PLACEHOLDER: prueba. No hay piezas impresas ni fotos reales, y la imagen
+       es un render. Segun la hoja de planteo, sin prueba la pagina no se abre:
+       esta pagina deberia quedar en dev hasta tener el primer prototipo. */
     precio: '',
-    whatsapp: { telefono: TELEFONO, mensaje: 'Hola, quiero consultar por un objeto.' },
+    whatsapp: {
+      telefono: TELEFONO,
+      mensaje: 'Hola, vi los objetos de Hito y quiero consultar.',
+    },
   },
 ]
 
