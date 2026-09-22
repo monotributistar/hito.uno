@@ -6,7 +6,7 @@
    quien ya entendio y quiere ver las piezas.
 
    ESTE ARCHIVO ES EL CONTRATO, no el contenido. Los tipos de abajo dicen que
-   campos tiene una pagina; el texto que esta cargado es PROVISORIO, lo minimo
+   campos tiene una pagina; el texto provisorio lleva la marca de pendiente que busca ORQ, lo minimo
    para que la pagina se pueda abrir y probar. El copy y el diseño los terminan
    UX 1 y PAG 1: se escriben aca, en `PAGINAS`, y en el componente `Pagina.tsx`.
    Agregar una pagina es sumar una entrada aca, un HTML de entrada y una linea en
@@ -60,22 +60,61 @@ export type Pagina = {
 /** Telefono de Hito. El mismo que ya usa el perfil de Stephano. */
 const TELEFONO = '+5492254590762'
 
-/* PROVISORIO: estructura con lo minimo. El copy es de UX 1 y PAG 1. */
+/* Lo que lleva la marca de pendiente no esta confirmado y no pasa a main.
+   El copy es de UX 1 y PAG 1. */
 export const PAGINAS: Pagina[] = [
   {
     ruta: '/software',
     nombre: 'Software a medida',
-    titulo: 'Un sistema hecho para cómo trabajás',
-    entrada: 'Desarrollo y servidores propios, con mantenimiento por abono.',
-    incluye: ['Desarrollo a medida', 'Servidores propios', 'Mantenimiento con abono'],
+    /* Arranca por un caso concreto: la landing de reservas para alojamientos.
+       Foco en propietarios de alquiler temporario; hoteles chicos, segundo.
+       No decir que "ya se hizo uno para un hotel": se construyo la base (el
+       codigo es de Stephano) pero nunca se vendio ni tuvo cliente.
+       La puesta a punto del local es de /comercios: aca solo las reservas. */
+    titulo: 'Las reservas te llegan por todos lados y alguna se pierde',
+    entrada:
+      'Si alquilás tu casa o tus cabañas por temporada, o tenés un hotel chico, los pedidos llegan por WhatsApp, por Instagram y por teléfono, y cuesta tenerlos a la vista. Armamos una página para tu alojamiento con un formulario de reserva, y cada pedido entra ordenado a una planilla de Google que ya sabés usar.',
+    imagen: {
+      /* Criterio de Stephano: captura real de la demo, nada generado. */
+      // PLACEHOLDER: falta la captura; cuando exista, poner su ruta en `src`.
+      descripcion:
+        'Dos capturas reales de hito.uno/demo/reservas en un celular, lado a lado. Izquierda: el formulario de Casa Viento Norte completo (fechas, 4 personas, con mascota). Derecha: la vista "Así le llegaría al propietario" con esa misma consulta. Arriba de las dos se lee el aviso "Demo · propiedad ficticia".',
+    },
+    incluye: [
+      'Una página propia para tu alojamiento',
+      'Un formulario de reserva con lo que necesitás saber: fechas, cuántas personas, cómo contactarlas',
+      'Cada pedido entra a tu planilla de Google, en orden y con fecha',
+      'Nada nuevo que aprender: la planilla es tu panel',
+      'Cambios y mantenimiento con abono mensual',
+      'Hablás siempre con quien lo programa, no con un soporte',
+    ],
+    /* La prueba es la demo /demo/reservas (propiedad inventada, marcada como
+       demo, la construyo PLAT 1): muestra el formulario del huesped y, al
+       enviar, lo que le llegaria al propietario. */
+    prueba: {
+      tipo: 'enlace',
+      texto: 'Probala: así ve la consulta tu huésped, y así te llega a vos. Es una demo.',
+      href: '/demo/reservas',
+    },
     precio: '',
-    whatsapp: { telefono: TELEFONO, mensaje: 'Hola, quiero contarte un proyecto de software.' },
+    whatsapp: {
+      telefono: TELEFONO,
+      mensaje: 'Hola, tengo un alojamiento y quiero ordenar las reservas.',
+    },
   },
   {
+    // PLACEHOLDER: copy provisorio de PLAT 1, falta el de PAG 1.
     ruta: '/comercios',
     nombre: 'Comercios · puesta a punto',
     titulo: 'Tu local listo antes del verano',
     entrada: 'Visita, fotos, ficha de Google, carta digital y el objeto instalado.',
+    imagen: {
+      /* Criterio de Stephano: foto de ambiente, sin piezas nuestras (ninguna
+         esta impresa todavia). */
+      // PLACEHOLDER: foto a generar; cuando exista, poner su ruta en `src`.
+      descripcion:
+        'Foto de ambiente: el salón de un café chico de Pinamar a media mañana, antes de la temporada. Mesas de madera vacías, luz natural por el ventanal, el dueño acomodando sillas al fondo. Sin tarjetas, placas ni objetos Hito a la vista. Formato 3:2, tercio izquierdo despejado.',
+    },
     incluye: [
       'Visita al local',
       'Fotos del lugar',
@@ -128,10 +167,18 @@ export const PAGINAS: Pagina[] = [
     },
   },
   {
+    // PLACEHOLDER: copy provisorio de PLAT 1, falta el de PAG 1.
     ruta: '/objetos',
     nombre: 'Objetos',
     titulo: 'Las piezas, una por una',
     entrada: 'Tarjeta, llavero, porta tarjetas, apoyavasos, placa y recibidor.',
+    imagen: {
+      /* Criterio de Stephano: render, no foto, y solo de las dos piezas con
+         diseño 3D. La descripcion lo dice para que nadie la genere como foto. */
+      // PLACEHOLDER: render a generar; cuando exista, poner su ruta en `src`.
+      descripcion:
+        'Render 3D, no foto: la tarjeta Lite con su código QR y el porta tarjetas con NFC, lado a lado sobre fondo crema #eef1e8, luz suave de estudio. Logo "Hito.uno" completo en las dos piezas. Nada de apoyavasos, placas ni llaveros: todavía no tienen diseño.',
+    },
     incluye: ['Tarjeta', 'Llavero', 'Porta tarjetas', 'Apoyavasos', 'Placa', 'Recibidor'],
     precio: '',
     whatsapp: { telefono: TELEFONO, mensaje: 'Hola, quiero consultar por un objeto.' },
