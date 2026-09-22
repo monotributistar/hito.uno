@@ -15,6 +15,8 @@
    Regla de la oferta que no se rompe: no mezclar segmentos. Lo de personas no
    muestra objetos de local (apoyavasos, placas) y al reves tampoco. */
 
+import type { FotoDatos } from '../compartido/foto-datos'
+
 /** Prueba de que la cosa existe: una foto real o algo que se puede abrir. */
 export type PaginaPrueba = {
   /** `foto` espera `src` (una ruta de `public/`); `enlace` espera `href`. */
@@ -23,6 +25,14 @@ export type PaginaPrueba = {
   src?: string
   href?: string
 }
+
+/** La foto principal de la pagina: una foto, o su hueco con la descripcion
+    de lo que va a ir mientras no este generada (Stephano, 2026-09-21: las
+    imagenes van al final). Se dibuja con src/compartido/Foto.tsx, el mismo
+    componente que usan las puertas de la home. Una imagen sin `src` lleva la
+    marca de pendiente en el renglon, para que no suba a produccion. Campo
+    agregado por UX 1. */
+export type PaginaImagen = FotoDatos
 
 export type Pagina = {
   /** Ruta servida, sin barra final: `/software`. Es la que va en el HTML de
@@ -34,6 +44,8 @@ export type Pagina = {
   titulo: string
   /** Un parrafo corto abajo del titulo. Opcional. */
   entrada?: string
+  /** La foto principal, abajo de la entrada. Opcional. */
+  imagen?: PaginaImagen
   /** Que incluye, en lista corta. */
   incluye: string[]
   /** Una prueba concreta. Sin esto la pagina no se abre (regla de la hoja de
@@ -85,6 +97,14 @@ export const PAGINAS: Pagina[] = [
     titulo: 'Que te agenden sin dictar tu número',
     entrada:
       'Una tarjeta que se apoya en el celular del otro y abre tu página: tu WhatsApp, tus redes y, si vendés, lo que ofrecés. La diseñamos, la imprimimos y la dejamos configurada.',
+    imagen: {
+      /* Criterio de Stephano: la imagen de Personal es una captura real del
+         perfil, no una escena armada. ORQ 1 la saca para la puerta de la home
+         y la deja en public/images/puertas/; va la misma. */
+      // PLACEHOLDER: falta la captura; cuando exista, poner su ruta en `src`.
+      descripcion:
+        'Captura real de la página hito.uno/p/stephano vista en un celular: la foto, el nombre, el botón de WhatsApp y Guardar contacto.',
+    },
     incluye: [
       'Tarjeta con NFC y QR, impresa por nosotros',
       'Tu página con tus canales',

@@ -20,6 +20,7 @@
 
 import { useEffect } from 'react'
 import { whatsappHref } from '../partner/links'
+import Foto from '../compartido/Foto'
 import type { Pagina as PaginaDatos, PaginaPrueba } from './paginas-data'
 import './pagina.css'
 
@@ -48,6 +49,9 @@ export default function Pagina({ pagina }: { pagina: PaginaDatos }) {
           </h1>
           {pagina.entrada ? <p className="pagina-entrada">{pagina.entrada}</p> : null}
         </section>
+
+        {/* Foto principal, o su hueco con la descripcion si todavia no esta. */}
+        {pagina.imagen ? <Foto {...pagina.imagen} /> : null}
 
         <section className="pagina-bloque" aria-labelledby="pagina-incluye">
           <h2 id="pagina-incluye" className="pagina-subtitulo">
