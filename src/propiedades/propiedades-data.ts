@@ -62,10 +62,10 @@ export const PROPIEDADES: Propiedad[] = [
     nombre: 'Valeria 1',
     // PLACEHOLDER: la zona dice lo que dice el inventario ("frente al mar"), falta confirmarla.
     zona: 'Valeria del Mar, frente al mar',
-    /* Es un departamento con escalera al sotano (Stephano, 2026-09-26): arriba
-       el estar con cocina, abajo el sotano con varias camas. */
+    /* Un departamento con escalera a una planta inferior (Stephano,
+       2026-09-26). Se dice "planta inferior", nunca "sotano". */
     descripcion:
-      'Departamento de playa en Valeria del Mar: arriba, cocina integrada, estar con sofá cama y ventanal al balcón. Por la escalera se baja al sótano, con varias camas para cuando viene más gente.',
+      'Departamento de playa en Valeria del Mar: arriba, cocina integrada, estar con sofá cama y ventanal al balcón. Por la escalera se baja a la planta inferior, con varias camas para cuando viene más gente.',
     // PLACEHOLDER: falta el precio.
     precio: '',
     // PLACEHOLDER: faltan capacidad, ambientes y baños confirmados.
@@ -73,7 +73,7 @@ export const PROPIEDADES: Propiedad[] = [
       { etiqueta: 'Personas', valor: 'A confirmar' },
       { etiqueta: 'Ambientes', valor: 'A confirmar' },
       { etiqueta: 'Baños', valor: '1' },
-      { etiqueta: 'Sótano', valor: 'Con camas' },
+      { etiqueta: 'Planta inferior', valor: 'Con camas' },
     ],
     // PLACEHOLDER: los servicios salen de lo que se ve en las fotos, falta confirmarlos.
     servicios: ['Cocina equipada', 'Heladera con freezer', 'Horno eléctrico', 'TV', 'Ventilador'],
@@ -95,20 +95,20 @@ export const PROPIEDADES: Propiedad[] = [
         alt: 'El baño con ducha y cortina con un faro y botes',
       },
       {
-        src: '/images/propiedades/valeria-1/sotano_camas_02.webp',
-        alt: 'El sótano: dos camas contra el revestimiento de junco, con mesitas de pino',
+        src: '/images/propiedades/valeria-1/inferior_camas_02.webp',
+        alt: 'La planta inferior: dos camas contra el revestimiento de junco, con mesitas de pino',
       },
       {
-        src: '/images/propiedades/valeria-1/sotano_camas_03.webp',
-        alt: 'El sótano: dos camas y un placar de pino abierto',
+        src: '/images/propiedades/valeria-1/inferior_camas_03.webp',
+        alt: 'La planta inferior: dos camas y un placar de pino abierto',
       },
       {
-        src: '/images/propiedades/valeria-1/sotano_cama-escalera_01.webp',
-        alt: 'El sótano: cama matrimonial junto a la escalera que baja del departamento',
+        src: '/images/propiedades/valeria-1/inferior_cama-escalera_01.webp',
+        alt: 'La planta inferior: cama matrimonial junto a la escalera que baja del departamento',
       },
       {
-        src: '/images/propiedades/valeria-1/sotano_estar_01.webp',
-        alt: 'El sótano: mesa con dos sillas, espejo de pie y perchero',
+        src: '/images/propiedades/valeria-1/inferior_estar_01.webp',
+        alt: 'La planta inferior: mesa con dos sillas, espejo de pie y perchero',
       },
     ],
     whatsapp: {
