@@ -23,6 +23,10 @@ export default defineConfig({
         comercios: resolve(__dirname, 'comercios/index.html'),
         personal: resolve(__dirname, 'personal/index.html'),
         objetos: resolve(__dirname, 'objetos/index.html'),
+        /* Paginas de propiedad: una entrada por propiedad, misma mecanica que
+           las comerciales. El contenido sale de
+           src/propiedades/propiedades-data.ts. */
+        'casa-valeria-1': resolve(__dirname, 'c/valeria-1/index.html'),
         /* Demos: pruebas de lo que se vende, con datos inventados. Van con
            noindex (lo exige check-paths) y no mandan nada a ningun lado. */
         'demo-reservas': resolve(__dirname, 'demo/reservas/index.html'),
