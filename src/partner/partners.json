@@ -52,6 +52,13 @@
           "handle": "arcella.uno"
         },
         {
+          "$comment": "Link interno a la pagina de la propiedad: quien toca la tarjeta puede ir a verla. Empieza con / a proposito, para que abra en la misma pestaña.",
+          "kind": "web",
+          "label": "Alquilo en Valeria del Mar",
+          "detail": "Depto frente al mar",
+          "href": "/c/valeria-1"
+        },
+        {
           "kind": "web",
           "label": "Conocé Hito",
           "detail": "hito.uno",

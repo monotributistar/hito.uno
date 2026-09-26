@@ -1,0 +1,325 @@
+/* Pagina de una propiedad. Mobile primero: la mayoria la abre en el celular,
+   parada frente a la casa o desde un link de WhatsApp.
+   Tokens de la marca: #17383a texto, #eef1e8 fondo, #ed8068 acento. */
+
+.casa {
+  display: grid;
+  gap: 28px;
+  width: min(100% - 32px, 720px);
+  margin: 0 auto;
+  padding: 0 0 64px;
+  color: #17383a;
+}
+
+/* --- Foto principal: lo primero y lo mas grande --- */
+
+.casa-principal {
+  margin: 0 calc(-1 * max(16px, (100vw - 720px) / 2)) 0;
+}
+
+.casa-principal img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #e2e8df;
+}
+
+.casa-principal figcaption {
+  padding: 8px 16px 0;
+  color: #4a6b68;
+  font-size: 0.78rem;
+}
+
+/* --- Cabecera --- */
+
+.casa-cabecera {
+  display: grid;
+  gap: 6px;
+}
+
+.casa-estado {
+  justify-self: start;
+  margin: 0;
+  padding: 5px 10px;
+  border-radius: 2px;
+  font: 700 0.64rem 'Space Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.casa-estado--disponible {
+  background: #17383a;
+  color: #eef1e8;
+}
+
+/* Reservada, alquilada y vendida se ven distinto a proposito: quien entra
+   tiene que darse cuenta antes de enamorarse de la casa. */
+.casa-estado--reservada,
+.casa-estado--alquilada,
+.casa-estado--vendida {
+  border: 1px solid rgba(23, 56, 58, 0.3);
+  background: transparent;
+  color: #4a6b68;
+}
+
+.casa-cabecera h1 {
+  margin: 4px 0 0;
+  font-size: clamp(1.9rem, 6vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.casa-zona {
+  margin: 0;
+  color: #315f63;
+  font: 400 0.84rem 'Space Mono', monospace;
+}
+
+.casa-precio {
+  margin: 10px 0 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.casa-precio-nota,
+.casa-descripcion {
+  margin: 0;
+  color: #315f63;
+  line-height: 1.5;
+}
+
+.casa-descripcion {
+  margin-top: 10px;
+}
+
+/* Lo que se pregunta primero: cuantos entran y si acepta mascotas. */
+.casa-claves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casa-claves li {
+  padding: 6px 11px;
+  border: 1px solid rgba(23, 56, 58, 0.22);
+  border-radius: 2px;
+  font: 400 0.76rem 'Space Mono', monospace;
+}
+
+.casa-clave--si {
+  border-color: #ed8068;
+  color: #17383a;
+}
+
+/* --- Los numeros que todos preguntan --- */
+
+.casa-datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casa-datos li {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid rgba(23, 56, 58, 0.18);
+  border-radius: 2px;
+}
+
+.casa-datos span {
+  color: #4a6b68;
+  font: 400 0.62rem 'Space Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.casa-datos strong {
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+/* --- Lo que tiene --- */
+
+.casa-servicios h2,
+.casa-consulta h2 {
+  margin: 0 0 12px;
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.casa-servicios ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casa-servicios li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(23, 56, 58, 0.12);
+  color: #315f63;
+}
+
+/* --- Galeria: tocar una miniatura la sube a la foto grande --- */
+
+.casa-galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.casa-galeria button {
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.casa-galeria button.is-actual {
+  border-color: #ed8068;
+}
+
+.casa-galeria img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #e2e8df;
+}
+
+/* --- Consulta --- */
+
+.casa-consulta {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid rgba(23, 56, 58, 0.18);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.casa-consulta form {
+  display: grid;
+  gap: 12px;
+}
+
+.casa-consulta label {
+  display: grid;
+  gap: 5px;
+}
+
+.casa-consulta label span {
+  color: #4a6b68;
+  font: 400 0.62rem 'Space Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.casa-consulta input,
+.casa-consulta textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(23, 56, 58, 0.24);
+  border-radius: 2px;
+  background: #fdfdfb;
+  color: #17383a;
+  font: 400 0.92rem 'DM Sans', sans-serif;
+}
+
+.casa-consulta textarea {
+  resize: vertical;
+  line-height: 1.45;
+}
+
+/* Las tres van juntas en una fila cuando entran: el selector de fecha de
+   Chrome no baja de ~150px, asi que en celular se apilan. */
+.casa-fechas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.casa-consulta button[type='submit'] {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 2px;
+  background: #17383a;
+  color: #eef1e8;
+  font: 700 0.72rem 'Space Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.casa-consulta button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.casa-aviso {
+  margin: 0;
+  color: #315f63;
+  line-height: 1.5;
+}
+
+.casa-whatsapp {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  border: 1px solid #17383a;
+  border-radius: 2px;
+  color: #17383a;
+  font: 700 0.72rem 'Space Mono', monospace;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+/* El del medio no compite con el formulario: mismo boton, sin relleno. */
+.casa-whatsapp--medio {
+  margin: 0;
+}
+
+.casa-whatsapp:hover {
+  background: #17383a;
+  color: #eef1e8;
+}
+
+/* Trampa anti-spam: fuera de pantalla y fuera del recorrido del teclado. */
+.casa-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.casa-pie {
+  display: grid;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(23, 56, 58, 0.14);
+  color: #4a6b68;
+  font-size: 0.8rem;
+}
+
+.casa-pie p {
+  margin: 0;
+}
