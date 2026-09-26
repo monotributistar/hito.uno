@@ -40,6 +40,12 @@ export type Propiedad = {
   precio?: string
   /** Aclaracion abajo del precio: temporada, minimo de noches, expensas. */
   precioNota?: string
+  /** Cuantas personas entran. Va arriba, al lado del nombre: en la costa es
+      la primera pregunta, antes que el precio. */
+  capacidad?: string
+  /** Si acepta mascotas. Decide una consulta entera, asi que se muestra
+      destacado. Sin dato, no se dice nada: no se inventa. */
+  mascotas?: 'si' | 'no'
   /** Los numeros que todos preguntan. Se muestran como fichas. */
   datos: { etiqueta: string; valor: string }[]
   /** Lo que tiene, en lista corta. */
@@ -68,9 +74,11 @@ export const PROPIEDADES: Propiedad[] = [
       'Departamento de playa en Valeria del Mar: arriba, cocina integrada, estar con sofá cama y ventanal al balcón. Por la escalera se baja a la planta inferior, con varias camas para cuando viene más gente.',
     // PLACEHOLDER: falta el precio.
     precio: '',
-    // PLACEHOLDER: faltan capacidad, ambientes y baños confirmados.
+    // PLACEHOLDER: falta la capacidad real, contando la planta inferior.
+    capacidad: 'Capacidad a confirmar',
+    // PLACEHOLDER: falta saber si acepta mascotas.
+    // PLACEHOLDER: faltan ambientes y baños confirmados.
     datos: [
-      { etiqueta: 'Personas', valor: 'A confirmar' },
       { etiqueta: 'Ambientes', valor: 'A confirmar' },
       { etiqueta: 'Baños', valor: '1' },
       { etiqueta: 'Planta inferior', valor: 'Con camas' },

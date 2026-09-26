@@ -95,6 +95,28 @@
   margin-top: 10px;
 }
 
+/* Lo que se pregunta primero: cuantos entran y si acepta mascotas. */
+.casa-claves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casa-claves li {
+  padding: 6px 11px;
+  border: 1px solid rgba(23, 56, 58, 0.22);
+  border-radius: 2px;
+  font: 400 0.76rem 'Space Mono', monospace;
+}
+
+.casa-clave--si {
+  border-color: #ed8068;
+  color: #17383a;
+}
+
 /* --- Los numeros que todos preguntan --- */
 
 .casa-datos {
@@ -268,6 +290,11 @@
   letter-spacing: 0.1em;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+/* El del medio no compite con el formulario: mismo boton, sin relleno. */
+.casa-whatsapp--medio {
+  margin: 0;
 }
 
 .casa-whatsapp:hover {

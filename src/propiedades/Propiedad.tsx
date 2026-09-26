@@ -94,6 +94,15 @@ export default function Propiedad({ propiedad }: { propiedad: PropiedadDatos }) 
         </p>
         <h1>{propiedad.nombre}</h1>
         <p className="casa-zona">{propiedad.zona}</p>
+        {/* Capacidad y mascotas arriba: son las dos preguntas que deciden una
+            consulta en la costa, antes incluso que el precio. */}
+        {propiedad.capacidad || propiedad.mascotas ? (
+          <ul className="casa-claves">
+            {propiedad.capacidad ? <li>{propiedad.capacidad}</li> : null}
+            {propiedad.mascotas === 'si' ? <li className="casa-clave--si">Acepta mascotas</li> : null}
+            {propiedad.mascotas === 'no' ? <li>No acepta mascotas</li> : null}
+          </ul>
+        ) : null}
         <p className="casa-precio">{propiedad.precio?.trim() ? propiedad.precio : 'Consultá el precio'}</p>
         {propiedad.precioNota ? <p className="casa-precio-nota">{propiedad.precioNota}</p> : null}
         <p className="casa-descripcion">{propiedad.descripcion}</p>
@@ -117,6 +126,17 @@ export default function Propiedad({ propiedad }: { propiedad: PropiedadDatos }) 
             ))}
           </ul>
         </section>
+      ) : null}
+
+      {/* El contacto a mitad de camino: el que ya se convencio con las fotos y
+          lo que tiene no deberia tener que seguir bajando. */}
+      {libre ? (
+        <a
+          className="casa-whatsapp casa-whatsapp--medio"
+          href={whatsappHref(propiedad.whatsapp.telefono, propiedad.whatsapp.mensaje)}
+        >
+          Consultar por WhatsApp
+        </a>
       ) : null}
 
       {propiedad.fotos.length > 1 ? (
