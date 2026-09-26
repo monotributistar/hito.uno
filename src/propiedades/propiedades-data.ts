@@ -63,28 +63,32 @@ export const PROPIEDADES: Propiedad[] = [
   {
     slug: 'valeria-1',
     modo: 'temporario',
-    // PLACEHOLDER: estado real a confirmar con Stephano antes de publicar.
     estado: 'disponible',
     nombre: 'Valeria 1',
-    // PLACEHOLDER: la zona dice lo que dice el inventario ("frente al mar"), falta confirmarla.
     zona: 'Valeria del Mar, frente al mar',
     /* Un departamento con escalera a una planta inferior (Stephano,
        2026-09-26). Se dice "planta inferior", nunca "sotano". */
     descripcion:
       'Departamento de playa en Valeria del Mar: arriba, cocina integrada, estar con sofá cama y ventanal al balcón. Por la escalera se baja a la planta inferior, con varias camas para cuando viene más gente.',
-    // PLACEHOLDER: falta el precio.
+    /* Vacio a proposito: Stephano decidio no publicar el precio (2026-09-26).
+       La pagina muestra "Consultá el precio". */
     precio: '',
-    // PLACEHOLDER: falta la capacidad real, contando la planta inferior.
-    capacidad: 'Capacidad a confirmar',
-    // PLACEHOLDER: falta saber si acepta mascotas.
-    // PLACEHOLDER: faltan ambientes y baños confirmados.
+    /* Datos confirmados por Stephano el 2026-09-26. El precio queda afuera a
+       proposito: decidio no publicarlo, asi que la pagina dice "consultá". */
+    capacidad: 'Hasta 5 personas',
+    mascotas: 'si',
     datos: [
-      { etiqueta: 'Ambientes', valor: 'A confirmar' },
+      { etiqueta: 'Ambientes', valor: '2' },
       { etiqueta: 'Baños', valor: '1' },
       { etiqueta: 'Planta inferior', valor: 'Con camas' },
     ],
-    // PLACEHOLDER: los servicios salen de lo que se ve en las fotos, falta confirmarlos.
-    servicios: ['Cocina equipada', 'Heladera con freezer', 'Horno eléctrico', 'TV', 'Ventilador'],
+    servicios: [
+      'Wifi',
+      'TV',
+      'Cocina equipada, con utensilios',
+      'Heladera con freezer',
+      'Horno eléctrico',
+    ],
     fotos: [
       {
         src: '/images/propiedades/valeria-1/depto_estar-ventanal_01.webp',
