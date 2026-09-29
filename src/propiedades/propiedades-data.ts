@@ -138,6 +138,25 @@ export const PROPIEDADES: Propiedad[] = [
 ]
 
 /** Las propiedades de un dueño, para su listado. */
+/* El titulo del listado habla de que y donde, no de quien. Quien llega por un
+   QR, por Google o por un link reenviado no sabe quien es el dueño todavia:
+   ese dato va al pie. Ademas, un titulo con un nombre propio adentro no sirve
+   como molde para el listado de otro. */
+export type Listado = {
+  /** Encabezado de /alquileres/<dueno>. */
+  titulo: string
+  /** Una linea abajo del titulo. */
+  bajada?: string
+}
+
+export const LISTADOS: Record<string, Listado> = {
+  // PLACEHOLDER: titulo y bajada a confirmar con Stephano.
+  stephano: {
+    titulo: 'Alquileres en Valeria del Mar',
+    bajada: 'Frente al mar, a pocas cuadras de Cariló.',
+  },
+}
+
 export function propiedadesDe(dueno: string): Propiedad[] {
   return PROPIEDADES.filter((p) => p.dueno === dueno)
 }

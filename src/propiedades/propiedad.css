@@ -348,6 +348,12 @@
   font: 400 0.82rem 'Space Mono', monospace;
 }
 
+.listado-bajada {
+  color: #315f63 !important;
+  font: 400 1rem 'DM Sans', sans-serif !important;
+  line-height: 1.45;
+}
+
 .listado-grilla {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

@@ -16,7 +16,7 @@ const root = document.getElementById('root')
 if (root && partner && propiedadesDe(dueno).length > 0) {
   createRoot(root).render(
     <StrictMode>
-      <Listado dueno={dueno} titulo={`Alquileres de ${partner.name.split(' ')[0]}`} />
+      <Listado dueno={dueno} publica={partner.name} />
     </StrictMode>,
   )
 } else if (root) {

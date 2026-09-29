@@ -7,7 +7,7 @@
    A proposito no tiene buscador ni filtros: con pocas propiedades estorban, y
    la gracia de esta pagina es que no compite con nadie adentro. */
 
-import { propiedadesDe, type Propiedad } from './propiedades-data'
+import { LISTADOS, propiedadesDe, type Propiedad } from './propiedades-data'
 import './propiedad.css'
 
 const ETIQUETA_ESTADO: Record<Propiedad['estado'], string> = {
@@ -17,13 +17,15 @@ const ETIQUETA_ESTADO: Record<Propiedad['estado'], string> = {
   vendida: 'Vendida',
 }
 
-export default function Listado({ dueno, titulo }: { dueno: string; titulo: string }) {
+export default function Listado({ dueno, publica }: { dueno: string; publica: string }) {
   const propiedades = propiedadesDe(dueno)
+  const cabecera = LISTADOS[dueno] ?? { titulo: 'Propiedades en alquiler' }
 
   return (
     <main className="listado">
       <header className="listado-cabecera">
-        <h1>{titulo}</h1>
+        <h1>{cabecera.titulo}</h1>
+        {cabecera.bajada ? <p className="listado-bajada">{cabecera.bajada}</p> : null}
         <p>
           {propiedades.length === 1
             ? 'Una propiedad publicada.'
@@ -54,6 +56,7 @@ export default function Listado({ dueno, titulo }: { dueno: string; titulo: stri
       </ul>
 
       <footer className="casa-pie">
+        <p>Publica: {publica}</p>
         <p>La dirección exacta de cada propiedad se pasa al coordinar la visita.</p>
       </footer>
     </main>
