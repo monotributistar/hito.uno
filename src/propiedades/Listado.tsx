@@ -34,7 +34,9 @@ export default function Listado({ dueno, titulo }: { dueno: string; titulo: stri
       <ul className="listado-grilla">
         {propiedades.map((p) => (
           <li key={p.slug}>
-            <a className="listado-casa" href={`/c/${p.slug}`}>
+            {/* Con barra final: un servidor de archivos que no la agrega
+                devuelve la landing en vez de la pagina. */}
+            <a className="listado-casa" href={`/c/${p.slug}/`}>
               <img src={p.fotos[0].src} alt={p.fotos[0].alt} loading="lazy" />
               <div className="listado-casa-cuerpo">
                 <p className={`casa-estado casa-estado--${p.estado}`}>{ETIQUETA_ESTADO[p.estado]}</p>
