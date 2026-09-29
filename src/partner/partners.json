@@ -55,7 +55,7 @@
           "$comment": "Link interno al listado de sus propiedades. Empieza con / a proposito, para que abra en la misma pestaña.",
           "kind": "web",
           "label": "Alquileres",
-          "detail": "Mis propiedades en la costa",
+          "detail": "Valeria del Mar",
           "href": "/alquileres/stephano"
         },
         {
