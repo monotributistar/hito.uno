@@ -29,6 +29,10 @@ export type FotoPropiedad = {
 export type Propiedad = {
   /** Ultimo tramo de la URL: /c/<slug>. Corto y legible en voz alta. */
   slug: string
+  /** Slug del perfil que la publica (`partners.json`). Su perfil muestra
+      "Alquileres" y ese link abre /alquileres/<dueno>, el listado con todo lo
+      suyo. Una propiedad pertenece a un solo dueño. */
+  dueno: string
   modo: ModoPropiedad
   estado: EstadoPropiedad
   nombre: string
@@ -62,6 +66,7 @@ const TELEFONO = '+5492254590762'
 export const PROPIEDADES: Propiedad[] = [
   {
     slug: 'valeria-1',
+    dueno: 'stephano',
     modo: 'temporario',
     estado: 'disponible',
     nombre: 'Valeria 1',
@@ -131,6 +136,16 @@ export const PROPIEDADES: Propiedad[] = [
     publica: 'Myland S.A.',
   },
 ]
+
+/** Las propiedades de un dueño, para su listado. */
+export function propiedadesDe(dueno: string): Propiedad[] {
+  return PROPIEDADES.filter((p) => p.dueno === dueno)
+}
+
+/** El listado se sirve en /alquileres/<dueno>. */
+export function duenoPorRuta(pathname: string): string {
+  return pathname.replace(/^\/alquileres\//, '').replace(/\/+$/, '').toLowerCase()
+}
 
 export function propiedadPorRuta(pathname: string): Propiedad | undefined {
   const slug = pathname.replace(/^\/c\//, '').replace(/\/+$/, '').toLowerCase()
