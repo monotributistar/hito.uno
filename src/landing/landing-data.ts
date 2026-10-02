@@ -1,4 +1,10 @@
 import type { ExperienceId } from '../experience-data'
+import { whatsappHref } from '../partner/links'
+
+/* El llamado a la accion unico del sitio. Vive aca porque dos puertas todavia
+   no tienen pagina publicada y abren esto en su lugar. */
+export const CTA = 'Agendemos una reunión'
+export const CTA_HREF = whatsappHref('+5492254590762', 'Hola, quiero agendar una reunión.')
 
 /* Configurador "Pedí tu Hito": dos preguntas, y las opciones de la segunda
    dependen de la primera. Asi quien quiere presentarse no ve "Wi-Fi del local"
@@ -269,7 +275,7 @@ export type Caso = {
   conHito: { titulo: string; detalle: string }
 }
 
-// PLACEHOLDER: los cuatro casos y su orden esperan el OK de Stephano.
+/* Los cuatro casos y su orden los aprobo Stephano el 2026-10-02. */
 export const casos: Caso[] = [
   {
     key: 'agendar',
@@ -351,7 +357,6 @@ export const servicios: Servicio[] = [
   },
   {
     titulo: 'Tomas aéreas y contenido',
-    // PLACEHOLDER: a confirmar con Stephano como se ofrece (frecuencia, que incluye).
     detalle: 'Vuelos privados en 4K y 8K sobre tu casa, tu local o tu obra. Con ese material armamos el contenido para tus publicaciones.',
   },
 ]
@@ -391,7 +396,8 @@ export const doors: Door[] = [
     description: 'Una tarjeta que deja tu contacto guardado y una página tuya que vive en Hito.uno.',
     examples: 'Tarjeta · llavero · página personal',
     href: '/personal',
-    // PLACEHOLDER: decia "Disponible hoy", pero no hay ninguna pieza impresa. La pagina si existe.
+    /* Decia "Disponible hoy" y no hay ninguna pieza impresa: la pagina si
+       existe, la pieza todavia no. */
     status: 'Página disponible',
     photo: {
       src: '/images/puertas/personal-perfil.webp',
@@ -402,15 +408,15 @@ export const doors: Door[] = [
   {
     key: 'comercio',
     label: 'Comercio',
-    // PLACEHOLDER: titulo y descripcion a confirmar con la pagina /comercios que escribe PAG 1.
     title: 'Tu local, listo para la temporada.',
     description: 'Ficha de Google, reseñas, carta o catálogo digital y un objeto instalado y probado en el local.',
     examples: 'Ficha de Google · carta digital · reseñas',
-    href: '/comercios',
-    // PLACEHOLDER: estado a confirmar.
-    status: 'Puesta a punto',
-    // PLACEHOLDER: provisoria, muestra una pieza que no esta impresa. Va hasta
-    // que exista la foto de ambiente descripta en /comercios.
+    // Pendiente de publicar: hasta entonces la puerta abre el llamado a la accion.
+    href: CTA_HREF,
+    // Pendiente: la pagina /comercios no se publica todavia (sin prueba).
+    status: 'Pronto',
+    /* Foto de producto que ya estaba en el sitio. Se cambia cuando exista la
+       foto de un local real. */
     photo: {
       src: '/images/products/apoyavasos/apoyavasos-01.webp',
       alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
@@ -425,10 +431,11 @@ export const doors: Door[] = [
     // Igual que /objetos: solo piezas personales (regla de segmentos).
     description: 'Tarjeta, porta tarjetas y llavero: se apoyan en el celular y abren tu página.',
     examples: 'Tarjeta · porta tarjetas · llavero',
-    href: '/objetos',
-    status: 'En diseño',
-    // PLACEHOLDER: provisoria, muestra una pieza que no esta impresa. Va hasta
-    // que exista el render descripto en /objetos.
+    // Pendiente de publicar: hasta entonces la puerta abre el llamado a la accion.
+    href: CTA_HREF,
+    status: 'Pronto',
+    /* Foto de producto que ya estaba en el sitio. Se cambia por el render
+       cuando exista. */
     photo: {
       src: '/images/products/tarjeta/tarjeta-06.webp',
       alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR',
@@ -439,7 +446,6 @@ export const doors: Door[] = [
   {
     key: 'software',
     label: 'Software a medida',
-    // PLACEHOLDER: titulo y descripcion a confirmar con la pagina /software que escribe PAG 1.
     title: 'Tus reservas, ordenadas.',
     description: 'Una página para tu alojamiento con un formulario que deja cada consulta en una planilla que ya sabés usar.',
     examples: 'Reservas · formularios · planillas',

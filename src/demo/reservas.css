@@ -412,22 +412,6 @@
   background: rgb(237 128 104 / 0.12);
 }
 
-/* PLACEHOLDER visual: el aviso al propietario todavia no esta definido.
-   Atenuado y con borde punteado para que no se lea como algo que funciona. */
-.demo-placeholder {
-  padding: 1rem;
-  border: 1.5px dashed var(--borde);
-  border-radius: var(--radio);
-  background: transparent;
-}
-
-.demo-placeholder-texto {
-  margin: 0;
-  color: var(--verde-medio);
-  opacity: 0.8;
-  font-size: 0.9rem;
-  text-align: center;
-}
 
 .demo-volver--abajo {
   display: block;

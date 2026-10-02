@@ -8,9 +8,11 @@
 import { test, expect } from 'vitest'
 import { PROPIEDAD } from '../propiedad'
 
-test('la demo tiene una o dos fotos, ni cero ni mas', () => {
-  // El diseño reserva lugar para una o dos; una tercera no se mostraria.
-  expect(PROPIEDAD.fotos.length).toBeGreaterThanOrEqual(1)
+test('la demo no muestra mas de dos fotos', () => {
+  /* El diseño reserva lugar para una o dos; una tercera no se mostraria.
+     Cero esta permitido desde el 2026-10-02: la demo salio a produccion sin
+     fotos de la casa inventada, porque lo que vende es el formulario y lo que
+     le llega al propietario, no la casa. */
   expect(PROPIEDAD.fotos.length).toBeLessThanOrEqual(2)
 })
 
