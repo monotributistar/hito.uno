@@ -183,7 +183,7 @@ async function anotarSinReenvio(id: number, ask: Ask): Promise<void> {
 async function anotarSinDestino(id: number, ask: Ask): Promise<void> {
   const error =
     'Falta el secreto APPS_SCRIPT_URL, o no es una direccion de Apps Script (/macros/s/.../exec). ' +
-    'Se carga con: npx wrangler secret put APPS_SCRIPT_URL'
+    'Se carga con: gh secret set APPS_SCRIPT_URL --env production (lo sube el deploy)'
   console.error(`Consulta ${id} guardada pero sin reenviar: ${error}`)
   if (!id) return
   await ask('/lead-mark', { method: 'POST', body: JSON.stringify({ id, forwarded: false, error }) })

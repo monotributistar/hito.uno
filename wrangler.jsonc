@@ -32,8 +32,12 @@
   "vars": { "REENVIO_CONSULTAS": "on" },
   // La direccion del Apps Script que escribe en la planilla es un SECRETO de
   // Cloudflare, no codigo: antes estaba en worker/leads.ts y el repositorio
-  // resulto publico. Se carga una vez con:
-  //   npx wrangler secret put APPS_SCRIPT_URL
+  // resulto publico. El valor NO se pega a mano en el panel de Cloudflare: lo
+  // guarda GitHub (entorno production) y el workflow de produccion lo sube al
+  // Worker en cada deploy. Se carga con:
+  //   gh secret set APPS_SCRIPT_URL --env production
+  // Asi destrabar un deploy no depende de tener acceso al panel de una cuenta
+  // de Cloudflare que no es nuestra. Ver .github/workflows/deploy-production.yml.
   // Declararlo como requerido hace que Cloudflare RECHACE el deploy de
   // produccion si el secreto no esta cargado: la verificacion la hace quien
   // sabe la verdad, no un archivo nuestro. (Un deploy rechazado no tira el
