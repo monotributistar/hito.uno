@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
 import Foto from '../compartido/Foto'
+import { whatsappHref } from '../partner/links'
 import {
   doors,
   layers,
@@ -25,6 +26,14 @@ type Props = {
    servidor, asi que esta respuesta se puede leer de verdad: si dice que si,
    la consulta esta guardada. Ver worker/leads.ts. */
 const LEAD_ENDPOINT = '/api/lead'
+
+/* Un solo llamado a la accion en todo el sitio (Stephano, 2026-10-02): se
+   agenda una reunion. Antes convivian "Pedi tu Hito", "Como funciona" y
+   "Hablemos", y cada uno llevaba a otro lado. Va por WhatsApp porque es el
+   canal donde contesta; el formulario sigue abajo para quien prefiera no
+   escribir por ahi. */
+const CTA = 'Agendemos una reunión'
+const CTA_HREF = whatsappHref('+5492254590762', 'Hola, quiero agendar una reunión.')
 
 /* Encuadre calibrado por foto (ver Photo en landing-data.ts). object-position
    va inline; zoom y nudge viajan como custom properties que lee el CSS. */
@@ -159,7 +168,7 @@ export default function Landing({ onSceneFocusChange }: Props) {
           <a href="#demo">Pedí tu Hito</a>
           <a href="#soportes">Soportes</a>
           <a href="#incluye">Qué incluye</a>
-          <a className="nav-cta" href="#hablemos">Hablemos</a>
+          <a className="nav-cta" href={CTA_HREF}>Agendemos</a>
         </nav>
       </header>
 
@@ -182,8 +191,8 @@ export default function Landing({ onSceneFocusChange }: Props) {
             ))}
           </ul>
           <div className="hero-actions">
-            <a className="primary-action" href="#demo">
-              Pedí tu Hito
+            <a className="primary-action" href={CTA_HREF}>
+              {CTA}
               <span aria-hidden="true">↘</span>
             </a>
             <a className="secondary-action" href="#puertas">
@@ -708,15 +717,18 @@ export default function Landing({ onSceneFocusChange }: Props) {
           <br />
           <em>reducir a un toque?</em>
         </h2>
-        <a className="primary-action" href="#demo">
-          Pedí tu Hito <span aria-hidden="true">↗</span>
+        <a className="primary-action" href={CTA_HREF}>
+          {CTA} <span aria-hidden="true">↗</span>
         </a>
       </section>
 
-      <a className={stickyVisible ? 'hito-sticky-cta is-visible' : 'hito-sticky-cta'} href="#demo">
+      <a
+        className={stickyVisible ? 'hito-sticky-cta is-visible' : 'hito-sticky-cta'}
+        href={CTA_HREF}
+      >
         <strong>
-          Pedí tu Hito
-          <small>Sin app · sin cuenta</small>
+          {CTA}
+          <small>Te contestamos por WhatsApp</small>
         </strong>
         <span aria-hidden="true">↗</span>
       </a>
