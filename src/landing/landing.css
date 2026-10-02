@@ -608,6 +608,207 @@
   }
 }
 
+/* --- ¿Que pasos queres reducir? ------------------------------------------
+   Fondo oscuro: es el unico bloque invertido del sitio, y eso alcanza para
+   que no se confunda con el configurador, que tambien tiene botones. */
+
+.hito-pasos {
+  padding: 8vh clamp(20px, 4vw, 54px);
+  border-radius: 4px;
+  background: #17383a;
+  color: #eef1e8;
+}
+
+.hito-pasos .card-eyebrow,
+.hito-pasos .kicker {
+  color: rgba(238, 241, 232, 0.72);
+}
+
+.hito-pasos h2 {
+  margin: 0 0 28px;
+  color: #eef1e8;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.hito-pasos h2 em {
+  color: #ed8068;
+  font-style: normal;
+}
+
+/* Pastillas: chicas y en fila. En el celular se deslizan de costado, con el
+   borde difuminado para que se vea que hay mas. */
+.hito-pasos-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 26px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.hito-pasos-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.hito-pasos-chips button {
+  flex: none;
+  min-height: 44px; /* objetivo tactil comodo: lo pedia la auditoria */
+  padding: 0 16px;
+  border: 1px solid rgba(238, 241, 232, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: #eef1e8;
+  font: 400 0.8rem 'DM Sans', sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.hito-pasos-chips button:hover {
+  border-color: #eef1e8;
+}
+
+.hito-pasos-chips button.is-actual {
+  border-color: #ed8068;
+  background: #ed8068;
+  color: #17383a;
+  font-weight: 500;
+}
+
+.hito-pasos-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+  animation: hito-pasos-entra 160ms ease;
+}
+
+@keyframes hito-pasos-entra {
+  from {
+    opacity: 0.4;
+    transform: translateY(4px);
+  }
+}
+
+/* La cadena de hoy se ve apagada y tachada: es lo que sobra. */
+.hito-pasos-hoy ol {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hito-pasos-hoy li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(238, 241, 232, 0.14);
+  color: rgba(238, 241, 232, 0.6);
+  text-decoration: line-through;
+  text-decoration-color: rgba(238, 241, 232, 0.35);
+}
+
+.hito-pasos-hoy li span {
+  font: 400 0.68rem 'Space Mono', monospace;
+  text-decoration: none;
+}
+
+.hito-pasos-hito {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.hito-pasos-titulo {
+  margin: 12px 0 0;
+  color: #eef1e8;
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.hito-pasos-detalle {
+  margin: 0;
+  max-width: 34ch;
+  color: rgba(238, 241, 232, 0.78);
+  line-height: 1.5;
+}
+
+/* La forma de boton solo vive en .hero-actions: aca se repite, porque este
+   llamado a la accion esta fuera del hero. */
+.hito-pasos .primary-action {
+  display: inline-flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: 8px;
+  padding: 0 18px;
+  border: 1px solid #ed8068;
+  border-radius: 3px;
+  background: #ed8068;
+  color: #17383a;
+  font: 700 0.72rem 'Space Mono', monospace;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.hito-pasos .primary-action span {
+  color: #17383a;
+}
+
+@media (max-width: 760px) {
+  .hito-pasos-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hito-pasos-panel {
+    animation: none;
+  }
+
+  .hito-pasos-chips button {
+    transition: none;
+  }
+}
+
+/* Que hacemos: la respuesta del hero, en cuatro renglones. */
+.hero-servicios {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+  margin: 22px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.hero-servicios li {
+  display: grid;
+  gap: 2px;
+  padding-left: 14px;
+  border-left: 2px solid rgba(237, 128, 104, 0.75);
+}
+
+.hero-servicios strong {
+  color: #17383a;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.hero-servicios span {
+  color: #315f63;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 /* --- Cuatro puertas ----------------------------------------------------- */
 
 .hito-doors {
