@@ -13,6 +13,21 @@ npm install
 npm run dev
 ```
 
+**Las dependencias van con versión, no con `latest`.** Hasta el 2026-09-20
+`package.json` decía `"latest"` en casi todas: con `npm ci` el lockfile las
+sujetaba, pero cualquier `npm install` podía traerse una versión mayor nueva de
+React, de Vite o de Wrangler y romper el build sin que nadie hubiera tocado una
+línea del proyecto. Ahora cada una lleva `^` sobre la versión instalada, que deja
+entrar correcciones pero no versiones mayores.
+
+Dos van clavadas sin `^`: `three` y `@types/three`. Ese paquete está en `0.x` y
+rompe en cada versión menor, así que ahí `^` no protege de nada (para npm,
+`^0.185.1` solo acepta `0.185.x`, pero el proyecto publica cambios incompatibles
+en `0.186`). Actualizarlas es una decisión, no un arrastre.
+
+Para subir algo a propósito: `npm install <paquete>@latest`, y que el cambio
+entre por un PR con `npm run check` en verde.
+
 ## Validación y despliegue
 
 ```bash
@@ -24,8 +39,38 @@ npm run deploy
 `hito.uno`. Para desplegar se necesita una sesión de Wrangler autenticada con
 acceso a la cuenta de Cloudflare que administra el dominio.
 
-`npm run check` corre, en este orden: el verificador de rutas, `tsc`, el build y
-un `wrangler deploy --dry-run`.
+`npm run check` corre, en este orden: el verificador de rutas, el de
+placeholders, `tsc`, el build, las pruebas y el verificador de entornos.
+
+**Placeholders** (`npm run check:placeholders`). Regla de Stephano del
+2026-09-21: lo que todavía no se sabe va como placeholder, marcado en el código con
+la palabra `PLACEHOLDER` (exacta, en mayúsculas), y **un placeholder no va a
+producción**. El verificador busca la marca en `src/`, `public/`, `worker/` y los
+HTML de entrada (deducidos de `vite.config.ts`), sin `docs/` ni archivos de prueba:
+
+- en un PR hacia `main` **falla** y lista archivo y línea de cada marca;
+- en cualquier otro caso (PRs a `dev`, una corrida local) **solo avisa**, porque
+  un placeholder en dev es lo esperado.
+
+Sabe a dónde va el PR por `GITHUB_BASE_REF`, que GitHub completa solo. Para
+probarlo a mano como si fuera el pase: `node scripts/check-placeholders.mjs
+--destino=main`. `main` no tiene protección de rama: una validación en rojo avisa,
+pero no impide mergear.
+
+`scripts/check-entornos.mjs` (`npm run check:entornos`) hace un
+`wrangler deploy --dry-run` de **los dos entornos**, no solo de producción, y
+verifica que cada uno quede con las variables que le corresponden:
+`REENVIO_CONSULTAS` en `"on"` en producción y en `"off"` en dev. Falla si una
+falta o tiene otro valor.
+
+Por qué se verifica eso y no alcanza con mirar el archivo: si alguien borra la de
+producción, el formulario sigue guardando la consulta pero deja de mandarla a la
+planilla y **no se nota**, porque hoy ninguna ruta lee las guardadas
+(`pendingLeads` en `worker/store.ts`); y si alguien pone dev en `"on"`, una
+prueba de carga escribe en la planilla donde miramos los pedidos reales. Las dos
+fallas son silenciosas. Además, antes el `--dry-run` era solo de producción: un
+error en el bloque `env.dev` de `wrangler.jsonc` pasaba la validación de GitHub y
+aparecía recién en el deploy, con el cambio ya en `dev.hito.uno`.
 
 ## Los dos entornos
 
@@ -85,8 +130,20 @@ Por qué así:
 - El cuerpo se manda con los caracteres no ASCII escapados. Sin eso, en el salto de
   redirección de Apps Script se pierde el charset y a la planilla llegan
   "85 ? 54 mm" o "Identificaci?n". Verificado contra la planilla real.
-- La URL del Apps Script vive en `worker/leads.ts`. Antes viajaba en el código de la
-  página y la veía cualquiera.
+- **La dirección del Apps Script es un secreto de Cloudflare** (`APPS_SCRIPT_URL`),
+  no código. Primero viajaba en el código de la página; después pasó a
+  `worker/leads.ts`, y el 2026-09-21 se vio que el repositorio era público: cualquiera
+  podía escribir en la planilla sin pasar por el freno ni la trampa anti-spam. Se
+  carga una vez con `npx wrangler secret put APPS_SCRIPT_URL`.
+- Producción lo declara en `secrets.required` (`wrangler.jsonc`): **Cloudflare
+  rechaza el deploy si el secreto no está cargado.** Un deploy rechazado no tira el
+  sitio, sigue la versión anterior. El verificador de entornos falla si alguien
+  borra esa declaración. Dev no lo necesita porque no reenvía.
+- Si el secreto falta o no es una dirección de Apps Script (`/macros/s/.../exec`),
+  **el formulario no se rompe**: la consulta se guarda igual y queda anotada con el
+  error, que dice cómo cargarlo.
+- Sacar la dirección del código no la borra del historial de Git: para que la vieja
+  deje de servir hay que **republicar el Apps Script**, que le da una dirección nueva.
 
 ## Guardar contacto y compartir
 
@@ -112,8 +169,17 @@ guarda, y el próximo toque ya va al destino nuevo. Sin cuenta, sin contraseña.
 - `worker/objects.json` es la **semilla**: se carga la primera vez y después manda
   la base. Si el almacén no responde, el toque cae al JSON y nunca a un error.
 - `worker/tokens.json` tiene los links secretos. **Solo de perfiles sandbox del
-  equipo**: un token de cliente real no se commitea. `npm run check` falla si
-  aparece uno que no sea sandbox.
+  equipo, y solo mientras el repositorio sea privado**: un token de cliente real no
+  se commitea nunca. `npm run check` falla si aparece uno que no sea sandbox.
+  **Hoy está vacío:** el 2026-09-21 se vio que el repositorio era público, y los
+  dos tokens sandbox (Stephano y Javier) se revocaron. Hasta que el repositorio
+  vuelva a ser privado, el panel no tiene ningún acceso.
+- **Revocar un token no es sacarlo de `tokens.json`.** La semilla entra con
+  `INSERT OR IGNORE` y no borra nada, así que un token sacado del archivo sigue
+  vivo en el almacén de producción y de dev. Para revocarlo, su hash va a
+  `worker/revocados.ts`: el almacén lo borra cada vez que arranca, y cada deploy
+  lo hace arrancar. No se reconcilia borrando "lo que no esté en el archivo":
+  el día que haya administración, los tokens de clientes no van a estar ahí.
 - El token viaja por header (`X-Hito-Token`), nunca en la URL de la API: la URL
   `/panel/<token>` solo carga la app.
 - Las sugerencias debajo del campo (Mi página, Mi WhatsApp, Mi Instagram, Mi
@@ -122,6 +188,46 @@ guarda, y el próximo toque ya va al destino nuevo. Sin cuenta, sin contraseña.
 Probar en local: `npm run dev:worker` y abrir `localhost:8787/panel/<token>`.
 El `npm run dev` de Vite no ejecuta el Worker, así que ahí no hay API.
 
+## Pruebas
+
+```bash
+npm test          # una corrida
+npx vitest        # se queda mirando los archivos, para trabajar
+```
+
+Viven en `worker/pruebas/` (el servidor) y `src/demo/pruebas/` (la demo de
+reservas), y entran en `npm run check`, así que las corre la validación de GitHub
+en cada PR. Tardan alrededor de un segundo.
+
+**No están para tener cobertura, sino para que no vuelva a pasar lo que ya
+pasó.** Cada una cuida una decisión que costó un celular en la mano o una
+planilla con datos rotos, y el mensaje de error dice por qué la cosa estaba así:
+
+- **`vcard.test.ts`** — que ninguna línea se corte (Contactos de Google en
+  Android no une la continuación y mezcla los campos), que el archivo use CRLF,
+  que el teléfono quede solo con dígitos, que las comas y los punto y coma se
+  escapen, y que un perfil sin datos opcionales igual arme un archivo válido.
+- **`body.test.ts`** — el tope de tamaño de los cuerpos: que lo grande se
+  rechace con 413 y lo roto con 400, que un envío del tamaño exacto del tope
+  entre, y sobre todo **que sin `Content-Length` corte igual y deje de
+  descargar** apenas se pasa. Ese encabezado puede faltar o mentir, así que si
+  solo se mirara eso, un cuerpo enorme entraría entero en memoria.
+- **`leads.test.ts`** — **que con el reenvío apagado no salga nada hacia
+  Google** (lo pidió SEC 1 antes de atacar el formulario en dev), que con el
+  reenvío prendido el cuerpo viaje en ASCII puro (si no, a la planilla llegan
+  "85 ? 54 mm" y "Identificaci?n"), que la trampa anti-spam no guarde ni
+  reenvíe, que el freno corte el envío y que solo entren los campos declarados.
+
+Se corren con **Vitest**. La primera opción fue `node --test`, que no suma
+dependencias, pero el código del Worker importa sin extensión (`./body`,
+`./store`), como espera un empaquetador, y Node no resuelve eso sin escribirle
+un cargador a mano. Vitest reutiliza el Vite que el proyecto ya usa, entiende
+TypeScript sin configuración y no necesita nada más.
+
+`handleLead` recibe el almacén y el `waitUntil` como parámetros, así que se
+prueba entero sin Cloudflare: se le pasa un almacén de mentira y se vigila
+`fetch` para ver si alguien sale a la red.
+
 ## Verificación de rutas
 
 `scripts/check-paths.mjs` (`npm run check:paths`) falla si:
@@ -129,11 +235,85 @@ El `npm run dev` de Vite no ejecuta el Worker, así que ahí no hay API.
 - quedan restos del versionado viejo (`v01`, `v02`, `LandingV0x`) en código o config;
 - el `src` de un `<script>` o una entrada de `vite.config.ts` apunta a un archivo
   que no existe;
-- **una foto declarada en `landing-data.ts` no está en `public/`**.
+- **una foto declarada en `landing-data.ts` no está en `public/`**;
+- un puerto de `objects.json` apunta a una ruta interna que no existe como página;
+- una página comercial lleva `noindex`, o una demo (`/demo/...`) no lo lleva (ver
+  más abajo).
 
-Ese último es el que más rinde: una ruta mal escrita compila, buildea y se
+El de las fotos es el que más rinde: una ruta mal escrita compila, buildea y se
 despliega sin una sola queja, y solo deja un hueco en el carrusel. También avisa
-—sin frenar el build— de fotos que están en `public/` y nadie usa.
+—sin frenar el build— de fotos que están en `public/` y nadie usa, y de páginas
+sin `og:image`.
+
+Las rutas que el sitio sirve no están escritas a mano en el verificador: se
+deducen de las entradas de `vite.config.ts`, así que agregar una página las
+actualiza solas.
+
+## Páginas comerciales (`/software`, `/comercios`, `/personal`, `/objetos`)
+
+Una página por conversación: cuando le escribís a alguien, le mandás el link que
+habla de lo suyo y no la landing, que habla de todo.
+
+Cada página es **una entrada estática propia** (`software/index.html` y
+compañía), no una ruta resuelta por el Worker. El motivo es la vista previa: esos
+links se mandan por WhatsApp, y **WhatsApp no ejecuta React**, así que el título y
+la descripción tienen que estar en el HTML desde el build. Por lo mismo no llevan
+`noindex`: estas páginas sí se buscan y sí se comparten, al revés que los perfiles
+y el panel.
+
+El contenido de las cuatro vive en `src/paginas/paginas-data.ts` y lo dibuja un
+solo componente (`src/paginas/Pagina.tsx`), con una sola entrada de código
+(`main-pagina.tsx`) que elige la página por la ruta, como `/p/<slug>` hace con el
+perfil.
+
+**Agregar una página** son tres pasos y ninguno es tocar el Worker:
+
+1. una entrada en `PAGINAS` (`src/paginas/paginas-data.ts`), con su `ruta`;
+2. el HTML de entrada (`<ruta>/index.html`), copiando uno existente y cambiando
+   título, descripción y `og:url`;
+3. la línea en `vite.config.ts`.
+
+Cada página tiene además su **puerto** (`/o/pg-<nombre>` en `worker/objects.json`)
+para poder mandarla impresa o por QR y contar cuánta gente entró por ahí. Esos
+puertos van con dueño `hito`: no son objetos de un cliente y no aparecen en
+ningún panel.
+
+## Demo de reservas (`/demo/reservas`)
+
+La prueba que acompaña a la página de Software a medida: la página de una
+**propiedad inventada** (Casa Viento Norte) con su formulario de consulta. Un
+propietario de alquiler temporario la abre en el celular, hace una consulta de
+prueba y ve cómo le quedaría su propia página.
+
+**No guarda ni manda nada.** Ni a una planilla, ni al almacén del Worker, ni a
+Google: al enviar, la misma página muestra **así le llegaría al propietario**:
+lo que pidió la persona, el renglón que le caería en su planilla y el lugar del
+aviso. Las consultas de la visita se acumulan en esa planilla de mentira para que
+se vea cómo ordena cada pedido; viven solo en memoria y se borran al cerrar la
+pestaña. Es pública y la
+gente va a probar con sus datos reales, así que no hay que retenerlos; tampoco
+abre una puerta al spam ni carga el almacén. La franja de arriba lo dice siempre
+y el resumen dice "no se envió", nunca "enviado".
+
+- La propiedad vive en `src/demo/propiedad.ts`: nombre, capacidad, ambientes y
+  servicios. Sin dirección, sin precio y sin teléfono, para que nunca parezca un
+  alojamiento real. Las fotos van en `fotos` cuando existan, marcadas como
+  ilustrativas.
+- La validación está en `src/demo/validar.ts`, en funciones puras, con sus pruebas
+  en `src/demo/pruebas/`. El día de hoy se calcula con la hora **local** del
+  celular: con la hora universal, en Argentina después de las 21 ya sería mañana y
+  se rechazaría una llegada para hoy.
+- El renglón lo arma `src/demo/planilla.ts`, con pruebas: fechas como las escribe
+  una planilla (`05/10/2026`), `Sí`/`No` y nunca `true`/`false`, vacío y nunca
+  `undefined`. Una planilla se filtra y se ordena, así que cada columna tiene que
+  salir siempre igual.
+- **Placeholders** (marcados `PLACEHOLDER` en el código, regla del 2026-09-21: lo
+  que no se sabe va como placeholder y no sube a producción): el nombre de la casa,
+  hasta confirmar que no coincide con una real, y el aviso al propietario, que no
+  muestra ningún canal hasta que se defina.
+- Lleva `noindex`, al revés que las páginas comerciales: una casa que no existe no
+  tiene que aparecer en Google. `check-paths` exige esa meta en todo lo que viva
+  bajo `/demo/`.
 
 ## Perfiles partner (`/p/<slug>`)
 

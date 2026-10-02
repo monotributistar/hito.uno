@@ -26,6 +26,7 @@ import { HitoStore, kindFromId, type ObjectRow } from './store'
 import { buildVCard, vcardFilename, type VCardPartner } from './vcard'
 import { withProfileMeta, type MetaPartner } from './meta'
 import { handleLead } from './leads'
+import { readJson } from './body'
 
 export { HitoStore }
 
@@ -54,6 +55,10 @@ export interface Env {
       valor, o la variable ausente, lo deja apagado: un entorno reenvia solo
       si lo dice. Ver wrangler.jsonc y docs/SEGURIDAD.md. */
   REENVIO_CONSULTAS?: string
+  /** Secreto de Cloudflare: la direccion del Apps Script que escribe en la
+      planilla. Nunca en el codigo. Si falta, la consulta se guarda igual y
+      queda anotada con el error (ver worker/leads.ts). */
+  APPS_SCRIPT_URL?: string
 }
 
 const SEED = objects.objects as Record<string, SeedEntry>
@@ -220,11 +225,20 @@ async function ownerOf(request: Request, env: Env): Promise<string | null> {
   return res?.owner ?? null
 }
 
+/** Tope del cuerpo de un PATCH del panel. Solo trae `{ "to": "<url>" }`. */
+const PANEL_BODY_MAX = 4 * 1024
+/** Largo maximo de un destino. Los navegadores aceptan URLs mucho mas
+    largas, pero un destino de un Hito real no pasa de unos cientos de
+    caracteres, y lo que entra se guarda en el almacen. */
+const DESTINATION_MAX = 2048
+
 /** Acepta una ruta interna del sitio o una URL http/https. Todo lo demas
     (javascript:, data:, mailto sin validar) se rechaza. */
-function validDestination(raw: string): string | null {
+function validDestination(raw: unknown): string | null {
+  // Lo que llega es JSON de afuera: puede ser un numero, un objeto o nada.
+  if (typeof raw !== 'string') return null
   const value = raw.trim()
-  if (!value) return null
+  if (!value || value.length > DESTINATION_MAX) return null
   if (value.startsWith('/')) return value.startsWith('//') ? null : value
   let parsed: URL
   try {
@@ -257,13 +271,20 @@ async function handlePanelApi(request: Request, env: Env, url: URL): Promise<Res
     if (!store(env)) {
       return json({ error: 'El panel todavía no puede guardar cambios.' }, 503)
     }
-    let body: { to?: string }
-    try {
-      body = (await request.json()) as { to?: string }
-    } catch {
-      return json({ error: 'cuerpo invalido' }, 400)
+    const body = await readJson<{ to?: unknown } | null>(request, PANEL_BODY_MAX)
+    if (!body.ok) {
+      return body.status === 413
+        ? json({ error: 'El pedido es demasiado grande.' }, 413)
+        : json({ error: 'cuerpo invalido' }, 400)
     }
-    const to = validDestination(body.to ?? '')
+    // `null` es JSON valido: se trata igual que un cuerpo sin destino.
+    const raw = body.data?.to
+    if (typeof raw === 'string' && raw.trim().length > DESTINATION_MAX) {
+      // Motivo propio: si no, el cliente lee "empezá con https://" sobre un
+      // link que ya empieza asi y no entiende que hizo mal.
+      return json({ error: 'El link es demasiado largo.' }, 400)
+    }
+    const to = validDestination(raw)
     if (!to) return json({ error: 'Poné un link que empiece con https:// o una ruta del sitio.' }, 400)
 
     const res = await ask<{ ok: boolean }>(env, '/set-destination', {
@@ -294,6 +315,7 @@ export default {
         (path, init) => ask(env, path, init),
         (promise) => ctx.waitUntil(promise),
         env.REENVIO_CONSULTAS === 'on',
+        env.APPS_SCRIPT_URL,
       )
       return result.ok
         ? json({ ok: true })

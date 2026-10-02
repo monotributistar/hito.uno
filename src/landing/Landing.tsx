@@ -1,11 +1,15 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
+import Foto from '../compartido/Foto'
 import {
+  CTA,
+  CTA_HREF,
+  casos,
   doors,
   layers,
+  servicios,
   needs,
   objects,
-  stepsWithout,
   tapActions,
   tiers,
   useCases,
@@ -23,6 +27,10 @@ type Props = {
    servidor, asi que esta respuesta se puede leer de verdad: si dice que si,
    la consulta esta guardada. Ver worker/leads.ts. */
 const LEAD_ENDPOINT = '/api/lead'
+
+/* Un solo llamado a la accion en todo el sitio (Stephano, 2026-10-02): se
+   agenda una reunion. Vive en landing-data.ts porque las puertas sin pagina
+   publicada tambien lo usan. */
 
 /* Encuadre calibrado por foto (ver Photo en landing-data.ts). object-position
    va inline; zoom y nudge viajan como custom properties que lee el CSS. */
@@ -42,6 +50,8 @@ export default function Landing({ onSceneFocusChange }: Props) {
   const [activeObject, setActiveObject] = useState<ObjectKey>('tarjeta')
   const [tapped, setTapped] = useState(false)
   const [photoIndex, setPhotoIndex] = useState(0)
+  // Caso elegido en "¿Qué pasos querés reducir?". Arranca en el primero.
+  const [caso, setCaso] = useState(casos[0])
 
   // Estados del Formulario de Contacto
   const [contactData, setContactData] = useState({
@@ -157,31 +167,35 @@ export default function Landing({ onSceneFocusChange }: Props) {
           <a href="#demo">Pedí tu Hito</a>
           <a href="#soportes">Soportes</a>
           <a href="#incluye">Qué incluye</a>
-          <a className="nav-cta" href="#hablemos">Hablemos</a>
+          <a className="nav-cta" href={CTA_HREF}>Agendemos</a>
         </nav>
       </header>
 
       <section className="hero" id="inicio" aria-labelledby="hero-title">
         <div className="hero-copy">
-          <p className="kicker">TARJETAS PERSONALES HITO / 01</p>
+          <p className="kicker">HITO.UNO / CARILÓ</p>
           <h1 id="hero-title">
-            Tu tarjeta.
+            ¿Qué hacemos
             <br />
-            A un toque
-            <br />
-            <em>de distancia.</em>
+            <em>en Hito.uno?</em>
           </h1>
-          <p className="hero-description">
-            Diseñamos tarjetas físicas personalizadas que conectan directamente con la acción que
-            necesitás. La primera es el punto de partida del sistema.
-          </p>
+          {/* La respuesta, en cuatro renglones: cada uno es un trabajo que se
+              puede pedir hoy. Nada de lo que esta a construir entra aca. */}
+          <ul className="hero-servicios">
+            {servicios.map((s) => (
+              <li key={s.titulo}>
+                <strong>{s.titulo}</strong>
+                <span>{s.detalle}</span>
+              </li>
+            ))}
+          </ul>
           <div className="hero-actions">
-            <a className="primary-action" href="#demo">
-              Pedí tu Hito
+            <a className="primary-action" href={CTA_HREF}>
+              {CTA}
               <span aria-hidden="true">↘</span>
             </a>
-            <a className="secondary-action" href="#pasos">
-              Cómo funciona
+            <a className="secondary-action" href="#puertas">
+              Elegí tu caso
             </a>
           </div>
         </div>
@@ -191,26 +205,30 @@ export default function Landing({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      {/* Tres puertas: orientan por contexto y dejan el carrusel en el
-          soporte que corresponde. Cada una baja a una seccion que ya existe. */}
+      {/* Cuatro puertas: una por tipo de conversacion. Cada una lleva a su
+          pagina, que es el link que se manda por WhatsApp. */}
       <section className="hito-doors" id="puertas" aria-label="Elegí tu contexto">
-        <p className="card-eyebrow">Tres puertas / ¿cuál es la tuya?</p>
+        <p className="card-eyebrow">Cuatro puertas / ¿cuál es la tuya?</p>
         <div className="hito-doors-grid">
           {doors.map((door) => (
-            <a
-              key={door.key}
-              className={door.status === 'Foco comercial' ? 'hito-door hito-door--focus' : 'hito-door'}
-              href={door.href}
-              onClick={() => selectObject(door.object)}
-            >
-              <img
-                className="hito-door-photo"
-                src={door.photo.src}
-                alt={door.photo.alt}
-                loading="lazy"
-                decoding="async"
-                style={photoStyle(door.photo)}
-              />
+            <a key={door.key} className="hito-door" href={door.href}>
+              {door.photo ? (
+                <img
+                  className="hito-door-photo"
+                  src={door.photo.src}
+                  alt={door.photo.alt}
+                  loading="lazy"
+                  decoding="async"
+                  style={photoStyle(door.photo)}
+                />
+              ) : (
+                /* Sin imagen real todavia: se ve el hueco y que va a ir ahi. */
+                <Foto
+                  descripcion={door.placeholder ?? ''}
+                  proporcion="16 / 10"
+                  className="hito-door-photo"
+                />
+              )}
               <div className="hito-door-head">
                 <p className="hito-door-label">{door.label}</p>
                 <span className="hito-door-status">{door.status}</span>
@@ -423,38 +441,58 @@ export default function Landing({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      <section className="hito-steps" id="pasos" aria-labelledby="steps-title">
+      {/* ¿Que pasos queres reducir? La persona elige su caso y ve su propia
+          cadena de hoy contra el toque. Fondo oscuro a proposito: separa esta
+          seccion del configurador, que tambien tiene botones pero pide datos. */}
+      <section className="hito-pasos" id="pasos" aria-labelledby="pasos-title">
         <p className="card-eyebrow">Reducimos pasos / la idea</p>
-        <h2 id="steps-title">
-          Menos pasos entre una persona
+        <h2 id="pasos-title">
+          ¿Qué pasos querés reducir
           <br />
-          <em>y lo que importa.</em>
+          <em>entre vos y tus clientes?</em>
         </h2>
-        <div className="hito-steps-grid">
-          <div>
-            <p className="kicker">SIN HITO</p>
-            <ol className="product-list">
-              {stepsWithout.map((label, index) => (
-                <li key={label}>
-                  <span className="marker-number is-muted">{String(index + 1).padStart(2, '0')}</span>
-                  <span>
-                    <strong>{label}</strong>
-                  </span>
+
+        <div className="hito-pasos-chips" role="tablist" aria-label="Elegí tu caso">
+          {casos.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              role="tab"
+              id={`caso-${c.key}`}
+              aria-selected={c.key === caso.key}
+              aria-controls="caso-panel"
+              className={c.key === caso.key ? 'is-actual' : undefined}
+              onClick={() => setCaso(c)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        <div
+          className="hito-pasos-panel"
+          id="caso-panel"
+          role="tabpanel"
+          aria-labelledby={`caso-${caso.key}`}
+        >
+          <div className="hito-pasos-hoy">
+            <p className="kicker">HOY</p>
+            <ol>
+              {caso.hoy.map((paso, i) => (
+                <li key={paso}>
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                  {paso}
                 </li>
               ))}
             </ol>
           </div>
-          <div>
-            <p className="kicker hito-kicker-accent">CON HITO</p>
-            <ol className="product-list hito-single-step">
-              <li>
-                <span className="marker-number">01</span>
-                <span>
-                  <strong>Un toque</strong>
-                  <small>El objeto ya sabe qué tiene que pasar.</small>
-                </span>
-              </li>
-            </ol>
+          <div className="hito-pasos-hito">
+            <p className="kicker">CON HITO</p>
+            <p className="hito-pasos-titulo">{caso.conHito.titulo}</p>
+            <p className="hito-pasos-detalle">{caso.conHito.detalle}</p>
+            <a className="primary-action" href={CTA_HREF}>
+              {CTA} <span aria-hidden="true">↗</span>
+            </a>
           </div>
         </div>
       </section>
@@ -698,15 +736,18 @@ export default function Landing({ onSceneFocusChange }: Props) {
           <br />
           <em>reducir a un toque?</em>
         </h2>
-        <a className="primary-action" href="#demo">
-          Pedí tu Hito <span aria-hidden="true">↗</span>
+        <a className="primary-action" href={CTA_HREF}>
+          {CTA} <span aria-hidden="true">↗</span>
         </a>
       </section>
 
-      <a className={stickyVisible ? 'hito-sticky-cta is-visible' : 'hito-sticky-cta'} href="#demo">
+      <a
+        className={stickyVisible ? 'hito-sticky-cta is-visible' : 'hito-sticky-cta'}
+        href={CTA_HREF}
+      >
         <strong>
-          Pedí tu Hito
-          <small>Tu página en 24 horas · sin app</small>
+          {CTA}
+          <small>Te contestamos por WhatsApp</small>
         </strong>
         <span aria-hidden="true">↗</span>
       </a>

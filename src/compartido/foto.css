@@ -1,0 +1,46 @@
+/* Foto o hueco de foto (ver Foto.tsx). La proporcion llega por la custom
+   property --foto-proporcion, asi el mismo componente sirve para un 3:2 de
+   pagina o un 4:5 de puerta. */
+
+.foto {
+  margin: 0;
+}
+
+.foto img {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--foto-proporcion, 3 / 2);
+  border: 1px solid rgba(23, 56, 58, 0.14);
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+/* Foto que todavia no existe: ocupa lo mismo que la final y se ve a proposito
+   como un hueco (borde punteado), no como una foto rota ni como decoracion. */
+.foto--pendiente {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  aspect-ratio: var(--foto-proporcion, 3 / 2);
+  padding: 22px;
+  overflow: hidden;
+  border: 1px dashed rgba(23, 56, 58, 0.35);
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(-45deg, rgba(23, 56, 58, 0.05) 0 1px, transparent 1px 12px),
+    rgba(255, 255, 255, 0.45);
+}
+
+.foto-etiqueta {
+  color: #ed8068;
+  font: 700 0.66rem 'Space Mono', monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.foto-descripcion {
+  color: #315f63;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}

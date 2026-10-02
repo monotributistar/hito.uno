@@ -1,0 +1,439 @@
+/* Demo de reservas. Celular primero: se abre desde un link por WhatsApp.
+
+   Identidad de docs/DISENO.md: tinta #17383a, coral #ed8068, fondo #eef1e8,
+   DM Sans. Los colores van como variables al principio para que UX 1 pueda
+   ajustar el pulido visual sin buscar valores sueltos por el archivo. Todo
+   queda bajo `.demo` para no pisar nada de la landing ni del perfil. */
+
+.demo {
+  --tinta: #17383a;
+  --coral: #ed8068;
+  --verde-medio: #587d78;
+  --verde-profundo: #315f63;
+  --fondo: #eef1e8;
+  --superficie: #f7f8f3;
+  --borde: #c9d3cc;
+  --error: #b3412c;
+  --radio: 12px;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--fondo);
+  color: var(--tinta);
+}
+
+/* La franja de demo: siempre visible, sin letra chica. */
+.demo-franja {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0.6rem 1rem;
+  background: var(--tinta);
+  color: var(--fondo);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.demo-cuerpo {
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+  flex: 1;
+}
+
+.demo-titulo {
+  margin: 1rem 0 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.demo-subtitulo {
+  margin: 0 0 0.5rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.demo-ubicacion {
+  margin: 0 0 1rem;
+  color: var(--verde-medio);
+}
+
+.demo-texto {
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+/* --- Fotos -------------------------------------------------------------- */
+
+/* Las fotos van en fila y se deslizan de costado, como en cualquier aviso de
+   alquiler. Apiladas, dos fotos de 3:2 empujaban el nombre de la casa a mitad
+   de pantalla y el boton Consultar quedaba fuera de la primera vista en un
+   celular. La segunda asoma por el borde para que se entienda que hay mas. */
+.demo-fotos {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 88%;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.demo-fotos::-webkit-scrollbar {
+  display: none;
+}
+
+.demo-fotos > .demo-foto {
+  scroll-snap-align: start;
+}
+
+/* Con una sola foto, ocupa todo el ancho. */
+.demo-fotos:has(> .demo-foto:only-child) {
+  grid-auto-columns: 100%;
+}
+
+.demo-foto {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radio);
+  overflow: hidden;
+  background: var(--superficie);
+}
+
+.demo-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Foto que todavia no existe: placeholder con la descripcion de lo que va a
+   mostrar. Borde punteado y sin fondo de foto, como el del aviso al
+   propietario, para que no se lea como una imagen real. */
+.demo-foto--pendiente {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border: 1.5px dashed var(--borde);
+  background: transparent;
+  text-align: center;
+}
+
+.demo-foto--pendiente figcaption {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 22rem;
+}
+
+.demo-foto-pendiente-rotulo {
+  color: var(--verde-medio);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.demo-foto-pendiente-texto {
+  color: var(--verde-medio);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.demo-foto-nota {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(23 56 58 / 0.75);
+  color: var(--fondo);
+  font-size: 0.75rem;
+}
+
+/* --- Lo que tiene ------------------------------------------------------- */
+
+.demo-bloque {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.demo-lista {
+  margin: 0;
+  padding-left: 1.1rem;
+  line-height: 1.7;
+}
+
+.demo-lista--servicios {
+  margin-top: 0.75rem;
+  color: var(--verde-profundo);
+}
+
+/* --- Botones ------------------------------------------------------------ */
+
+.demo-boton {
+  display: block;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 0;
+  border-radius: var(--radio);
+  background: var(--coral);
+  color: var(--tinta);
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.demo-boton--secundario {
+  background: transparent;
+  border: 1.5px solid var(--verde-profundo);
+  color: var(--verde-profundo);
+}
+
+.demo-volver {
+  display: inline-block;
+  color: var(--verde-profundo);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+/* --- Formulario --------------------------------------------------------- */
+
+.demo-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.demo-grupo {
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  border-radius: var(--radio);
+  background: var(--superficie);
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Dos campos lado a lado (adultos y menores). */
+.demo-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Las fechas van una debajo de la otra en el celular: el selector de fecha de
+   Chrome tiene un ancho minimo propio (~175px) que no se achica, y en 375px
+   las dos casillas se pisaban. Lado a lado recien cuando entran. */
+.demo-fila--fechas {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 26rem) {
+  .demo-fila--fechas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.demo-casilla {
+  display: grid;
+  gap: 0.3rem;
+  /* Sin esto, un campo con ancho minimo propio desborda la grilla. */
+  min-width: 0;
+}
+
+/* La franja de demo queda fija arriba: al llevar a la persona a un campo con
+   error (o al titulo), que no quede tapado debajo de ella. */
+.demo :is(h1, input, select, textarea) {
+  scroll-margin-top: 4rem;
+}
+
+.demo-etiqueta {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.demo-casilla input,
+.demo-casilla select,
+.demo-casilla textarea {
+  width: 100%;
+  min-width: 0;
+  /* 16px: con menos, el iPhone hace zoom al tocar el campo. */
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.7rem 0.75rem;
+  border: 1.5px solid var(--borde);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--tinta);
+}
+
+.demo-casilla textarea {
+  resize: vertical;
+}
+
+.demo-casilla input:focus-visible,
+.demo-casilla select:focus-visible,
+.demo-casilla textarea:focus-visible {
+  outline: 2px solid var(--verde-profundo);
+  outline-offset: 1px;
+}
+
+.demo-casilla--error input,
+.demo-casilla--error select,
+.demo-casilla--error textarea {
+  border-color: var(--error);
+}
+
+.demo-error {
+  margin: 0;
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+.demo-tilde {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem; /* area tocable comoda */
+}
+
+.demo-tilde input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--verde-profundo);
+}
+
+.demo-ayuda {
+  margin: 0;
+  color: var(--verde-medio);
+  font-size: 0.9rem;
+}
+
+.demo-ayuda--centro {
+  text-align: center;
+}
+
+/* --- Resumen ------------------------------------------------------------ */
+
+.demo-aviso {
+  margin: 0.5rem 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--coral);
+  background: var(--superficie);
+}
+
+.demo-resumen {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.demo-resumen dt {
+  color: var(--verde-medio);
+}
+
+.demo-resumen dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* --- Asi le llegaria al propietario ------------------------------------- */
+
+.demo-seccion {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.demo-seccion .demo-resumen {
+  margin: 0;
+}
+
+/* La planilla: ancha a proposito, con las columnas de un Google Sheet. En el
+   celular se desliza de costado dentro de su caja; la pagina no se corre. */
+.demo-planilla {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: #fff;
+}
+
+.demo-planilla:focus-visible {
+  outline: 2px solid var(--verde-profundo);
+  outline-offset: 2px;
+}
+
+.demo-planilla table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.demo-planilla th,
+.demo-planilla td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--borde);
+  border-right: 1px solid var(--borde);
+  text-align: left;
+}
+
+.demo-planilla th {
+  background: var(--superficie);
+  color: var(--verde-medio);
+  font-weight: 600;
+}
+
+/* El comentario puede ser largo: que corte en vez de estirar la planilla. */
+.demo-planilla td:last-child {
+  min-width: 12rem;
+  max-width: 20rem;
+  white-space: normal;
+}
+
+.demo-planilla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* El renglon que acaba de caer. */
+.demo-planilla-nueva td {
+  background: rgb(237 128 104 / 0.12);
+}
+
+
+.demo-volver--abajo {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* --- Pie ---------------------------------------------------------------- */
+
+.demo-pie {
+  padding: 1.25rem 1rem 2rem;
+  color: var(--verde-medio);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.demo-pie a {
+  color: var(--tinta);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.demo-marca-uno {
+  color: var(--coral);
+}

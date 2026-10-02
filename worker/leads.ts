@@ -10,11 +10,23 @@
    primero y despues se la reenvia a la planilla desde el servidor, donde si
    puede leer la respuesta. Si Google falla, la consulta ya esta guardada. */
 
-/** Web App de Apps Script ("Hito Leads") que escribe en la planilla.
-    Vive aca y no en el cliente: antes viajaba en el bundle y la veia
-    cualquiera que mirara el codigo de la pagina. */
-const APPS_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbzPbTpdaGcOrutc0u86gnerx_d0Bm5GOVZ8uQQrmQN33kqPaXSA_HLmIYb8y1N72Qzxiw/exec'
+import { readJson } from './body'
+
+/** La Web App de Apps Script ("Hito Leads") que escribe en la planilla.
+
+    La direccion NO vive en el codigo: es el secreto APPS_SCRIPT_URL de
+    Cloudflare. Antes estaba escrita aca, y el repositorio resulto publico
+    (2026-09-21): cualquiera podia escribir en la planilla sin pasar por el
+    freno ni la trampa anti-spam de este Worker.
+
+    Se valida igual, aunque la cargue alguien del equipo: un secreto mal
+    cargado (otra URL, un espacio de mas, la de edicion en vez de la de
+    /exec) mandaria las consultas de clientes a cualquier lado sin que nadie
+    lo note. Devuelve la direccion limpia, o null si no sirve. */
+export function urlPlanilla(valor: string | undefined): string | null {
+  const v = (valor ?? '').trim()
+  return /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(v) ? v : null
+}
 
 /** Campos que acepta el formulario. `hp` es la trampa anti-spam. */
 /* Los campos que el formulario manda hoy. "shape" lleva el Hito propuesto:
@@ -33,6 +45,12 @@ const FIELDS = [
 
 const MAX_LENGTH: Record<string, number> = { notes: 2000, pageUrl: 200 }
 const DEFAULT_MAX = 200
+
+/* Tope del cuerpo entero, antes de leerlo. Con los recortes de arriba una
+   consulta completa ocupa unos 3.400 caracteres; con acentos y emojis, que
+   pesan hasta 4 bytes, no llega a 14 KB. 16 KB deja margen para una consulta
+   real y corta cualquier cosa que no lo sea. */
+const LEAD_BODY_MAX = 16 * 1024
 
 export type LeadResult =
   | { ok: true; stored: number; forwarded: boolean }
@@ -73,13 +91,23 @@ export async function handleLead(
       heredar el que reenvia por descuido (ver `REENVIO_CONSULTAS` en
       wrangler.jsonc). */
   reenviar: boolean,
+  /** El secreto APPS_SCRIPT_URL tal como llega del entorno. Si falta o no es
+      una direccion de Apps Script, la consulta se guarda igual y queda
+      anotada con el error: el formulario nunca se rompe por esto. */
+  secretoPlanilla: string | undefined,
 ): Promise<LeadResult> {
-  let raw: Record<string, unknown>
-  try {
-    raw = (await request.json()) as Record<string, unknown>
-  } catch {
+  const body = await readJson<unknown>(request, LEAD_BODY_MAX)
+  if (!body.ok) {
+    return body.status === 413
+      ? { ok: false, status: 413, error: 'El formulario es demasiado largo.' }
+      : { ok: false, status: 400, error: 'No pudimos leer el formulario.' }
+  }
+  /* `null`, un numero o una lista tambien son JSON valido, y sin este control
+     `raw.hp` revienta y el Worker contesta 500 en vez de un 400 claro. */
+  if (typeof body.data !== 'object' || body.data === null || Array.isArray(body.data)) {
     return { ok: false, status: 400, error: 'No pudimos leer el formulario.' }
   }
+  const raw = body.data as Record<string, unknown>
 
   /* Trampa: el campo esta escondido, una persona no lo completa nunca. Al bot
      se le contesta que si para que no reintente, pero no se guarda ni se
@@ -114,7 +142,10 @@ export async function handleLead(
   /* El viaje a Apps Script tarda varios segundos. No se hace esperar a la
      persona por eso: la consulta ya esta guardada, asi que se contesta ya y
      el reenvio sigue en segundo plano. */
-  waitUntil(reenviar ? forward(payload, id, ask) : anotarSinReenvio(id, ask))
+  const destino = urlPlanilla(secretoPlanilla)
+  if (!reenviar) waitUntil(anotarSinReenvio(id, ask))
+  else if (!destino) waitUntil(anotarSinDestino(id, ask))
+  else waitUntil(forward(payload, id, ask, destino))
 
   /* Para quien completo el formulario esto es un exito: su consulta esta
      guardada y la vamos a ver. Si no llega a la planilla queda anotada con su
@@ -145,14 +176,27 @@ async function anotarSinReenvio(id: number, ask: Ask): Promise<void> {
   })
 }
 
+/* Entorno que deberia reenviar pero no tiene a donde: falta el secreto o no
+   es una direccion de Apps Script. La consulta ya esta guardada; se anota con
+   un error que dice que hacer, y se grita en el registro del Worker, porque
+   es una falla de configuracion nuestra y no de Google. */
+async function anotarSinDestino(id: number, ask: Ask): Promise<void> {
+  const error =
+    'Falta el secreto APPS_SCRIPT_URL, o no es una direccion de Apps Script (/macros/s/.../exec). ' +
+    'Se carga con: npx wrangler secret put APPS_SCRIPT_URL'
+  console.error(`Consulta ${id} guardada pero sin reenviar: ${error}`)
+  if (!id) return
+  await ask('/lead-mark', { method: 'POST', body: JSON.stringify({ id, forwarded: false, error }) })
+}
+
 /** Manda la consulta a la planilla y anota como salio. */
-async function forward(payload: unknown, id: number, ask: Ask): Promise<void> {
+async function forward(payload: unknown, id: number, ask: Ask, destino: string): Promise<void> {
   let forwarded = false
   let error: string | undefined
   try {
     /* Servidor a servidor: aca no hay CORS, asi que la respuesta se puede
        leer de verdad. El Apps Script contesta {result:"success"} o error. */
-    const response = await fetch(APPS_SCRIPT_URL, {
+    const response = await fetch(destino, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       /* Todo en ASCII: Apps Script responde con una redireccion y en el salto

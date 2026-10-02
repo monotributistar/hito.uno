@@ -169,6 +169,10 @@ rate     bucket (PK), count, started_at
   `worker/tokens.json`, así que **solo sirve para los perfiles sandbox del equipo**:
   hasta que exista administración no hay forma de darle un panel a un cliente real sin
   commitear su token, que es un secreto filtrado (`npm run check` lo frena).
+  **Desde el 2026-09-21 no hay ninguno:** el repositorio resultó público, los dos
+  tokens sandbox se revocaron y el panel queda sin acceso hasta que vuelva a ser
+  privado. Revocar pide su hash en `worker/revocados.ts`, porque la semilla
+  (`INSERT OR IGNORE`) no borra: sacar un token del archivo lo deja vivo en el almacén.
 - `leads` son las consultas del formulario de la landing, guardadas antes de reenviarlas
   a la planilla. `forwarded` dice si la planilla las confirmó; `pendingLeads()` lista las
   que no. No es del panel, pero vive en el mismo almacén.

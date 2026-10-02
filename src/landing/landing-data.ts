@@ -1,4 +1,10 @@
 import type { ExperienceId } from '../experience-data'
+import { whatsappHref } from '../partner/links'
+
+/* El llamado a la accion unico del sitio. Vive aca porque dos puertas todavia
+   no tienen pagina publicada y abren esto en su lugar. */
+export const CTA = 'Agendemos una reunión'
+export const CTA_HREF = whatsappHref('+5492254590762', 'Hola, quiero agendar una reunión.')
 
 /* Configurador "Pedí tu Hito": dos preguntas, y las opciones de la segunda
    dependen de la primera. Asi quien quiere presentarse no ve "Wi-Fi del local"
@@ -247,35 +253,139 @@ export const objects: Record<ObjectKey, HitoObject> = {
 }
 
 
-export const stepsWithout = [
-  'Buscar información',
-  'Abrir el navegador',
-  'Buscar la empresa',
-  'Encontrar la sección',
-  'Hacer la acción',
+/* --- Que pasos queres reducir ---
+   La seccion arranca con una pregunta y la persona elige su caso. Cada caso
+   muestra la cadena de hoy contra el toque: la gracia es que se vea a si misma
+   en la lista larga.
+
+   Todos los casos son cosas que Hito entrega hoy. Si algo esta a construir, no
+   entra aca.
+
+   No confundir con el configurador: aca se muestra el PROBLEMA; el
+   configurador arma la propuesta y pide el contacto. */
+export type CasoKey = 'agendar' | 'vender' | 'reservar' | 'resenas'
+
+export type Caso = {
+  key: CasoKey
+  /** Texto de la pastilla. Corto: entra en una fila en el celular. */
+  label: string
+  /** La cadena de hoy, un renglon por paso. */
+  hoy: string[]
+  /** Lo que pasa con el objeto, en un paso. */
+  conHito: { titulo: string; detalle: string }
+}
+
+/* Los cuatro casos y su orden los aprobo Stephano el 2026-10-02. */
+export const casos: Caso[] = [
+  {
+    key: 'agendar',
+    label: 'Que me agenden',
+    hoy: [
+      'Le dictás tu número',
+      'Lo escribe mal',
+      'Te guarda como "Juan el de las tarjetas"',
+      'No te encuentra cuando te necesita',
+    ],
+    conHito: {
+      titulo: 'Un toque y quedás agendado',
+      detalle: 'Con tu nombre, tu foto y tus redes. Sin dictar nada.',
+    },
+  },
+  {
+    key: 'vender',
+    label: 'Que vean lo que vendo',
+    hoy: [
+      '"¿Tenés más fotos?"',
+      'Mandás una por una',
+      '"¿Cuánto el segundo?"',
+      'Repetís lo mismo diez veces por día',
+    ],
+    conHito: {
+      titulo: 'Un toque y ve todo, con precio',
+      detalle: 'Y te escribe por el que quiere, sin que expliques nada.',
+    },
+  },
+  {
+    key: 'reservar',
+    label: 'Que reserven mi casa',
+    hoy: [
+      'Te escriben por WhatsApp, Instagram y teléfono',
+      'Anotás en un papel',
+      'Dos personas preguntan por la misma semana',
+      'Una se te pierde',
+    ],
+    conHito: {
+      titulo: 'Un toque y la consulta cae ordenada',
+      detalle: 'Fechas, cuántos son y contacto, en la planilla que ya usás.',
+    },
+  },
+  {
+    key: 'resenas',
+    label: 'Que me dejen una reseña',
+    hoy: [
+      'Se lo pedís',
+      'Busca tu local en el mapa',
+      'Aparecen tres con nombre parecido',
+      'Lo deja para después',
+    ],
+    conHito: {
+      titulo: 'Un toque y está escribiendo la reseña',
+      detalle: 'En tu ficha, la correcta, mientras todavía está en la mesa.',
+    },
+  },
 ]
 
-/* --- Tres puertas ---
-   Orientan por contexto antes de que el visitante lea nada mas. Cada puerta
-   lleva a una seccion que ya existe y deja el carrusel en el soporte que
-   corresponde: no hay contenido nuevo que mantener detras. */
-export type DoorKey = 'personal' | 'local' | 'objeto'
+/* --- Que hacemos ---
+   Es lo primero que se lee. La pregunta va adelante porque es la que trae todo
+   el mundo cuando abre la pagina, y la respuesta son los cuatro trabajos que
+   Hito hace hoy, incluido el de las tomas aereas, que no estaba en el sitio.
+   Si algo no se puede entregar hoy, no entra en esta lista. */
+export type Servicio = { titulo: string; detalle: string }
+
+export const servicios: Servicio[] = [
+  {
+    titulo: 'Objetos que abren lo tuyo',
+    detalle: 'Tarjetas, llaveros y piezas impresas en 3D con chip y código: se apoyan en el celular y abren tu página.',
+  },
+  {
+    titulo: 'Tu página, al día',
+    detalle: 'Tu perfil, tu catálogo o la ficha de una propiedad. Cambia lo que muestra sin cambiar el objeto.',
+  },
+  {
+    titulo: 'Sistemas a medida',
+    detalle: 'Lo que hoy llevás en planillas y cuadernos, hecho a tu forma de trabajar y alojado por nosotros.',
+  },
+  {
+    titulo: 'Tomas aéreas y contenido',
+    detalle: 'Vuelos privados en 4K y 8K sobre tu casa, tu local o tu obra. Con ese material armamos el contenido para tus publicaciones.',
+  },
+]
+
+/* --- Cuatro puertas ---
+   Una por tipo de conversacion. Cada puerta lleva a su pagina (/personal,
+   /comercios, /objetos, /software), que es el link que Stephano manda por
+   WhatsApp: la home las presenta y la pagina cuenta el resto.
+
+   Imagenes, con el criterio que decidio Stephano (2026-09-21): solo capturas
+   reales de lo que existe (el perfil de muestra y la demo de reservas). Donde
+   no hay nada real que mostrar, un recuadro con la descripcion de lo que va a
+   ir, nunca una foto que haga parecer impresa una pieza que no existe. */
+export type DoorKey = 'personal' | 'comercio' | 'objetos' | 'software'
 
 export type Door = {
   key: DoorKey
   label: string
   title: string
   description: string
-  /** Que hay hoy para ese contexto, en pocas palabras. */
+  /** Que hay para ese contexto, en pocas palabras. */
   examples: string
-  /** Seccion de la landing a la que baja. */
+  /** Pagina a la que lleva. Tiene que ser una de las rutas del build. */
   href: string
-  /** Soporte que queda seleccionado en el carrusel al elegir la puerta. */
-  object: ObjectKey
-  /** Estado honesto: lo que se puede pedir hoy vs lo que se esta armando. */
-  status: 'Disponible hoy' | 'Foco comercial' | 'En desarrollo'
-  /** Foto arriba de la tarjeta. Reusa las de producto que ya estan en public/. */
-  photo: Photo
+  /** Estado honesto de lo que se ofrece en esa puerta. */
+  status: string
+  /** Captura real. Si no hay, va `placeholder` con la descripcion de la imagen. */
+  photo?: Photo
+  placeholder?: string
 }
 
 export const doors: Door[] = [
@@ -283,27 +393,30 @@ export const doors: Door[] = [
     key: 'personal',
     label: 'Personal',
     title: 'Tu información, siempre a mano.',
-    description: 'Una tarjeta que deja tu contacto guardado y una página tuya que vive en hito.uno.',
+    description: 'Una tarjeta que deja tu contacto guardado y una página tuya que vive en Hito.uno.',
     examples: 'Tarjeta · llavero · página personal',
-    href: '#demo',
-    object: 'tarjeta',
-    status: 'Disponible hoy',
+    href: '/personal',
+    /* Decia "Disponible hoy" y no hay ninguna pieza impresa: la pagina si
+       existe, la pieza todavia no. */
+    status: 'Página disponible',
     photo: {
-      src: '/images/products/tarjeta/tarjeta-06.webp',
-      alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR y la leyenda "acercá tu tarjeta para conectar"',
-      caption: 'Tarjeta · frente y dorso',
-      focus: '50% 55%',
+      src: '/images/puertas/personal-perfil.webp',
+      alt: 'Primer plano del perfil de muestra en un celular: la foto, el nombre y el rubro',
+      caption: 'Perfil de muestra · captura real',
     },
   },
   {
-    key: 'local',
-    label: 'Local',
-    title: 'Hacé más simple tu espacio.',
-    description: 'Objetos en la mesa, la pared o el mostrador que abren el menú, el Wi-Fi o las reseñas sin que nadie pregunte.',
-    examples: 'Apoyavasos · placa · recibidor',
-    href: '#soportes',
-    object: 'apoyavasos',
-    status: 'Foco comercial',
+    key: 'comercio',
+    label: 'Comercio',
+    title: 'Tu local, listo para la temporada.',
+    description: 'Ficha de Google, reseñas, carta o catálogo digital y un objeto instalado y probado en el local.',
+    examples: 'Ficha de Google · carta digital · reseñas',
+    // Pendiente de publicar: hasta entonces la puerta abre el llamado a la accion.
+    href: CTA_HREF,
+    // Pendiente: la pagina /comercios no se publica todavia (sin prueba).
+    status: 'Pronto',
+    /* Foto de producto que ya estaba en el sitio. Se cambia cuando exista la
+       foto de un local real. */
     photo: {
       src: '/images/products/apoyavasos/apoyavasos-01.webp',
       alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
@@ -312,19 +425,36 @@ export const doors: Door[] = [
     },
   },
   {
-    key: 'objeto',
-    label: 'Objeto',
+    key: 'objetos',
+    label: 'Objetos',
     title: 'Dale una capa digital a las cosas.',
-    description: 'Llaves, productos y equipos que cuentan lo que hay que saber de ellos al acercar el celular.',
-    examples: 'Llave · producto · equipo',
-    href: '#soportes',
-    object: 'llavero',
-    status: 'En desarrollo',
+    // Igual que /objetos: solo piezas personales (regla de segmentos).
+    description: 'Tarjeta, porta tarjetas y llavero: se apoyan en el celular y abren tu página.',
+    examples: 'Tarjeta · porta tarjetas · llavero',
+    // Pendiente de publicar: hasta entonces la puerta abre el llamado a la accion.
+    href: CTA_HREF,
+    status: 'Pronto',
+    /* Foto de producto que ya estaba en el sitio. Se cambia por el render
+       cuando exista. */
     photo: {
-      src: '/images/products/llavero/llavero-01.webp',
-      alt: 'Llavero Hito.uno azul colgado de una llave, sobre una superficie de piedra con luz cálida',
-      caption: 'Llavero · con la llave',
-      focus: '60% 55%',
+      src: '/images/products/tarjeta/tarjeta-06.webp',
+      alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR',
+      caption: 'Tarjeta · frente y dorso',
+      focus: '50% 55%',
+    },
+  },
+  {
+    key: 'software',
+    label: 'Software a medida',
+    title: 'Tus reservas, ordenadas.',
+    description: 'Una página para tu alojamiento con un formulario que deja cada consulta en una planilla que ya sabés usar.',
+    examples: 'Reservas · formularios · planillas',
+    href: '/software',
+    status: 'A medida',
+    photo: {
+      src: '/images/puertas/software-demo.webp',
+      alt: 'Primer plano de la demo de reservas: "Así le llegaría al propietario", con el aviso de que en la demo no se envía nada',
+      caption: 'Demo de reservas · captura real',
     },
   },
 ]

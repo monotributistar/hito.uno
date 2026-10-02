@@ -30,6 +30,16 @@
   // el lugar donde miramos los pedidos reales, y eso no se ve hasta que ya
   // paso. Ver docs/SEGURIDAD.md.
   "vars": { "REENVIO_CONSULTAS": "on" },
+  // La direccion del Apps Script que escribe en la planilla es un SECRETO de
+  // Cloudflare, no codigo: antes estaba en worker/leads.ts y el repositorio
+  // resulto publico. Se carga una vez con:
+  //   npx wrangler secret put APPS_SCRIPT_URL
+  // Declararlo como requerido hace que Cloudflare RECHACE el deploy de
+  // produccion si el secreto no esta cargado: la verificacion la hace quien
+  // sabe la verdad, no un archivo nuestro. (Un deploy rechazado no tira el
+  // sitio: sigue corriendo la version anterior.) Dev no lo necesita porque no
+  // reenvia (ver REENVIO_CONSULTAS).
+  "secrets": { "required": ["APPS_SCRIPT_URL"] },
   // Conteo de toques por objeto (Analytics Engine). El dataset aparece solo
   // con el primer dato, pero la cuenta tiene que tener Analytics Engine
   // habilitado UNA vez desde el panel, si no el deploy falla con el error
@@ -53,6 +63,10 @@
       // creyendo que falta. La consulta se guarda igual en el almacen de dev,
       // que es de donde se leen las pruebas de carga.
       "vars": { "REENVIO_CONSULTAS": "off" },
+      // Dev no reenvia, asi que no necesita la direccion del Apps Script. Se
+      // declara vacio a proposito: "secrets" no se hereda del nivel de arriba,
+      // y sin esta linea wrangler avisa en cada corrida.
+      "secrets": { "required": [] },
       // Los bindings no se heredan entre entornos: hay que repetirlos aca.
       "durable_objects": {
         "bindings": [{ "name": "STORE", "class_name": "HitoStore" }]

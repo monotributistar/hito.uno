@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Demo con una propiedad INVENTADA: fuera de los buscadores, para que
+         nadie encuentre en Google una casa que no existe. El verificador de
+         rutas exige esta meta en todo lo que vive bajo /demo/. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#17383a" />
+    <meta name="description" content="Demo de un sistema de reservas para alquiler temporario. Propiedad ficticia: no se envía nada." />
+    <!-- La vista previa si importa: Stephano manda este link por WhatsApp, y la
+         meta robots de arriba no afecta a WhatsApp. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hito.uno/demo/reservas" />
+    <meta property="og:title" content="Demo de reservas · Hito.uno" />
+    <meta property="og:description" content="Así se vería la página de reservas de tu alojamiento. Propiedad ficticia." />
+    <title>Demo de reservas · Hito.uno</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/demo/main-reservas.tsx"></script>
+  </body>
+</html>

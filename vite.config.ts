@@ -13,6 +13,31 @@ export default defineConfig({
         partner: resolve(__dirname, 'p/index.html'),
         // Panel del cliente: una sola entrada para cualquier /panel/<token>.
         panel: resolve(__dirname, 'panel/index.html'),
+        /* Paginas comerciales: una entrada por pagina, con su <head> propio.
+           Son archivos estaticos, no pasan por el Worker: el titulo y la
+           descripcion de la vista previa quedan resueltos en el build, que es
+           lo que necesita WhatsApp (no ejecuta React). El contenido de las
+           cuatro sale de src/paginas/paginas-data.ts y lo dibuja un solo
+           modulo, main-pagina.tsx, que elige por la ruta. */
+        software: resolve(__dirname, 'software/index.html'),
+        personal: resolve(__dirname, 'personal/index.html'),
+        /* comercios y objetos NO se publican todavia: las dos paginas estan
+           escritas (comercios/index.html, objetos/index.html y sus entradas en
+           paginas-data.ts) pero ninguna tiene prueba, asi que no entran al
+           build. Comercios se abre con el primer local hecho; objetos, con la
+           primera pieza impresa. Mientras tanto, sus puertas de la home abren
+           el llamado a la accion. */
+        /* Paginas de propiedad: una entrada por propiedad, misma mecanica que
+           las comerciales. El contenido sale de
+           src/propiedades/propiedades-data.ts. */
+        'casa-valeria-1': resolve(__dirname, 'c/valeria-1/index.html'),
+        /* Listado de propiedades por dueño: a donde lleva "Alquileres" desde
+           su perfil. Una entrada por dueño, el contenido se filtra por la
+           ruta. */
+        'alquileres-stephano': resolve(__dirname, 'alquileres/stephano/index.html'),
+        /* Demos: pruebas de lo que se vende, con datos inventados. Van con
+           noindex (lo exige check-paths) y no mandan nada a ningun lado. */
+        'demo-reservas': resolve(__dirname, 'demo/reservas/index.html'),
       },
     },
   },

@@ -10,25 +10,29 @@
     "preview": "vite preview",
     "map:refresh": "node scripts/maps/fetch-map.mjs",
     "check:paths": "node scripts/check-paths.mjs",
+    "check:entornos": "node scripts/check-entornos.mjs",
+    "check:placeholders": "node scripts/check-placeholders.mjs",
+    "test": "vitest run",
     "deploy": "npm run build && wrangler deploy --env=\"\"",
     "deploy:dev": "npm run build && wrangler deploy --env dev",
     "deploy:production": "npm run deploy",
-    "check": "npm run check:paths && tsc -b && vite build && wrangler deploy --dry-run --env=\"\""
+    "check": "npm run check:paths && npm run check:placeholders && tsc -b && vite build && npm run test && npm run check:entornos"
   },
   "dependencies": {
-    "@react-three/fiber": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "three": "latest"
+    "@react-three/fiber": "^9.7.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "0.185.1"
   },
   "devDependencies": {
     "@types/node": "^26.3.0",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "@types/three": "latest",
-    "@vitejs/plugin-react": "latest",
-    "typescript": "latest",
-    "vite": "latest",
-    "wrangler": "latest"
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@types/three": "0.185.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.1",
+    "wrangler": "^4.125.0"
   }
 }

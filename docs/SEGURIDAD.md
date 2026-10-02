@@ -21,6 +21,16 @@ Sin excepciones:
 - Antes de una prueba de carga fuerte, revisar qué dice Cloudflare sobre
   hacerlas en la propia zona, para no terminar con la cuenta o la IP
   bloqueadas.
+- **Mientras la dirección real del Apps Script esté en el código, ninguna
+  consulta válida a un Worker local.** Un Worker local tiene Internet y la
+  planilla es una sola. Para probar que algo no reenvía: test con `fetch`
+  simulado, sin red. A un servidor solo se le mandan pedidos que cualquier
+  versión del código rechaza antes de guardar, como un cuerpo que no es JSON.
+  Ver incidente 4.1.
+- **Una prueba contra un servidor cuenta solo si contestó el propio**: puerto
+  propio, log propio, y una respuesta o línea de log que solo el código nuevo
+  produce. Si esa señal falta, la prueba falló; no se descarta. En esta carpeta
+  hay varios chats con su propio `wrangler dev`.
 
 ---
 
@@ -64,6 +74,37 @@ panel de Cloudflare, para cada entorno, y si alguien redeploya sin cargarlo el
 comportamiento cambia en silencio. Qué entorno reenvía es una decisión que
 queremos a la vista y revisada en el PR, no escondida.
 
+### 1.2 Tope de tamaño en los cuerpos de `/api/lead` y `/api/panel/*` (2026-09-18)
+
+**El problema.** Los dos leían el cuerpo con `request.json()`, que carga el
+pedido entero en memoria antes de mirar nada, y Cloudflare deja entrar cuerpos
+de hasta 100 MB. Además, un cuerpo que era JSON válido pero no un objeto
+(`null`, `42`, `[1,2]`) hacía reventar el Worker con un 500 en vez de un 400: en
+el formulario por `raw.hp`, y en el panel por `.trim()` sobre un `to` que no era
+texto. Y el destino que guarda el panel no tenía largo máximo.
+
+**Qué se hizo.** `worker/body.ts` lee el cuerpo con tope: mira `Content-Length`
+primero y además cuenta mientras lee, porque ese encabezado puede no venir o
+mentir; apenas se pasa, corta sin descargar el resto y contesta 413. Topes:
+
+| Ruta | Tope | Por qué ese número |
+| --- | --- | --- |
+| `POST /api/lead` | 16 KB | Una consulta completa con los recortes de `leads.ts` no llega a 14 KB ni con todo en caracteres de 3 bytes |
+| `PATCH /api/panel/objects/<id>` | 4 KB | Solo trae `{ "to": "<url>" }` |
+| Destino del panel | 2048 caracteres | Un destino real no pasa de unos cientos, y se guarda en el almacén |
+
+Lo que no es un objeto o no trae un `to` de texto recibe un 400 claro.
+
+**Cómo se probó.** Sin red, con `node --test` y la llamada a Google simulada:
+el lector con 9 casos (tope exacto, un byte más, bytes y no caracteres,
+`Content-Length` que miente, envío por partes que se corta antes de leer el
+resto) y `handleLead` con 10 (con el reenvío apagado Google no recibe nada;
+cuerpo gigante y cuerpos que no son objeto no tocan ni el almacén ni Google;
+una consulta real completa con acentos y emojis entra). Después, contra un
+Worker local propio, confirmando que era el propio. Los tests no quedaron en el
+repositorio: PLAT 1 va a sumar los del Worker y no conviene que haya dos
+formas de correrlos.
+
 ---
 
 ## 2. Pendientes anotados
@@ -95,8 +136,8 @@ En orden, con el riesgo escrito:
    bien (el toque nunca termina en error); para un freno de seguridad, no.
 
 4. **`/api/panel/*` no tiene freno de intentos**, así que los tokens del panel
-   se pueden probar de a miles. Y el cuerpo de `/api/lead` y `/api/panel/*` se
-   lee sin tope de tamaño.
+   se pueden probar de a miles. (El tope de tamaño del cuerpo, que iba en este
+   mismo punto, ya está: ver 1.2.)
 
 5. **Un solo almacén para todo.** El mismo Durable Object guarda los destinos
    de los objetos, los tokens, las consultas y el conteo del freno, y atiende
@@ -122,3 +163,27 @@ En orden, con el riesgo escrito:
 
 Todavía ninguno. El primero es el punto 5 de la lista de arriba, ahora que dev
 dejó de tocar la planilla.
+
+---
+
+## 4. Incidentes
+
+### 4.1 Una prueba local escribió en la planilla real (2026-09-17)
+
+**Qué pasó.** Para verificar el cambio 1.1, SEC 1 mandó una consulta de prueba
+("Prueba SEC 1 entorno nuevo", `sec@prueba.local`) a un Worker local que
+supuestamente no reenviaba. La consulta llegó a la planilla real. Se informó
+como prueba superada, en el PR #13 y a PLAT 1. Stephano encontró la fila el
+2026-09-18.
+
+**Por qué.** El log del servidor de prueba quedó vacío y los rastros que se
+usaron como prueba incluían pedidos que no se habían hecho: lo más probable es
+que contestara el servidor local de otro chat, con código anterior al cambio.
+Había una señal y se descartó: faltaba la línea de log que el código nuevo
+escribe cuando no reenvía.
+
+**Qué no pasó.** El código del cambio 1.1 estaba bien, y lo sigue estando: el
+paquete de dev tiene `=== "on"`, y producción reenvía, como muestra una
+consulta de Stephano del 2026-09-18.
+
+**Qué cambió.** Dos reglas, sumadas arriba a las reglas para atacar.
