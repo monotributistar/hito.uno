@@ -52,6 +52,13 @@
           "handle": "arcella.uno"
         },
         {
+          "$comment": "Link interno al listado de sus propiedades. Empieza con / a proposito, para que abra en la misma pestaña.",
+          "kind": "web",
+          "label": "Alquileres",
+          "detail": "Mis propiedades",
+          "href": "/alquileres/stephano/"
+        },
+        {
           "kind": "web",
           "label": "Conocé Hito",
           "detail": "hito.uno",

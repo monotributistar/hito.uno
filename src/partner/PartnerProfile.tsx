@@ -176,7 +176,10 @@ function ProfileActions({ partner }: { partner: Partner }) {
 function LinkButton({ link, primary = false }: { link: PartnerLink; primary?: boolean }) {
   // Un link a una seccion de la misma pagina (ej. "#catalog-<slug>") baja
   // hasta ahi; abrirlo en otra pestana no tendria sentido.
-  const internal = link.href.startsWith('#')
+  /* Interno: un ancla de la misma pagina o una ruta nuestra (la pagina de una
+     propiedad, por ejemplo). Se abre en la misma pestaña; solo lo de afuera
+     abre una nueva. */
+  const internal = link.href.startsWith('#') || link.href.startsWith('/')
   return (
     <a
       className={primary ? 'partner-link partner-link--primary' : 'partner-link'}
