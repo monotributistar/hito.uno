@@ -608,6 +608,36 @@
   }
 }
 
+/* Que hacemos: la respuesta del hero, en cuatro renglones. */
+.hero-servicios {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+  margin: 22px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.hero-servicios li {
+  display: grid;
+  gap: 2px;
+  padding-left: 14px;
+  border-left: 2px solid rgba(237, 128, 104, 0.75);
+}
+
+.hero-servicios strong {
+  color: #17383a;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.hero-servicios span {
+  color: #315f63;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 /* --- Cuatro puertas ----------------------------------------------------- */
 
 .hito-doors {

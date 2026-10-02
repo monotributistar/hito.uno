@@ -255,6 +255,33 @@ export const stepsWithout = [
   'Hacer la acción',
 ]
 
+/* --- Que hacemos ---
+   Es lo primero que se lee. La pregunta va adelante porque es la que trae todo
+   el mundo cuando abre la pagina, y la respuesta son los cuatro trabajos que
+   Hito hace hoy, incluido el de las tomas aereas, que no estaba en el sitio.
+   Si algo no se puede entregar hoy, no entra en esta lista. */
+export type Servicio = { titulo: string; detalle: string }
+
+export const servicios: Servicio[] = [
+  {
+    titulo: 'Objetos que abren lo tuyo',
+    detalle: 'Tarjetas, llaveros y piezas impresas en 3D con chip y código: se apoyan en el celular y abren tu página.',
+  },
+  {
+    titulo: 'Tu página, al día',
+    detalle: 'Tu perfil, tu catálogo o la ficha de una propiedad. Cambia lo que muestra sin cambiar el objeto.',
+  },
+  {
+    titulo: 'Sistemas a medida',
+    detalle: 'Lo que hoy llevás en planillas y cuadernos, hecho a tu forma de trabajar y alojado por nosotros.',
+  },
+  {
+    titulo: 'Tomas aéreas y contenido',
+    // PLACEHOLDER: a confirmar con Stephano como se ofrece (frecuencia, que incluye).
+    detalle: 'Vuelos privados en 4K y 8K sobre tu casa, tu local o tu obra. Con ese material armamos el contenido para tus publicaciones.',
+  },
+]
+
 /* --- Cuatro puertas ---
    Una por tipo de conversacion. Cada puerta lleva a su pagina (/personal,
    /comercios, /objetos, /software), que es el link que Stephano manda por

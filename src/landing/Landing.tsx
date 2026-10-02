@@ -4,6 +4,7 @@ import Foto from '../compartido/Foto'
 import {
   doors,
   layers,
+  servicios,
   needs,
   objects,
   stepsWithout,
@@ -164,25 +165,29 @@ export default function Landing({ onSceneFocusChange }: Props) {
 
       <section className="hero" id="inicio" aria-labelledby="hero-title">
         <div className="hero-copy">
-          <p className="kicker">TARJETAS PERSONALES HITO / 01</p>
+          <p className="kicker">HITO.UNO / CARILÓ</p>
           <h1 id="hero-title">
-            Tu tarjeta.
+            ¿Qué hacemos
             <br />
-            A un toque
-            <br />
-            <em>de distancia.</em>
+            <em>en Hito.uno?</em>
           </h1>
-          <p className="hero-description">
-            Diseñamos tarjetas físicas personalizadas que conectan directamente con la acción que
-            necesitás. La primera es el punto de partida del sistema.
-          </p>
+          {/* La respuesta, en cuatro renglones: cada uno es un trabajo que se
+              puede pedir hoy. Nada de lo que esta a construir entra aca. */}
+          <ul className="hero-servicios">
+            {servicios.map((s) => (
+              <li key={s.titulo}>
+                <strong>{s.titulo}</strong>
+                <span>{s.detalle}</span>
+              </li>
+            ))}
+          </ul>
           <div className="hero-actions">
             <a className="primary-action" href="#demo">
               Pedí tu Hito
               <span aria-hidden="true">↘</span>
             </a>
-            <a className="secondary-action" href="#pasos">
-              Cómo funciona
+            <a className="secondary-action" href="#puertas">
+              Elegí tu caso
             </a>
           </div>
         </div>
