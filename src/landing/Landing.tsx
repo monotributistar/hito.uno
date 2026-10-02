@@ -3,12 +3,12 @@ import { experiences, type ExperienceId } from '../experience-data'
 import Foto from '../compartido/Foto'
 import { whatsappHref } from '../partner/links'
 import {
+  casos,
   doors,
   layers,
   servicios,
   needs,
   objects,
-  stepsWithout,
   tapActions,
   tiers,
   useCases,
@@ -53,6 +53,8 @@ export default function Landing({ onSceneFocusChange }: Props) {
   const [activeObject, setActiveObject] = useState<ObjectKey>('tarjeta')
   const [tapped, setTapped] = useState(false)
   const [photoIndex, setPhotoIndex] = useState(0)
+  // Caso elegido en "¿Qué pasos querés reducir?". Arranca en el primero.
+  const [caso, setCaso] = useState(casos[0])
 
   // Estados del Formulario de Contacto
   const [contactData, setContactData] = useState({
@@ -442,38 +444,58 @@ export default function Landing({ onSceneFocusChange }: Props) {
         </div>
       </section>
 
-      <section className="hito-steps" id="pasos" aria-labelledby="steps-title">
+      {/* ¿Que pasos queres reducir? La persona elige su caso y ve su propia
+          cadena de hoy contra el toque. Fondo oscuro a proposito: separa esta
+          seccion del configurador, que tambien tiene botones pero pide datos. */}
+      <section className="hito-pasos" id="pasos" aria-labelledby="pasos-title">
         <p className="card-eyebrow">Reducimos pasos / la idea</p>
-        <h2 id="steps-title">
-          Menos pasos entre una persona
+        <h2 id="pasos-title">
+          ¿Qué pasos querés reducir
           <br />
-          <em>y lo que importa.</em>
+          <em>entre vos y tus clientes?</em>
         </h2>
-        <div className="hito-steps-grid">
-          <div>
-            <p className="kicker">SIN HITO</p>
-            <ol className="product-list">
-              {stepsWithout.map((label, index) => (
-                <li key={label}>
-                  <span className="marker-number is-muted">{String(index + 1).padStart(2, '0')}</span>
-                  <span>
-                    <strong>{label}</strong>
-                  </span>
+
+        <div className="hito-pasos-chips" role="tablist" aria-label="Elegí tu caso">
+          {casos.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              role="tab"
+              id={`caso-${c.key}`}
+              aria-selected={c.key === caso.key}
+              aria-controls="caso-panel"
+              className={c.key === caso.key ? 'is-actual' : undefined}
+              onClick={() => setCaso(c)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        <div
+          className="hito-pasos-panel"
+          id="caso-panel"
+          role="tabpanel"
+          aria-labelledby={`caso-${caso.key}`}
+        >
+          <div className="hito-pasos-hoy">
+            <p className="kicker">HOY</p>
+            <ol>
+              {caso.hoy.map((paso, i) => (
+                <li key={paso}>
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                  {paso}
                 </li>
               ))}
             </ol>
           </div>
-          <div>
-            <p className="kicker hito-kicker-accent">CON HITO</p>
-            <ol className="product-list hito-single-step">
-              <li>
-                <span className="marker-number">01</span>
-                <span>
-                  <strong>Un toque</strong>
-                  <small>El objeto ya sabe qué tiene que pasar.</small>
-                </span>
-              </li>
-            </ol>
+          <div className="hito-pasos-hito">
+            <p className="kicker">CON HITO</p>
+            <p className="hito-pasos-titulo">{caso.conHito.titulo}</p>
+            <p className="hito-pasos-detalle">{caso.conHito.detalle}</p>
+            <a className="primary-action" href={CTA_HREF}>
+              {CTA} <span aria-hidden="true">↗</span>
+            </a>
           </div>
         </div>
       </section>

@@ -247,12 +247,86 @@ export const objects: Record<ObjectKey, HitoObject> = {
 }
 
 
-export const stepsWithout = [
-  'Buscar información',
-  'Abrir el navegador',
-  'Buscar la empresa',
-  'Encontrar la sección',
-  'Hacer la acción',
+/* --- Que pasos queres reducir ---
+   La seccion arranca con una pregunta y la persona elige su caso. Cada caso
+   muestra la cadena de hoy contra el toque: la gracia es que se vea a si misma
+   en la lista larga.
+
+   Todos los casos son cosas que Hito entrega hoy. Si algo esta a construir, no
+   entra aca.
+
+   No confundir con el configurador: aca se muestra el PROBLEMA; el
+   configurador arma la propuesta y pide el contacto. */
+export type CasoKey = 'agendar' | 'vender' | 'reservar' | 'resenas'
+
+export type Caso = {
+  key: CasoKey
+  /** Texto de la pastilla. Corto: entra en una fila en el celular. */
+  label: string
+  /** La cadena de hoy, un renglon por paso. */
+  hoy: string[]
+  /** Lo que pasa con el objeto, en un paso. */
+  conHito: { titulo: string; detalle: string }
+}
+
+// PLACEHOLDER: los cuatro casos y su orden esperan el OK de Stephano.
+export const casos: Caso[] = [
+  {
+    key: 'agendar',
+    label: 'Que me agenden',
+    hoy: [
+      'Le dictás tu número',
+      'Lo escribe mal',
+      'Te guarda como "Juan el de las tarjetas"',
+      'No te encuentra cuando te necesita',
+    ],
+    conHito: {
+      titulo: 'Un toque y quedás agendado',
+      detalle: 'Con tu nombre, tu foto y tus redes. Sin dictar nada.',
+    },
+  },
+  {
+    key: 'vender',
+    label: 'Que vean lo que vendo',
+    hoy: [
+      '"¿Tenés más fotos?"',
+      'Mandás una por una',
+      '"¿Cuánto el segundo?"',
+      'Repetís lo mismo diez veces por día',
+    ],
+    conHito: {
+      titulo: 'Un toque y ve todo, con precio',
+      detalle: 'Y te escribe por el que quiere, sin que expliques nada.',
+    },
+  },
+  {
+    key: 'reservar',
+    label: 'Que reserven mi casa',
+    hoy: [
+      'Te escriben por WhatsApp, Instagram y teléfono',
+      'Anotás en un papel',
+      'Dos personas preguntan por la misma semana',
+      'Una se te pierde',
+    ],
+    conHito: {
+      titulo: 'Un toque y la consulta cae ordenada',
+      detalle: 'Fechas, cuántos son y contacto, en la planilla que ya usás.',
+    },
+  },
+  {
+    key: 'resenas',
+    label: 'Que me dejen una reseña',
+    hoy: [
+      'Se lo pedís',
+      'Busca tu local en el mapa',
+      'Aparecen tres con nombre parecido',
+      'Lo deja para después',
+    ],
+    conHito: {
+      titulo: 'Un toque y está escribiendo la reseña',
+      detalle: 'En tu ficha, la correcta, mientras todavía está en la mesa.',
+    },
+  },
 ]
 
 /* --- Que hacemos ---
