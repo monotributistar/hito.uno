@@ -132,7 +132,6 @@ export const PROPIEDADES: Propiedad[] = [
       telefono: TELEFONO,
       mensaje: 'Hola, quiero consultar por Valeria 1.',
     },
-    // PLACEHOLDER: falta confirmar como se nombra a quien la publica.
     publica: 'Myland S.A.',
   },
 ]
@@ -150,7 +149,6 @@ export type Listado = {
 }
 
 export const LISTADOS: Record<string, Listado> = {
-  // PLACEHOLDER: titulo y bajada a confirmar con Stephano.
   stephano: {
     titulo: 'Alquileres en Valeria del Mar',
     bajada: 'Frente al mar, a pocas cuadras de Cariló.',

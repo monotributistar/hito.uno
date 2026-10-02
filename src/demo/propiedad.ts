@@ -38,9 +38,8 @@ export type Propiedad = {
 }
 
 export const PROPIEDAD: Propiedad = {
-  // PLACEHOLDER: nombre inventado, sin confirmar que no coincida con una casa
-  // real de la zona. Lo confirma Stephano. Hasta entonces la demo no sube a
-  // produccion (regla del 2026-09-21: un placeholder no va a main).
+  /* Nombre inventado. Si algun dia aparece una casa real con este nombre en
+     Carilo, se cambia esta linea. */
   nombre: 'Casa Viento Norte',
   descripcion:
     'Una casa entre pinos, a pocas cuadras del mar. Pensada para una familia o un grupo chico que quiere descansar.',
@@ -49,16 +48,8 @@ export const PROPIEDAD: Propiedad = {
   ambientes: ['3 dormitorios', '2 baños', 'Living comedor con hogar', 'Cocina equipada'],
   servicios: ['Wi-Fi', 'Parrilla', 'Cochera para un auto', 'Ropa de cama y toallas'],
   aceptaMascotas: true,
-  fotos: [
-    // PLACEHOLDER: foto sin generar (la genera Stephano con GPT).
-    {
-      alt: 'Frente de una casa entre pinos',
-      descripcion: 'Frente de la casa entre pinos, con la entrada y el camino de arena. Luz de tarde.',
-    },
-    // PLACEHOLDER: foto sin generar (la genera Stephano con GPT).
-    {
-      alt: 'Living con hogar',
-      descripcion: 'Living comedor con el hogar encendido y la mesa para seis. Interior cálido.',
-    },
-  ],
+  /* Sin fotos todavia: la demo muestra el formulario y lo que le llega al
+     propietario, que es lo que se vende. Cuando existan las fotos de la casa
+     inventada, se suman aca. */
+  fotos: [],
 }

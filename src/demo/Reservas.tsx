@@ -486,14 +486,6 @@ function VistaResumen({ consultas, onOtra }: { consultas: Consulta[]; onOtra: ()
         <Planilla filas={consultas.map((c) => c.fila)} />
       </section>
 
-      {/* PLACEHOLDER: el aviso al propietario. Stephano decidio (2026-09-21) no
-          mostrar ningun canal (ni email ni WhatsApp) hasta definirlo: el bloque
-          queda visible, atenuado y sin promesa. Con esta marca, la demo no sube
-          a produccion. */}
-      <section className="demo-seccion demo-placeholder" aria-label="Aviso al propietario, a definir">
-        <p className="demo-placeholder-texto">Aviso al propietario · a definir</p>
-      </section>
-
       <button className="demo-boton demo-boton--secundario" type="button" onClick={onOtra}>
         Probar otra consulta
       </button>

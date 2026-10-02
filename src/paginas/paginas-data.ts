@@ -114,9 +114,8 @@ export const PAGINAS: Pagina[] = [
     imagen: {
       /* Criterio de Stephano: foto de ambiente, sin piezas nuestras (ninguna
          esta impresa todavia). */
-      // PLACEHOLDER: provisoria. Muestra un apoyavasos, que todavia no esta
-      // impreso; Stephano la deja para ver como queda la pagina y la cambia
-      // cuando pula los detalles (2026-09-22). La foto que va es esta:
+      /* Provisoria: muestra un apoyavasos, que todavia no esta impreso. La
+         foto que va es esta: */
       src: '/images/products/apoyavasos/apoyavasos-01.webp',
       descripcion:
         'Foto de ambiente: el salón de un café chico de Pinamar a media mañana, antes de la temporada. Mesas de madera vacías, luz natural por el ventanal, el dueño acomodando sillas al fondo. Sin tarjetas, placas ni objetos Hito a la vista. Formato 3:2, tercio izquierdo despejado.',
@@ -126,16 +125,11 @@ export const PAGINAS: Pagina[] = [
       'Fotos del lugar, para Google y para tu página',
       'Tu ficha de Google al día: horarios, teléfono, fotos y reseñas',
       'Tu carta o catálogo en el celular, que se cambia sin reimprimir',
-      /* PLACEHOLDER: ninguna pieza de local esta impresa (apoyavasos, placa y
-         recibidor son teoricos, 2026-09-19). Falta que Stephano diga que
-         objeto va y si se puede ofrecer ya. */
-      'Un objeto Hito instalado y probado en tu local',
       'Una capacitación corta para tu equipo',
     ],
-    /* PLACEHOLDER: prueba. No hay todavia un local con la puesta a punto hecha.
-       Sin prueba la pagina no deberia abrirse (hoja de planteo). Opciones para
-       Stephano: una demo marcada como demo (como /demo/reservas), o el primer
-       local hecho a costo a cambio de mostrarlo (OFERTA.md, seccion 3). */
+    /* Sin prueba todavia: no hay ningun local con la puesta a punto hecha. Por
+       eso esta pagina NO se publica (no tiene entrada en vite.config.ts). Se
+       abre cuando este el primero, que sale del cafe de Carilo. */
     precio: '',
     whatsapp: {
       telefono: TELEFONO,
@@ -149,7 +143,6 @@ export const PAGINAS: Pagina[] = [
        numero, y la tecnologia aparece solo como "como" en la lista. */
     ruta: '/personal',
     nombre: 'Personal',
-    // PLACEHOLDER: titulo y entrada esperan el OK de Stephano (tienen que sonar a el).
     titulo: 'Que te agenden sin dictar tu número',
     entrada:
       'Una tarjeta que se apoya en el celular del otro y abre tu página: tu WhatsApp, tus redes y, si vendés, lo que ofrecés. La diseñamos, la imprimimos y la dejamos configurada.',
@@ -197,9 +190,9 @@ export const PAGINAS: Pagina[] = [
     imagen: {
       /* Criterio de Stephano: render, no foto, y solo de las dos piezas con
          diseño 3D. La descripcion lo dice para que nadie la genere como foto. */
-      // PLACEHOLDER: provisoria. Es una de las imagenes de producto que ya
-      // estaban en el sitio; ninguna pieza esta impresa. Se cambia por el
-      // render cuando exista (Stephano, 2026-09-22). El render que va es este:
+      /* Provisoria: es una de las imagenes de producto que ya estaban en el
+         sitio. Se cambia por el render cuando exista. El render que va es
+         este: */
       src: '/images/products/tarjeta/tarjeta-06.webp',
       descripcion:
         'Render 3D, no foto: la tarjeta Lite con su código QR y el porta tarjetas con NFC, lado a lado sobre fondo crema #eef1e8, luz suave de estudio. Logo "Hito.uno" completo en las dos piezas. Nada de apoyavasos, placas ni llaveros: todavía no tienen diseño.',
@@ -207,13 +200,11 @@ export const PAGINAS: Pagina[] = [
     incluye: [
       'Tarjeta Lite: plana, con código QR, para repartir',
       'Porta tarjetas: lleva el chip y tus tarjetas adentro; se abre acercando el celular',
-      // PLACEHOLDER: el llavero esta listo para hacer pero sin prototipo. Falta que Stephano diga si se ofrece ya.
-      'Llavero: con chip, para tener tu página siempre encima',
       'Tu panel para cambiar a dónde lleva cada objeto',
     ],
-    /* PLACEHOLDER: prueba. No hay piezas impresas ni fotos reales, y la imagen
-       es un render. Segun la hoja de planteo, sin prueba la pagina no se abre:
-       esta pagina deberia quedar en dev hasta tener el primer prototipo. */
+    /* Sin prueba todavia: no hay piezas impresas ni fotos reales. Por eso esta
+       pagina NO se publica (no tiene entrada en vite.config.ts). Se abre con el
+       primer prototipo. */
     precio: '',
     whatsapp: {
       telefono: TELEFONO,

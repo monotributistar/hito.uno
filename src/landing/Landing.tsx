@@ -1,8 +1,9 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
 import Foto from '../compartido/Foto'
-import { whatsappHref } from '../partner/links'
 import {
+  CTA,
+  CTA_HREF,
   casos,
   doors,
   layers,
@@ -28,12 +29,8 @@ type Props = {
 const LEAD_ENDPOINT = '/api/lead'
 
 /* Un solo llamado a la accion en todo el sitio (Stephano, 2026-10-02): se
-   agenda una reunion. Antes convivian "Pedi tu Hito", "Como funciona" y
-   "Hablemos", y cada uno llevaba a otro lado. Va por WhatsApp porque es el
-   canal donde contesta; el formulario sigue abajo para quien prefiera no
-   escribir por ahi. */
-const CTA = 'Agendemos una reunión'
-const CTA_HREF = whatsappHref('+5492254590762', 'Hola, quiero agendar una reunión.')
+   agenda una reunion. Vive en landing-data.ts porque las puertas sin pagina
+   publicada tambien lo usan. */
 
 /* Encuadre calibrado por foto (ver Photo en landing-data.ts). object-position
    va inline; zoom y nudge viajan como custom properties que lee el CSS. */
