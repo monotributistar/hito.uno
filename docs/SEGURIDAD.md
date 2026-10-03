@@ -105,6 +105,37 @@ Worker local propio, confirmando que era el propio. Los tests no quedaron en el
 repositorio: PLAT 1 va a sumar los del Worker y no conviene que haya dos
 formas de correrlos.
 
+### 1.4 El freno de `/api/lead` deja de fallar abierto (2026-10-03)
+
+**El problema.** El freno cuenta los intentos en el Durable Object. Si el
+almacén no contestaba, la consulta pasaba igual. Y el momento en que el almacén
+no contesta es, justamente, cuando lo están golpeando: el freno se apagaba solo
+cuando más falta hacía.
+
+**Por qué no alcanzaba con rechazar.** Con el almacén caído la consulta tampoco
+se guarda, pero **sí llega a la planilla**, porque el reenvío no depende del
+almacén. O sea que rechazar significa perder el pedido de un cliente real.
+Entre "no frena nada" y "pierde consultas", ninguna de las dos servía.
+
+**Qué se hizo.** Un freno de respaldo en la memoria del isolate
+(`worker/freno.ts`), que cuenta solo cuando el almacén no contesta. No
+reemplaza al almacén ni pretende ser exacto: Cloudflare reparte los pedidos
+entre varios isolates y los recicla cuando quiere, así que un atacante decidido
+pasa más que el límite. Pero **una persona sola nunca se ve frenada**, y una
+avalancha desde el mismo lugar deja de ser gratis. Tiene tope de entradas, para
+que llenar la memoria del isolate no sea otra forma de voltearlo.
+
+Se anota en el log cada vez que el respaldo entra en acción: que el almacén no
+conteste es, por sí solo, una señal.
+
+**Cómo se probó.** Cinco casos del respaldo
+(`worker/pruebas/freno.test.ts`): una persona sola pasa; se corta pasando el
+límite; frenar a uno no frena a otro; pasado el minuto se vuelve a empezar (con
+el reloj movido a mano); muchas direcciones distintas no hacen crecer la
+memoria sin fin. Y dos de punta a punta en `leads.test.ts`, que cuidan los dos
+lados de la decisión: con el almacén caído, una consulta sola llega a la
+planilla, y de siete seguidas pasan cinco y se cortan dos.
+
 ---
 
 ## 2. Pendientes anotados
@@ -129,11 +160,10 @@ En orden, con el riesgo escrito:
    Google. Riesgo hoy: bajo, el repositorio es privado. Hacerlo el día que se
    abra el repositorio o que se toque el Apps Script por otro motivo.
 
-3. **El freno de `/api/lead` falla abierto.** En `worker/leads.ts`, si el
-   almacén no contesta, la consulta pasa igual. El momento en que el almacén no
-   contesta es, justamente, cuando lo están saturando: el freno se apaga solo
-   cuando más falta hace. Para las redirecciones de objetos fallar abierto está
-   bien (el toque nunca termina en error); para un freno de seguridad, no.
+3. ~~**El freno de `/api/lead` falla abierto.**~~ Resuelto el 2026-10-03, ver
+   1.4. Queda el límite de fondo: el respaldo cuenta por isolate, no por sitio,
+   así que es un piso y no un techo. El techo real lo da el pendiente 9 (tope
+   de gasto), que es lo que protege de una avalancha grande.
 
 4. **`/api/panel/*` no tiene freno de intentos**, así que los tokens del panel
    se pueden probar de a miles. (El tope de tamaño del cuerpo, que iba en este
