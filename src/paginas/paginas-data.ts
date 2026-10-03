@@ -114,9 +114,10 @@ export const PAGINAS: Pagina[] = [
     imagen: {
       /* Criterio de Stephano: foto de ambiente, sin piezas nuestras (ninguna
          esta impresa todavia). */
-      /* Provisoria: muestra un apoyavasos, que todavia no esta impreso. La
-         foto que va es esta: */
-      src: '/images/products/apoyavasos/apoyavasos-01.webp',
+      /* Provisoria: una pieza nuestra, no el ambiente que va. El apoyavasos
+         salio del catalogo el 2026-10-03 (decision de Stephano), asi que su
+         foto ya no esta en el repo. La foto que va es esta: */
+      src: '/images/products/recibidor/recibidor-01.webp',
       descripcion:
         'Foto de ambiente: el salón de un café chico de Pinamar a media mañana, antes de la temporada. Mesas de madera vacías, luz natural por el ventanal, el dueño acomodando sillas al fondo. Sin tarjetas, placas ni objetos Hito a la vista. Formato 3:2, tercio izquierdo despejado.',
     },
