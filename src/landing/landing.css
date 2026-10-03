@@ -1160,10 +1160,12 @@
 }
 
 @media (max-width: 760px) {
-  /* La barra sticky vive abajo: la atribucion del mapa sube para no quedar
-     tapada. Solo en la landing (el perfil partner no tiene mapa ni barra). */
+  /* La barra sticky vive abajo y tapa el final de la pagina: la atribucion se
+     corre para arriba lo justo para quedar por encima de ella. Ya no flota
+     (ver .map-attribution en styles.css), asi que alcanza con el margen. */
   .hito-shell .map-attribution {
-    bottom: 86px;
+    margin-bottom: 92px;
+    text-align: center;
   }
 }
 
@@ -1191,10 +1193,14 @@
    oscuro de la seccion de pasos para que se lea como una voz y no como una
    imagen que falto. Sin aspect-ratio: manda el texto, con un minimo para que la
    tarjeta no quede mas baja que las que si tienen foto. */
-/* `.hito-door p` (mas abajo) pinta los parrafos de la tarjeta en #315f63, que
-   sobre este verde oscuro da 1.77:1 y no se lee. La clase repetida gana por
-   especificidad sin tener que usar !important ni reordenar el archivo. */
+/* `.hito-door p` (mas abajo) le gana a `.hito-door-photo` en dos cosas, y las
+   dos se ven: pinta el texto de #315f63, que sobre este verde oscuro da 1.77:1
+   y no se lee, y le pone `margin: 0`, que anula los margenes negativos con los
+   que la foto se estira hasta el borde de la tarjeta; sin ellos el parrafo se
+   iba 21px por fuera a la derecha. La clase repetida gana por especificidad sin
+   tener que usar !important ni reordenar el archivo. */
 .hito-door-nota.hito-door-nota {
+  margin: -22px -22px 4px;
   color: #eef1e8;
 }
 
