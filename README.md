@@ -133,8 +133,21 @@ Por qué así:
 - **La dirección del Apps Script es un secreto de Cloudflare** (`APPS_SCRIPT_URL`),
   no código. Primero viajaba en el código de la página; después pasó a
   `worker/leads.ts`, y el 2026-09-21 se vio que el repositorio era público: cualquiera
-  podía escribir en la planilla sin pasar por el freno ni la trampa anti-spam. Se
-  carga una vez con `npx wrangler secret put APPS_SCRIPT_URL`.
+  podía escribir en la planilla sin pasar por el freno ni la trampa anti-spam.
+- **El valor lo guarda GitHub, no una persona.** Vive en el entorno `production`
+  del repositorio y el workflow de producción lo sube al Worker en cada deploy
+  (`secrets:` de `wrangler-action`, que corre `wrangler secret put`). Se carga con
+  `gh secret set APPS_SCRIPT_URL --env production`. Antes se pegaba a mano en el
+  panel de Cloudflare, y el 2026-10-02 eso bloqueó un pase a producción: la cuenta
+  de Cloudflare no es nuestra, así que nadie del equipo podía destrabarlo sin
+  esperar a quien sí entra. El token que ya deploya tiene permiso para escribir el
+  secreto; el acceso al panel dejó de ser necesario.
+- El deploy **revisa el valor antes de publicar** y falla con un mensaje que dice
+  qué hacer. El caso que importa es el valor vacío: pasaría `secrets.required` (el
+  secreto "existe"), el deploy saldría verde, y las consultas se guardarían sin
+  llegar nunca a la planilla. Eso no se descubre hasta que alguien reclama un
+  pedido que nadie vio. El patrón es el mismo de `worker/leads.ts`, así que también
+  atrapa la dirección de edición (`/edit`) pegada en lugar de la publicada.
 - Producción lo declara en `secrets.required` (`wrangler.jsonc`): **Cloudflare
   rechaza el deploy si el secreto no está cargado.** Un deploy rechazado no tira el
   sitio, sigue la versión anterior. El verificador de entornos falla si alguien

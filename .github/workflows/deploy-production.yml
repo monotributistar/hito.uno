@@ -36,9 +36,49 @@ jobs:
       - name: Build
         run: npm run build
 
+      # El secreto se carga desde aca, no a mano en el panel de Cloudflare.
+      # Por que: la cuenta de Cloudflare no es nuestra, y un deploy que depende
+      # de que alguien, alguna vez, haya pegado un valor en un panel al que no
+      # entramos es un deploy que no podemos arreglar solos. El token que ya
+      # usa este workflow tiene permiso para escribir el secreto, asi que la
+      # fuente de verdad pasa a ser el secreto de GitHub (entorno production),
+      # que si administramos nosotros.
+      #
+      # Se revisa ANTES de deployar, y el mensaje dice que hacer. Un valor
+      # vacio es la trampa que importa: pasaria el control de secretos de
+      # Cloudflare (el secreto "existe"), el deploy saldria verde, y las
+      # consultas de los clientes se guardarian sin llegar nunca a la planilla.
+      # Eso no se descubre hasta que alguien reclama un pedido que nadie vio.
+      # El patron es el mismo que valida el Worker en worker/leads.ts: atrapa
+      # el error tipico de pegar la direccion de edicion (/edit) en lugar de la
+      # publicada (/exec). El valor no se imprime nunca.
+      - name: Check the Apps Script secret
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_URL }}
+        run: |
+          if [ -z "$APPS_SCRIPT_URL" ]; then
+            echo "::error::Falta el secreto APPS_SCRIPT_URL en el entorno 'production' de GitHub." \
+                 "Cargalo con: gh secret set APPS_SCRIPT_URL --env production --repo \$GITHUB_REPOSITORY"
+            exit 1
+          fi
+          if ! printf '%s' "$APPS_SCRIPT_URL" | grep -Eq '^https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec$'; then
+            echo "::error::APPS_SCRIPT_URL no es una direccion publicada de Apps Script." \
+                 "Tiene que ser https://script.google.com/macros/s/<id>/exec (la de 'Implementar', no la de /edit)."
+            exit 1
+          fi
+          echo "El secreto esta cargado y tiene forma de direccion publicada de Apps Script."
+
+      # `secrets` sube APPS_SCRIPT_URL al Worker (wrangler secret put) antes de
+      # deployar. Corre en cada deploy a proposito: es idempotente y deja el
+      # Worker igual a lo que dice GitHub, asi que un cambio a mano en el panel
+      # no sobrevive en silencio.
       - name: Deploy production Worker
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          secrets: |
+            APPS_SCRIPT_URL
           command: deploy --env=""
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_URL }}
