@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { experiences, type ExperienceId } from '../experience-data'
 import Foto from '../compartido/Foto'
+import DiagramaRecorrido from './DiagramaRecorrido'
 import {
   CTA,
   CTA_HREF,
@@ -221,6 +222,12 @@ export default function Landing({ onSceneFocusChange }: Props) {
                   decoding="async"
                   style={photoStyle(door.photo)}
                 />
+              ) : door.diagrama ? (
+                /* El recorrido dibujado, en lugar de la captura de un perfil real. */
+                <DiagramaRecorrido className="hito-door-photo hito-door-diagrama" />
+              ) : door.nota ? (
+                /* Todavia no hay foto que valga la pena: va un texto que se lee. */
+                <p className="hito-door-photo hito-door-nota">{door.nota}</p>
               ) : (
                 /* Sin imagen real todavia: se ve el hueco y que va a ir ahi. */
                 <Foto

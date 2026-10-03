@@ -1180,6 +1180,37 @@
 
 /* Puerta sin imagen real todavia: el hueco del componente Foto, pegado a los
    bordes de la tarjeta como la foto que va a reemplazarlo. */
+/* El recorrido dibujado de la puerta Personal. El SVG trae su propio fondo y
+   su viewBox 16/10, asi que ocupa el mismo lugar que una foto; object-fit no
+   le aplica, por eso no se repite aca. */
+.hito-door-diagrama {
+  background: #e6ebe2;
+}
+
+/* Un texto en el lugar de la foto (hoy, la puerta Comercio). Va en el verde
+   oscuro de la seccion de pasos para que se lea como una voz y no como una
+   imagen que falto. Sin aspect-ratio: manda el texto, con un minimo para que la
+   tarjeta no quede mas baja que las que si tienen foto. */
+/* `.hito-door p` (mas abajo) pinta los parrafos de la tarjeta en #315f63, que
+   sobre este verde oscuro da 1.77:1 y no se lee. La clase repetida gana por
+   especificidad sin tener que usar !important ni reordenar el archivo. */
+.hito-door-nota.hito-door-nota {
+  color: #eef1e8;
+}
+
+.hito-door-nota {
+  display: flex;
+  align-items: center;
+  aspect-ratio: auto;
+  min-height: 170px;
+  padding: 24px 22px;
+  background: #17383a;
+  color: #eef1e8;
+  font-size: 1.02rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
 .hito-door-photo.foto--pendiente {
   /* .hito-door-photo lo pone en block (para la img): se devuelve el flex en
      columna del hueco, si no la etiqueta y la descripcion quedan pegadas. */

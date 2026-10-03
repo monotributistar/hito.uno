@@ -371,9 +371,34 @@ export type Door = {
   /** Captura real. Si no hay, va `placeholder` con la descripcion de la imagen. */
   photo?: Photo
   placeholder?: string
+  /** Dibuja el recorrido (objeto, toque, pagina) en lugar de una foto. Lo usa
+      Personal, que antes mostraba la cara de Stephano en una captura. */
+  diagrama?: boolean
+  /** Un texto en el lugar de la foto, cuando todavia no hay foto que valga la
+      pena. No es una descripcion de la imagen que falta (eso es `placeholder`):
+      es contenido que se lee. */
+  nota?: string
 }
 
 export const doors: Door[] = [
+  /* El orden importa: primero las dos que llevan a una pagina, despues las dos
+     que todavia no se publican. Software va primera porque es lo que hoy se
+     puede mostrar funcionando (la demo), y Personal bajo de prioridad por
+     pedido de Stephano (2026-10-03). */
+  {
+    key: 'software',
+    label: 'Software a medida',
+    title: 'Tus reservas, ordenadas.',
+    description: 'Una página para tu alojamiento con un formulario que deja cada consulta en una planilla que ya sabés usar.',
+    examples: 'Reservas · formularios · planillas',
+    href: '/software',
+    status: 'A medida',
+    photo: {
+      src: '/images/puertas/software-demo.webp',
+      alt: 'Primer plano de la demo de reservas: "Así le llegaría al propietario", con el aviso de que en la demo no se envía nada',
+      caption: 'Demo de reservas · captura real',
+    },
+  },
   {
     key: 'personal',
     label: 'Personal',
@@ -384,11 +409,9 @@ export const doors: Door[] = [
     /* Decia "Disponible hoy" y no hay ninguna pieza impresa: la pagina si
        existe, la pieza todavia no. */
     status: 'Página disponible',
-    photo: {
-      src: '/images/puertas/personal-perfil.webp',
-      alt: 'Primer plano del perfil de muestra en un celular: la foto, el nombre y el rubro',
-      caption: 'Perfil de muestra · captura real',
-    },
+    /* Mostraba una captura del perfil de Stephano, con su cara. La home no
+       necesita presentar a una persona para explicar el servicio. */
+    diagrama: true,
   },
   {
     key: 'comercio',
@@ -400,15 +423,10 @@ export const doors: Door[] = [
     href: CTA_HREF,
     // Pendiente: la pagina /comercios no se publica todavia (sin prueba).
     status: 'Pronto',
-    /* Foto de producto que ya estaba en el sitio. Se cambia cuando exista la
-       foto de un local real. Era la del apoyavasos, que salio del catalogo el
-       2026-10-03; va la placa, que es la pieza que se instala en un local. */
-    photo: {
-      src: '/images/products/placa/placa-01.webp',
-      alt: 'Placa Hito.uno color crema montada en una pared de revoque junto a la puerta de madera de un hotel boutique, con un olivo en maceta al fondo y luz cálida de tarde',
-      caption: 'Placa · entrada',
-      focus: '55% 45%',
-    },
+    /* Texto de muestra, hasta que haya la foto de un local real trabajando con
+       esto (sale del cafe de Carilo). Antes habia una foto de producto, que
+       mostraba una pieza suelta sobre un fondo y no decia nada del local. */
+    nota: 'Un toque sobre la mesa y el cliente ya está mirando la carta, dejando la reseña o guardando tu contacto. Sin app, sin pedirle que escriba nada.',
   },
   {
     key: 'objetos',
@@ -427,20 +445,6 @@ export const doors: Door[] = [
       alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR',
       caption: 'Tarjeta · frente y dorso',
       focus: '50% 55%',
-    },
-  },
-  {
-    key: 'software',
-    label: 'Software a medida',
-    title: 'Tus reservas, ordenadas.',
-    description: 'Una página para tu alojamiento con un formulario que deja cada consulta en una planilla que ya sabés usar.',
-    examples: 'Reservas · formularios · planillas',
-    href: '/software',
-    status: 'A medida',
-    photo: {
-      src: '/images/puertas/software-demo.webp',
-      alt: 'Primer plano de la demo de reservas: "Así le llegaría al propietario", con el aviso de que en la demo no se envía nada',
-      caption: 'Demo de reservas · captura real',
     },
   },
 ]
