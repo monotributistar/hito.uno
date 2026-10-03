@@ -105,6 +105,58 @@ Worker local propio, confirmando que era el propio. Los tests no quedaron en el
 repositorio: PLAT 1 va a sumar los del Worker y no conviene que haya dos
 formas de correrlos.
 
+### 1.3 Cabeceras de seguridad en todas las respuestas (2026-10-03)
+
+**El problema.** La auditoría del 2026-10-03 lo midió en producción: la
+respuesta solo traía `Cache-Control`. Sin ninguna cabecera, el navegador adivina
+el tipo de los archivos, manda la dirección completa al salir del sitio —y la
+del panel lleva el token— y cualquiera puede mostrar el sitio dentro de un
+iframe suyo haciéndose pasar por nosotros.
+
+**Qué se hizo.** Cuatro cabeceras, en todas las respuestas:
+
+| Cabecera | Qué evita |
+| --- | --- |
+| `X-Content-Type-Options: nosniff` | Que el navegador adivine el tipo y termine ejecutando algo |
+| `Referrer-Policy: strict-origin-when-cross-origin` | Que al salir del panel se le regale el token al otro sitio |
+| `X-Frame-Options: DENY` | Que otro sitio nos muestre adentro suyo |
+| `Content-Security-Policy: frame-ancestors 'none'` | Lo mismo, en la forma nueva |
+
+Más `Strict-Transport-Security: max-age=15552000` (seis meses), que hace que el
+navegador no vuelva a intentar por HTTP. **Sin `includeSubDomains` ni
+`preload`:** los dos son difíciles de dar marcha atrás, y `preload` hay que
+pedir que lo saquen de una lista que traen los navegadores.
+
+**Por qué están en dos lugares.** `worker/cabeceras.ts` las pone en una sola
+puerta de salida, para que una ruta nueva las lleve sin que nadie se acuerde.
+Pero **la landing no pasa por el Worker**: solo `/p/`, `/o/`, `/panel/` y
+`/api/` lo ejecutan (`run_worker_first`), y el resto lo sirve Cloudflare
+directo. Por eso la misma lista está en `public/_headers`, que es como se le
+dan cabeceras a los archivos estáticos. Hacer pasar todo por el Worker sería la
+otra salida, pero cuesta una ejecución por archivo y el plan tiene tope diario.
+
+**Lo que NO entró, y por qué.** Una CSP completa (pendiente 8) y la redirección
+a HTTPS (pendiente 7). La redirección se intentó en el Worker y se sacó por dos
+razones que valen la pena anotar:
+
+1. Como la landing no pasa por el Worker, `http://hito.uno` seguiría contestando
+   200: no arreglaba el problema que reportó la auditoría.
+2. En `wrangler dev` el Worker ve los pedidos como `http://dev.hito.uno`, así
+   que la redirección se disparaba **siempre en local** y rompía
+   `npm run dev:worker`.
+
+**Una trampa nueva, para el próximo.** `url.protocol = 'https:'` **no hace nada
+en el runtime del Worker**, aunque en Node funciona. La redirección salía al
+mismo `http://`, o sea un bucle, y los tests en Node no lo veían. Si hay que
+armar una URL cambiando el esquema, se arma con texto.
+
+**Cómo se probó.** Siete casos en `worker/pruebas/cabeceras.test.ts` (que no se
+pise `Content-Type`, `Content-Disposition` ni `Cache-Control`; que una
+redirección conserve su destino; que por HTTP no se mande HSTS; que la CSP no
+tenga nada más que `frame-ancestors`). Y contra un Worker local propio: las
+cinco cabeceras salen en la landing, en el JS, en el perfil, en el vCard, en el
+puerto `/o/`, en el panel, en el 401 de la API y en un 404.
+
 ---
 
 ## 2. Pendientes anotados
@@ -150,12 +202,33 @@ En orden, con el riesgo escrito:
    reenvío, así que un ataque distribuido la llena y ensucia `pendingLeads`.
    No se puede limpiar por antigüedad sin más: ahí hay pedidos de clientes.
 
-7. **Cabeceras de seguridad**: CSP, HSTS, X-Content-Type-Options,
-   Referrer-Policy y protección contra que otro sitio embeba nuestras páginas.
+7. **Que `http://hito.uno` pase a HTTPS.** Hoy contesta 200 sin redirigir. No
+   se puede resolver desde el Worker: la landing no pasa por él (ver 1.3). Es
+   un interruptor en Cloudflare, **"Always Use HTTPS"** en SSL/TLS → Edge
+   Certificates. **Lo tiene que prender Stephano**, y después se verifica con
+   `curl -sI http://hito.uno`, que tiene que contestar 301 a `https://`.
 
-8. **Plan de Workers en Cloudflare.** El gratuito tiene tope diario de pedidos:
+8. **CSP completa.** Hoy va solo `frame-ancestors` (ver 1.3). Decir de dónde se
+   puede cargar cada cosa es lo que frena un script inyectado, pero este sitio
+   carga tipografías de Google, la analítica que Cloudflare inyecta sola y, en
+   los perfiles con catálogo, una planilla. Mal escrita, las corta en silencio.
+   Va primero en dev, con `Content-Security-Policy-Report-Only`, mirando qué se
+   rompería antes de aplicarla.
+
+9. **Plan de Workers en Cloudflare.** El gratuito tiene tope diario de pedidos:
    saturarlo deja el sitio sin servicio hasta el día siguiente. Confirmar en
    qué plan estamos y activar alertas de consumo.
+
+10. **Segundo factor en GitHub y en Cloudflare.** Es la base más barata de
+    todas y la única que no puedo verificar desde acá: quien entre a esas dos
+    cuentas cambia el sitio, los destinos de los objetos ya impresos y el
+    secreto de la planilla. **A confirmar por Stephano.**
+
+11. **Las cabeceras están escritas en dos lugares** (`worker/cabeceras.ts` y
+    `public/_headers`) y nada verifica que digan lo mismo. Intenté un test que
+    leyera el archivo, pero `tsconfig.worker.json` va con `types: []` y no
+    tiene `node:fs`; no toqué esa configuración porque es de PLAT. **Pedido a
+    PLAT:** que `npm run check` compare las dos listas.
 
 ---
 
