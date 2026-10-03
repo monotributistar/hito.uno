@@ -31,7 +31,6 @@ export const experiences: Experience[] = [
     focus: [370, -850],
     zoom: 9.2,
     products: [
-      { label: 'Apoyavasos NFC', description: 'Carta, promos o playlist con un gesto.', marker: [357, -878] },
       { label: 'Placa de mesa', description: 'Pedido, Wi-Fi y llamado al personal.', marker: [385, -842] },
       { label: 'Tarjeta de fidelidad', description: 'Un acceso simple para volver.', marker: [411, -815] },
     ],
@@ -60,7 +59,6 @@ export const experiences: Experience[] = [
     zoom: 9.8,
     products: [
       { label: 'Tarjeta en la caja', description: 'Recompra y contenido desde la caja.', marker: [379, 295] },
-      { label: 'Apoyavasos NFC', description: 'Menú y promociones del día.', marker: [352, 311] },
       { label: 'Tarjeta de beneficios', description: 'Una porción más para quienes vuelven.', marker: [284, 339] },
     ],
   },
