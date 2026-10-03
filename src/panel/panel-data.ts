@@ -21,11 +21,6 @@ export const objectKinds: Record<string, ObjectKindInfo> = {
     photo: '/images/products/llavero/llavero-01.webp',
     monogram: 'LL',
   },
-  apoyavasos: {
-    label: 'Apoyavasos',
-    photo: '/images/products/apoyavasos/apoyavasos-01.webp',
-    monogram: 'AP',
-  },
   placa: {
     label: 'Placa',
     photo: '/images/products/placa/placa-01.webp',

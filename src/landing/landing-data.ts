@@ -22,7 +22,7 @@ export type TapActionKey =
   | 'resena'
   | 'ficha'
   | 'asesor'
-export type ObjectKey = 'tarjeta' | 'llavero' | 'apoyavasos' | 'placa' | 'recibidor'
+export type ObjectKey = 'tarjeta' | 'llavero' | 'placa' | 'recibidor'
 
 type UseCase = {
   label: string
@@ -84,7 +84,7 @@ export const useCases: Record<UseCaseKey, UseCase> = {
     label: 'Mi local',
     description: 'Un objeto en la mesa o en la pared que resuelve lo que todos preguntan al llegar.',
     sceneId: 'bar',
-    object: 'Apoyavasos o placa',
+    object: 'Placa',
     actions: ['menu', 'wifi', 'resena'],
   },
   propiedad: {
@@ -197,21 +197,6 @@ export const objects: Record<ObjectKey, HitoObject> = {
       caption: 'Después del toque',
       focus: '65% 55%',
     },
-  },
-  apoyavasos: {
-    label: 'Apoyavasos',
-    moment: 'Al sentarse en la mesa.',
-    result: 'Carta, promo del día y playlist.',
-    blurb: 'Ya está en la mesa cuando llega el pedido. La carta, la promo del día y la playlist, sin llamar a nadie.',
-    sceneId: 'bar',
-    photos: [
-      {
-        src: '/images/products/apoyavasos/apoyavasos-01.webp',
-        alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
-        caption: 'Barra · bar',
-        focus: '55% 62%',
-      },
-    ],
   },
   placa: {
     label: 'Placa',
@@ -409,19 +394,20 @@ export const doors: Door[] = [
     key: 'comercio',
     label: 'Comercio',
     title: 'Tu local, listo para la temporada.',
-    description: 'Ficha de Google, reseñas, carta o catálogo digital y un objeto instalado y probado en el local.',
+    description: 'Ficha de Google, reseñas y tu carta o catálogo digital, al día y sin reimprimir.',
     examples: 'Ficha de Google · carta digital · reseñas',
     // Pendiente de publicar: hasta entonces la puerta abre el llamado a la accion.
     href: CTA_HREF,
     // Pendiente: la pagina /comercios no se publica todavia (sin prueba).
     status: 'Pronto',
     /* Foto de producto que ya estaba en el sitio. Se cambia cuando exista la
-       foto de un local real. */
+       foto de un local real. Era la del apoyavasos, que salio del catalogo el
+       2026-10-03; va la placa, que es la pieza que se instala en un local. */
     photo: {
-      src: '/images/products/apoyavasos/apoyavasos-01.webp',
-      alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
-      caption: 'Apoyavasos · barra',
-      focus: '55% 62%',
+      src: '/images/products/placa/placa-01.webp',
+      alt: 'Placa Hito.uno color crema montada en una pared de revoque junto a la puerta de madera de un hotel boutique, con un olivo en maceta al fondo y luz cálida de tarde',
+      caption: 'Placa · entrada',
+      focus: '55% 45%',
     },
   },
   {
@@ -481,7 +467,7 @@ export const layers: Layer[] = [
   {
     label: 'Objeto',
     title: 'La pieza física.',
-    description: 'Tarjeta, llavero, apoyavasos, placa o recibidor. Impresos en 3D, con NFC y código QR. Se paga una vez.',
+    description: 'Tarjeta, llavero, placa o recibidor. Impresos en 3D, con NFC y código QR. Se paga una vez.',
   },
   {
     label: 'Destino',
