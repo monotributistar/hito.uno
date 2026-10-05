@@ -27,8 +27,11 @@ import { buildVCard, vcardFilename, type VCardPartner } from './vcard'
 import { withProfileMeta, type MetaPartner } from './meta'
 import { handleLead } from './leads'
 import { readJson } from './body'
+import { TrucoRegistro, TrucoSala } from './truco/salas'
+import { esRutaTruco, manejarTruco } from './truco/rutas'
+import type { EntornoTruco } from './truco/plataforma'
 
-export { HitoStore }
+export { HitoStore, TrucoRegistro, TrucoSala }
 
 type SeedEntry = { to: string; label?: string; owner?: string }
 
@@ -43,7 +46,7 @@ type DurableObjectNamespace = {
   get(id: unknown): DurableObjectStub
 }
 
-export interface Env {
+export interface Env extends EntornoTruco {
   ASSETS: AssetsBinding
   /** Almacen del panel (destinos y tokens). Opcional: sin el, todo cae al JSON. */
   STORE?: DurableObjectNamespace
@@ -305,6 +308,19 @@ type Ctx = { waitUntil(promise: Promise<unknown>): void }
 export default {
   async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(request.url)
+
+    /* Truco: salas de juego para el QR de "mientras esperas". Todo vive bajo
+       /api/truco/. Un error ahi adentro no tumba el resto del sitio: se contesta
+       500 solo en esa ruta. Ver docs/TRUCO.md. */
+    if (esRutaTruco(url.pathname)) {
+      try {
+        const respuesta = await manejarTruco(request, env, url)
+        if (respuesta) return respuesta
+      } catch (error) {
+        console.error('truco: error no controlado', error)
+        return json({ error: 'error interno' }, 500)
+      }
+    }
 
     /* Formulario de la landing. El navegador ya no le habla a Google: manda
        la consulta aca y recibe un si o un no de verdad. Ver worker/leads.ts. */

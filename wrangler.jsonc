@@ -19,9 +19,18 @@
   // Un Durable Object con SQLite se crea solo con la migracion de abajo: no
   // hay que crear nada a mano en el panel de Cloudflare.
   "durable_objects": {
-    "bindings": [{ "name": "STORE", "class_name": "HitoStore" }]
+    "bindings": [
+      { "name": "STORE", "class_name": "HitoStore" },
+      // Truco (QR de "mientras esperas"): una sala por Durable Object y un
+      // registro con la lista de mesas. Ver docs/TRUCO.md.
+      { "name": "TRUCO_SALA", "class_name": "TrucoSala" },
+      { "name": "TRUCO_REGISTRO", "class_name": "TrucoRegistro" }
+    ]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["HitoStore"] }],
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["HitoStore"] },
+    { "tag": "v2", "new_sqlite_classes": ["TrucoSala", "TrucoRegistro"] }
+  ],
   // Reenvio de las consultas del formulario a la planilla de Google.
   // Solo reenvia el entorno que lo diga con "on", y hoy ese es produccion y
   // nadie mas. Un entorno que no lo declare —dev, uno nuevo, el worker local—
@@ -73,7 +82,11 @@
       "secrets": { "required": [] },
       // Los bindings no se heredan entre entornos: hay que repetirlos aca.
       "durable_objects": {
-        "bindings": [{ "name": "STORE", "class_name": "HitoStore" }]
+        "bindings": [
+          { "name": "STORE", "class_name": "HitoStore" },
+          { "name": "TRUCO_SALA", "class_name": "TrucoSala" },
+          { "name": "TRUCO_REGISTRO", "class_name": "TrucoRegistro" }
+        ]
       },
       // "analytics_engine_datasets": [{ "binding": "TOQUES", "dataset": "hito_toques_dev" }],
       "routes": [

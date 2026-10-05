@@ -1,0 +1,90 @@
+:root {
+  --fondo: #0f2a1c;
+  --fondo-2: #16402b;
+  --paño: #1d5a3a;
+  --texto: #f3efe4;
+  --suave: #b9c9bd;
+  --acento: #e3b341;
+  --peligro: #c9553d;
+  --borde: #2e6b49;
+  --carta: #fbf7ea;
+  --radio: 14px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--fondo); color: var(--texto); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+body { padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom); }
+[hidden] { display: none !important; }
+
+.vista { max-width: 480px; margin: 0 auto; padding: 20px 0 32px; display: flex; flex-direction: column; gap: 12px; }
+h1 { margin: 8px 0 0; font-size: 2rem; letter-spacing: 0.02em; }
+h2 { margin: 0 0 8px; font-size: 1rem; color: var(--acento); }
+.sub { margin: 0; color: var(--suave); }
+.nota { margin: 4px 0; color: var(--suave); font-size: 0.85rem; line-height: 1.4; }
+label { font-size: 0.85rem; color: var(--suave); }
+
+input[type="text"] { width: 100%; padding: 14px; font-size: 1.05rem; border-radius: var(--radio); border: 2px solid var(--borde); background: var(--fondo-2); color: var(--texto); }
+input[type="text"]:focus { outline: none; border-color: var(--acento); }
+
+button { font: inherit; border-radius: var(--radio); border: 2px solid transparent; padding: 14px 16px; min-height: 48px; cursor: pointer; color: var(--texto); background: var(--fondo-2); }
+button:disabled { opacity: 0.4; cursor: default; }
+button:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+.principal { background: var(--acento); color: #231a00; font-weight: 700; }
+.secundario { background: transparent; border-color: var(--borde); }
+.terciario { background: transparent; color: var(--suave); }
+
+.bloque { background: var(--fondo-2); border-radius: var(--radio); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.opciones { display: flex; gap: 8px; }
+.opcion { flex: 1; border-color: var(--borde); background: transparent; }
+.opcion.activa { border-color: var(--acento); color: var(--acento); font-weight: 700; }
+
+.aviso { position: sticky; top: 0; z-index: 10; margin: 0 -16px; padding: 10px 16px; background: var(--peligro); color: #fff; text-align: center; font-size: 0.9rem; }
+.aviso.info { background: var(--borde); }
+
+.asientos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.asientos li { display: flex; justify-content: space-between; padding: 12px 14px; border-radius: var(--radio); background: var(--fondo-2); }
+.asientos li.libre { color: var(--suave); border: 2px dashed var(--borde); background: transparent; }
+.etiqueta { font-size: 0.75rem; color: var(--suave); }
+
+/* Partida */
+.juego { gap: 8px; padding-top: 8px; }
+.marcador { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; background: var(--fondo-2); padding: 10px 12px; border-radius: var(--radio); }
+.marcador .equipo { display: flex; flex-direction: column; font-size: 0.8rem; color: var(--suave); }
+.marcador .equipo:last-child { text-align: right; }
+.marcador strong { font-size: 1.8rem; color: var(--texto); line-height: 1; }
+.marcador .centro { display: flex; flex-direction: column; text-align: center; font-size: 0.75rem; color: var(--suave); }
+
+.mesa { background: var(--paño); border: 2px solid var(--borde); border-radius: var(--radio); padding: 10px; min-height: 190px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.baza { display: flex; gap: 10px; justify-content: center; align-items: flex-end; }
+.baza.anterior { transform: scale(0.72); transform-origin: center; margin: -14px 0; opacity: 0.8; }
+.jugada { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--suave); max-width: 72px; }
+.jugada span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 72px; }
+.baza-vacia { color: var(--suave); text-align: center; font-size: 0.85rem; }
+
+.estado { margin: 0; text-align: center; font-weight: 600; min-height: 1.4em; }
+.reloj { margin: 0; text-align: center; font-size: 0.85rem; color: var(--suave); min-height: 1.3em; }
+.reloj.urgente { color: #ffb3a3; font-weight: 700; }
+.registro { list-style: none; margin: 0; padding: 0; font-size: 0.8rem; color: var(--suave); text-align: center; min-height: 3.6em; }
+
+.acciones { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 48px; }
+.acciones button { flex: 1 1 40%; border-color: var(--borde); }
+.acciones .canto { border-color: var(--acento); color: var(--acento); }
+.acciones .si { background: var(--acento); color: #231a00; font-weight: 700; }
+.acciones .no { border-color: var(--peligro); color: #ffb3a3; }
+
+.mano { display: flex; gap: 10px; justify-content: center; padding-top: 4px; }
+.mano button.carta { padding: 0; min-height: 0; background: none; border: 0; border-radius: 10px; }
+.mano button.carta:disabled { opacity: 0.55; }
+.mano button.carta:not(:disabled) { box-shadow: 0 0 0 3px var(--acento); }
+
+/* Carta dibujada a mano (arte propio, sin copiar mazos de otras apps) */
+.carta-vista { width: 72px; height: 108px; background: var(--carta); border-radius: 10px; border: 2px solid #1b1b1b; color: #1b1b1b; display: grid; grid-template-rows: auto 1fr; justify-items: center; padding: 6px 4px 8px; }
+.carta-vista .numero { font-size: 1.5rem; font-weight: 800; line-height: 1; justify-self: start; padding-left: 4px; }
+.carta-vista svg { width: 44px; height: 44px; align-self: center; }
+.jugada .carta-vista { width: 56px; height: 84px; }
+.jugada .carta-vista .numero { font-size: 1.1rem; }
+.jugada .carta-vista svg { width: 34px; height: 34px; }
+.carta-oro .numero { color: #8a6a10; }
+.carta-copa .numero { color: #9c2f2f; }
+.carta-espada .numero { color: #26455f; }
+.carta-basto .numero { color: #2f5a1e; }

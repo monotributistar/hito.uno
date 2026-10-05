@@ -1,0 +1,7 @@
+# Politica de contenido del truco: sin scripts ni estilos en linea, conexiones solo al mismo origen.
+# Solo para /truco/*; el resto del sitio no cambia. Ver docs/TRUCO.md.
+/truco/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
