@@ -227,15 +227,20 @@ h1 em {
   background: #ed8068;
 }
 
+/* La atribucion del mapa de fondo. NO flota: iba fija abajo a la derecha y se
+   superponia con el contenido —el boton de la seccion de pasos, los rotulos del
+   diagrama, el renglon de la Tarjeta Lite—, y como su fondo era semitransparente
+   el texto de atras se leia a traves. Va al final del contenido, que es donde
+   esta en el HTML: queda visible, que es lo que pide la licencia de
+   OpenStreetMap, y no tapa nada en ningun ancho. */
 .map-attribution {
-  position: fixed;
+  display: block;
+  position: relative;
   z-index: 4;
-  right: 22px;
-  bottom: 14px;
-  padding: 5px 7px;
+  padding: 10px 16px 0;
   color: #315f63;
-  background: rgba(238, 241, 232, 0.82);
   font: 400 0.58rem 'Space Mono', monospace;
+  text-align: right;
   text-decoration: none;
 }
 

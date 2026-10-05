@@ -22,7 +22,7 @@ export type TapActionKey =
   | 'resena'
   | 'ficha'
   | 'asesor'
-export type ObjectKey = 'tarjeta' | 'llavero' | 'apoyavasos' | 'placa' | 'recibidor'
+export type ObjectKey = 'tarjeta' | 'llavero' | 'placa' | 'recibidor'
 
 type UseCase = {
   label: string
@@ -84,7 +84,7 @@ export const useCases: Record<UseCaseKey, UseCase> = {
     label: 'Mi local',
     description: 'Un objeto en la mesa o en la pared que resuelve lo que todos preguntan al llegar.',
     sceneId: 'bar',
-    object: 'Apoyavasos o placa',
+    object: 'Placa',
     actions: ['menu', 'wifi', 'resena'],
   },
   propiedad: {
@@ -197,21 +197,6 @@ export const objects: Record<ObjectKey, HitoObject> = {
       caption: 'Después del toque',
       focus: '65% 55%',
     },
-  },
-  apoyavasos: {
-    label: 'Apoyavasos',
-    moment: 'Al sentarse en la mesa.',
-    result: 'Carta, promo del día y playlist.',
-    blurb: 'Ya está en la mesa cuando llega el pedido. La carta, la promo del día y la playlist, sin llamar a nadie.',
-    sceneId: 'bar',
-    photos: [
-      {
-        src: '/images/products/apoyavasos/apoyavasos-01.webp',
-        alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
-        caption: 'Barra · bar',
-        focus: '55% 62%',
-      },
-    ],
   },
   placa: {
     label: 'Placa',
@@ -386,9 +371,34 @@ export type Door = {
   /** Captura real. Si no hay, va `placeholder` con la descripcion de la imagen. */
   photo?: Photo
   placeholder?: string
+  /** Dibuja el recorrido (objeto, toque, pagina) en lugar de una foto. Lo usa
+      Personal, que antes mostraba la cara de Stephano en una captura. */
+  diagrama?: boolean
+  /** Un texto en el lugar de la foto, cuando todavia no hay foto que valga la
+      pena. No es una descripcion de la imagen que falta (eso es `placeholder`):
+      es contenido que se lee. */
+  nota?: string
 }
 
 export const doors: Door[] = [
+  /* El orden importa: primero las dos que llevan a una pagina, despues las dos
+     que todavia no se publican. Software va primera porque es lo que hoy se
+     puede mostrar funcionando (la demo), y Personal bajo de prioridad por
+     pedido de Stephano (2026-10-03). */
+  {
+    key: 'software',
+    label: 'Software a medida',
+    title: 'Tus reservas, ordenadas.',
+    description: 'Una página para tu alojamiento con un formulario que deja cada consulta en una planilla que ya sabés usar.',
+    examples: 'Reservas · formularios · planillas',
+    href: '/software',
+    status: 'A medida',
+    photo: {
+      src: '/images/puertas/software-demo.webp',
+      alt: 'Primer plano de la demo de reservas: "Así le llegaría al propietario", con el aviso de que en la demo no se envía nada',
+      caption: 'Demo de reservas · captura real',
+    },
+  },
   {
     key: 'personal',
     label: 'Personal',
@@ -399,30 +409,24 @@ export const doors: Door[] = [
     /* Decia "Disponible hoy" y no hay ninguna pieza impresa: la pagina si
        existe, la pieza todavia no. */
     status: 'Página disponible',
-    photo: {
-      src: '/images/puertas/personal-perfil.webp',
-      alt: 'Primer plano del perfil de muestra en un celular: la foto, el nombre y el rubro',
-      caption: 'Perfil de muestra · captura real',
-    },
+    /* Mostraba una captura del perfil de Stephano, con su cara. La home no
+       necesita presentar a una persona para explicar el servicio. */
+    diagrama: true,
   },
   {
     key: 'comercio',
     label: 'Comercio',
     title: 'Tu local, listo para la temporada.',
-    description: 'Ficha de Google, reseñas, carta o catálogo digital y un objeto instalado y probado en el local.',
+    description: 'Ficha de Google, reseñas y tu carta o catálogo digital, al día y sin reimprimir.',
     examples: 'Ficha de Google · carta digital · reseñas',
     // Pendiente de publicar: hasta entonces la puerta abre el llamado a la accion.
     href: CTA_HREF,
     // Pendiente: la pagina /comercios no se publica todavia (sin prueba).
     status: 'Pronto',
-    /* Foto de producto que ya estaba en el sitio. Se cambia cuando exista la
-       foto de un local real. */
-    photo: {
-      src: '/images/products/apoyavasos/apoyavasos-01.webp',
-      alt: 'Apoyavasos Hito.uno parado sobre la barra de un bar, junto a un vaso de cóctel con hielo y una vela encendida',
-      caption: 'Apoyavasos · barra',
-      focus: '55% 62%',
-    },
+    /* Texto de muestra, hasta que haya la foto de un local real trabajando con
+       esto (sale del cafe de Carilo). Antes habia una foto de producto, que
+       mostraba una pieza suelta sobre un fondo y no decia nada del local. */
+    nota: 'Un toque sobre la mesa y el cliente ya está mirando la carta, dejando la reseña o guardando tu contacto. Sin app, sin pedirle que escriba nada.',
   },
   {
     key: 'objetos',
@@ -441,20 +445,6 @@ export const doors: Door[] = [
       alt: 'Dos tarjetas Hito.uno sobre fondo crema: el frente con el logo y el dorso con el código QR',
       caption: 'Tarjeta · frente y dorso',
       focus: '50% 55%',
-    },
-  },
-  {
-    key: 'software',
-    label: 'Software a medida',
-    title: 'Tus reservas, ordenadas.',
-    description: 'Una página para tu alojamiento con un formulario que deja cada consulta en una planilla que ya sabés usar.',
-    examples: 'Reservas · formularios · planillas',
-    href: '/software',
-    status: 'A medida',
-    photo: {
-      src: '/images/puertas/software-demo.webp',
-      alt: 'Primer plano de la demo de reservas: "Así le llegaría al propietario", con el aviso de que en la demo no se envía nada',
-      caption: 'Demo de reservas · captura real',
     },
   },
 ]
@@ -481,7 +471,7 @@ export const layers: Layer[] = [
   {
     label: 'Objeto',
     title: 'La pieza física.',
-    description: 'Tarjeta, llavero, apoyavasos, placa o recibidor. Impresos en 3D, con NFC y código QR. Se paga una vez.',
+    description: 'Tarjeta, llavero, placa o recibidor. Impresos en 3D, con NFC y código QR. Se paga una vez.',
   },
   {
     label: 'Destino',
