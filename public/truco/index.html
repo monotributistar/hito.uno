@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2a1c">
+  <meta name="robots" content="noindex">
+  <title>Truco</title>
+  <link rel="stylesheet" href="/truco/styles.css">
+</head>
+<body>
+  <div id="aviso" class="aviso" hidden></div>
+
+  <!-- Inicio: alias, crear sala o entrar con codigo -->
+  <main id="vista-inicio" class="vista">
+    <h1>Truco</h1>
+    <p class="sub">Jugá mientras esperás.</p>
+
+    <label for="alias">Tu alias</label>
+    <input id="alias" type="text" maxlength="16" autocomplete="off" autocapitalize="words" placeholder="Como te llaman en la mesa">
+
+    <section class="bloque">
+      <h2>Crear una sala</h2>
+      <div class="opciones" role="group" aria-label="Modalidad">
+        <button type="button" class="opcion activa" data-jugadores="2">1 contra 1</button>
+        <button type="button" class="opcion" data-jugadores="4">Parejas</button>
+      </div>
+      <div class="opciones" role="group" aria-label="Puntos">
+        <button type="button" class="opcion activa" data-puntos="15">A 15</button>
+        <button type="button" class="opcion" data-puntos="30">A 30</button>
+      </div>
+      <button id="crear" type="button" class="principal">Crear sala</button>
+    </section>
+
+    <section class="bloque">
+      <h2>Entrar a una sala</h2>
+      <input id="codigo" type="text" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="Codigo de 5 letras">
+      <button id="entrar" type="button" class="secundario">Entrar</button>
+    </section>
+
+    <p class="nota">No hace falta registrarse. Si nadie se une, jugás contra un bot, y esas partidas no cuentan para el ranking.</p>
+  </main>
+
+  <!-- Sala de espera -->
+  <main id="vista-sala" class="vista" hidden>
+    <h1>Sala <span id="sala-codigo"></span></h1>
+    <p id="sala-config" class="sub"></p>
+    <ul id="sala-asientos" class="asientos"></ul>
+    <p id="sala-ayuda" class="nota"></p>
+    <button id="empezar" type="button" class="principal" hidden>Empezar ahora (los lugares libres los ocupan bots)</button>
+    <button id="copiar" type="button" class="secundario">Copiar link de la sala</button>
+    <button id="salir-sala" type="button" class="terciario">Salir</button>
+  </main>
+
+  <!-- Partida -->
+  <main id="vista-juego" class="vista juego" hidden>
+    <header class="marcador">
+      <div class="equipo"><span id="p-nos-nombre"></span><strong id="p-nos">0</strong></div>
+      <div class="centro"><span id="j-sala"></span><span id="j-objetivo"></span></div>
+      <div class="equipo"><span id="p-ellos-nombre"></span><strong id="p-ellos">0</strong></div>
+    </header>
+
+    <section id="mesa" class="mesa" aria-live="polite"></section>
+    <p id="estado" class="estado" aria-live="polite"></p>
+    <p id="reloj" class="reloj"></p>
+    <ul id="registro" class="registro"></ul>
+
+    <section id="acciones" class="acciones"></section>
+    <section id="mano" class="mano" aria-label="Tus cartas"></section>
+  </main>
+
+  <!-- Fin de la partida -->
+  <main id="vista-fin" class="vista" hidden>
+    <h1 id="fin-titulo"></h1>
+    <p id="fin-puntos" class="sub"></p>
+    <p id="fin-ranking" class="nota"></p>
+    <button id="otra" type="button" class="principal">Jugar otra</button>
+  </main>
+
+  <script src="/truco/app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Truco - Pantalla del local</title>
+  <link rel="stylesheet" href="/truco/tv.css">
+</head>
+<body>
+  <div id="advertencia" class="advertencia" hidden></div>
+  <main class="tv">
+    <section class="entrada">
+      <h1>Truco</h1>
+      <p class="lema">Escaneá, poné un alias y jugá mientras esperás.</p>
+      <div id="qr" class="qr" role="img" aria-label="Codigo QR para entrar al juego"></div>
+      <p id="direccion" class="direccion"></p>
+    </section>
+    <section class="salas">
+      <h2>Mesas</h2>
+      <ul id="lista" class="lista"></ul>
+      <p id="vacio" class="vacio">Todavia no hay mesas. Creá la primera.</p>
+    </section>
+  </main>
+  <script src="/truco/vendor/qrcode.js"></script>
+  <script src="/truco/tv.js"></script>
+</body>
+</html>

@@ -328,6 +328,15 @@ y el resumen dice "no se envió", nunca "enviado".
   tiene que aparecer en Google. `check-paths` exige esa meta en todo lo que viva
   bajo `/demo/`.
 
+## Truco (`/truco/`)
+
+Juego de truco argentino en el celular para el QR de "mientras esperás" (segmento
+Local): se escanea, se pone un alias y se juega, contra otra persona o contra un
+bot. **Sin enlace desde la home** y con `noindex`: se entra por el QR. Vive en el
+mismo Worker, bajo `/api/truco/`, con dos Durable Objects propios. Todo el detalle
+(reglas, seguridad, cómo probarlo, cómo apagarlo y qué falta) está en
+[`docs/TRUCO.md`](docs/TRUCO.md).
+
 ## Perfiles partner (`/p/<slug>`)
 
 Cada objeto de un cliente (tarjeta, llavero, porta tarjetas) abre

@@ -72,3 +72,18 @@ test('la CSP es SOLO frame-ancestors: una completa rompe la pagina en silencio',
   expect(csp).not.toContain('default-src')
   expect(csp).not.toContain('script-src')
 })
+
+test('el cambio a WebSocket sale intacto: reconstruirlo pierde la conexion', () => {
+  /* El truco abre un WebSocket por /api/truco/. La conexion viaja en la
+     propiedad `webSocket` de la respuesta, y `new Response(body, init)` no la
+     copia: si `conCabeceras` la reconstruyera, el celular se quedaria esperando
+     un socket que nunca llega. Ademas, un 101 no se puede armar con el
+     constructor de Response, asi que esto tampoco puede tirar una excepcion.
+     Se simula la forma que tiene la respuesta en el runtime de Cloudflare. */
+  const falso = { status: 101, webSocket: { marca: 'la conexion' }, headers: new Headers() }
+  const salida = conCabeceras(falso as unknown as Response, true)
+
+  expect(salida, 'tiene que ser la misma respuesta, no una copia').toBe(falso)
+  expect((salida as unknown as { webSocket?: { marca: string } }).webSocket?.marca).toBe('la conexion')
+  expect(salida.headers.get('X-Frame-Options'), 'no se le agrega nada').toBe(null)
+})

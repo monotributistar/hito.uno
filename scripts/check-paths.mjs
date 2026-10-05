@@ -75,7 +75,11 @@ for (const html of htmlsDelProyecto('.')) {
   const contenido = readFileSync(html, 'utf8')
   for (const m of contenido.matchAll(/<script[^>]+src="(\/[^"]+)"/g)) {
     const destino = m[1].replace(/^\//, '')
-    if (!existsSync(destino)) errores.push(`${html} — el script apunta a ${m[1]}, que no existe`)
+    // Vite sirve `public/` como raiz del sitio: `/truco/app.js` tambien es valido
+    // si el archivo esta en `public/truco/app.js` (paginas estaticas sin build).
+    if (!existsSync(destino) && !existsSync(join('public', destino))) {
+      errores.push(`${html} — el script apunta a ${m[1]}, que no existe`)
+    }
   }
 }
 

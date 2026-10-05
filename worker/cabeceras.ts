@@ -48,6 +48,15 @@ const HSTS = 'max-age=15552000'
     No pisa lo que la respuesta ya traiga: `Cache-Control`, `Content-Type` y
     `Content-Disposition` (el vCard) quedan como estaban. */
 export function conCabeceras(response: Response, esHttps: boolean): Response {
+  /* El cambio a WebSocket sale sin tocar. `new Response(body, init)` arma una
+     respuesta nueva, y la conexion viaja en la propiedad `webSocket`, que no se
+     copia: el truco se quedaria esperando un socket que nunca llega. Un 101
+     tampoco se puede construir desde el constructor de Response. Las cabeceras
+     no se pierden por esto, porque el navegador ya las aplico en el pedido que
+     abrio la conexion. Ver worker/truco/salas.ts. */
+  if (response.status === 101 || (response as { webSocket?: unknown }).webSocket) {
+    return response
+  }
   const salida = new Response(response.body, response)
   for (const [nombre, valor] of Object.entries(CABECERAS)) {
     if (!salida.headers.has(nombre)) salida.headers.set(nombre, valor)
