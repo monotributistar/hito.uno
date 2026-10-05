@@ -11,6 +11,7 @@
 
 import { test, expect, beforeEach, afterEach } from 'vitest'
 import { handleLead, urlPlanilla } from '../leads'
+import { vaciarFreno } from '../freno'
 
 /** Almacen de mentira: anota cada llamada y contesta lo que haria el de verdad. */
 function almacenFalso() {
@@ -215,4 +216,50 @@ test('que direcciones se aceptan como planilla', () => {
   expect(urlPlanilla('https://script.google.com/macros/s/AKfyPRUEBA/dev')).toBeNull()
   expect(urlPlanilla('http://script.google.com/macros/s/AKfyPRUEBA/exec')).toBeNull()
   expect(urlPlanilla('https://script.google.com.otro.example/macros/s/AKfyPRUEBA/exec')).toBeNull()
+})
+
+/* --- El freno cuando el almacen no contesta -------------------------------
+
+   Antes, sin respuesta del almacen la consulta pasaba igual: el freno se
+   apagaba justo cuando lo estaban golpeando. Ahora cuenta el respaldo en
+   memoria (worker/freno.ts). Las dos pruebas de abajo cuidan los dos lados de
+   esa decision, porque arreglar uno rompiendo el otro seria peor que antes. */
+
+/** Almacen caido: no contesta nada, ni el freno ni el guardado. */
+function almacenCaido() {
+  const rutas: string[] = []
+  const ask = async <T>(ruta: string): Promise<T | null> => {
+    rutas.push(ruta)
+    return null
+  }
+  return { ask, rutas }
+}
+
+test('con el almacen caido, una persona sola NO se ve frenada', async () => {
+  vaciarFreno()
+  const almacen = almacenCaido()
+  const bg = fondo()
+
+  const res = await handleLead(consulta(), almacen.ask, bg.waitUntil, true, PLANILLA)
+  await bg.terminar()
+
+  expect(res.ok, 'perder un pedido real es peor que no frenar').toBe(true)
+  expect(salidas.length, 'y la consulta tiene que llegar a la planilla').toBe(1)
+})
+
+test('con el almacen caido, una avalancha del mismo lugar se frena', async () => {
+  vaciarFreno()
+  const almacen = almacenCaido()
+  const bg = fondo()
+
+  const respuestas = []
+  for (let i = 0; i < 7; i++) {
+    respuestas.push(await handleLead(consulta(), almacen.ask, bg.waitUntil, true, PLANILLA))
+  }
+  await bg.terminar()
+
+  const frenadas = respuestas.filter((r) => r.ok === false)
+  expect(frenadas.length, 'las que pasan del limite tienen que cortarse').toBe(2)
+  expect(frenadas.every((r) => r.ok === false && r.status === 429)).toBe(true)
+  expect(salidas.length, 'solo las aceptadas salen a la planilla').toBe(5)
 })

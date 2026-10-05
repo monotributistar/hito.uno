@@ -11,6 +11,7 @@
    puede leer la respuesta. Si Google falla, la consulta ya esta guardada. */
 
 import { readJson } from './body'
+import { permiteSinAlmacen } from './freno'
 
 /** La Web App de Apps Script ("Hito Leads") que escribe en la planilla.
 
@@ -51,6 +52,12 @@ const DEFAULT_MAX = 200
    pesan hasta 4 bytes, no llega a 14 KB. 16 KB deja margen para una consulta
    real y corta cualquier cosa que no lo sea. */
 const LEAD_BODY_MAX = 16 * 1024
+
+/* Freno: cuantos envios se aceptan desde el mismo lugar y en cuanto tiempo.
+   Cinco por minuto es holgado para una persona —puede equivocarse y reenviar—
+   y corto para un programa. */
+const LIMITE = 5
+const VENTANA_MS = 60_000
 
 export type LeadResult =
   | { ok: true; stored: number; forwarded: boolean }
@@ -122,11 +129,20 @@ export async function handleLead(
   }
 
   const ip = request.headers.get('cf-connecting-ip') ?? 'sin-ip'
+  const bucket = await bucketFor(ip)
   const gate = await ask<{ allowed: boolean }>('/allow', {
     method: 'POST',
-    body: JSON.stringify({ bucket: await bucketFor(ip), limit: 5, windowMs: 60_000 }),
+    body: JSON.stringify({ bucket, limit: LIMITE, windowMs: VENTANA_MS }),
   })
-  if (gate && !gate.allowed) {
+
+  /* Sin respuesta del almacen, antes pasaba cualquier cosa. El momento en que
+     el almacen no contesta es, justamente, cuando lo estan golpeando: el freno
+     se apagaba solo cuando mas falta hacia. Ahora cuenta el respaldo en
+     memoria (ver worker/freno.ts), que no es exacto pero no deja la puerta
+     abierta de par en par. */
+  const permitido = gate ? gate.allowed : permiteSinAlmacen(bucket, LIMITE, VENTANA_MS)
+  if (!gate) console.warn('El almacen no contesto el freno: cuenta el respaldo en memoria.')
+  if (!permitido) {
     return { ok: false, status: 429, error: 'Demasiados envíos seguidos. Probá en un minuto.' }
   }
 
