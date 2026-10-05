@@ -1,5 +1,26 @@
-# Politica de contenido del truco: sin scripts ni estilos en linea, conexiones solo al mismo origen.
-# Solo para /truco/*; el resto del sitio no cambia. Ver docs/TRUCO.md.
+# Cabeceras de los archivos estaticos.
+#
+# La landing, el CSS, el JS y las fotos NO pasan por el Worker: Cloudflare los
+# sirve directo, y solo las rutas de `run_worker_first` (/p/, /o/, /panel/,
+# /api/) ejecutan nuestro codigo. Por eso las cabeceras de worker/cabeceras.ts
+# no llegaban a la pagina principal, que es la mas visitada.
+#
+# Este archivo las pone del lado de Cloudflare. Vive en public/ para que el
+# build lo copie a dist/ tal cual. Las dos listas tienen que decir lo mismo:
+# si se cambia una, se cambia la otra (hay un test que lo verifica).
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
+  Strict-Transport-Security: max-age=15552000
+
+# El truco va mas cerrado que el resto: es la unica parte del sitio que no carga
+# nada de afuera, asi que puede llevar una CSP completa sin riesgo de cortar las
+# tipografias de Google ni la analitica. Cloudflare aplica las reglas que
+# coinciden y para /truco/* gana la mas especifica, asi que estas refuerzan las
+# de arriba, no las reemplazan.
 /truco/*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
   X-Content-Type-Options: nosniff

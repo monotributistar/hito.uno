@@ -27,6 +27,7 @@ import { buildVCard, vcardFilename, type VCardPartner } from './vcard'
 import { withProfileMeta, type MetaPartner } from './meta'
 import { handleLead } from './leads'
 import { readJson } from './body'
+import { conCabeceras } from './cabeceras'
 import { TrucoRegistro, TrucoSala } from './truco/salas'
 import { esRutaTruco, manejarTruco } from './truco/rutas'
 import type { EntornoTruco } from './truco/plataforma'
@@ -309,87 +310,100 @@ export default {
   async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(request.url)
 
-    /* Truco: salas de juego para el QR de "mientras esperas". Todo vive bajo
-       /api/truco/. Un error ahi adentro no tumba el resto del sitio: se contesta
-       500 solo en esa ruta. Ver docs/TRUCO.md. */
-    if (esRutaTruco(url.pathname)) {
-      try {
-        const respuesta = await manejarTruco(request, env, url)
-        if (respuesta) return respuesta
-      } catch (error) {
-        console.error('truco: error no controlado', error)
-        return json({ error: 'error interno' }, 500)
-      }
-    }
-
-    /* Formulario de la landing. El navegador ya no le habla a Google: manda
-       la consulta aca y recibe un si o un no de verdad. Ver worker/leads.ts. */
-    if (url.pathname === '/api/lead') {
-      if (request.method !== 'POST') return json({ error: 'metodo no permitido' }, 405)
-      const result = await handleLead(
-        request,
-        (path, init) => ask(env, path, init),
-        (promise) => ctx.waitUntil(promise),
-        env.REENVIO_CONSULTAS === 'on',
-        env.APPS_SCRIPT_URL,
-      )
-      return result.ok
-        ? json({ ok: true })
-        : json({ ok: false, error: result.error }, result.status)
-    }
-
-    const apiResponse = await handlePanelApi(request, env, url)
-    if (apiResponse) return apiResponse
-
-    const objectMatch = url.pathname.match(OBJECT_ROUTE)
-    if (objectMatch) {
-      const id = objectMatch[1]
-      const target = await resolveTarget(id, env)
-      if (!target) {
-        // Un objeto impreso con un id desconocido no puede llevar a un error:
-        // va a la landing, con el id en la query para poder rastrearlo.
-        countHit(env, request, id, '(desconocido)', '(sin dueno)')
-        return redirect(new URL(`/?o=${encodeURIComponent(id)}`, url).toString())
-      }
-      countHit(env, request, id, target, SEED[id]?.owner ?? '(sin dueno)')
-      return redirect(target.startsWith('/') ? new URL(target, url).toString() : target)
-    }
-
-    if (PANEL_ROUTE.test(url.pathname)) {
-      return env.ASSETS.fetch(new Request(new URL(PANEL_ENTRY, url).toString(), request))
-    }
-
-    /* Archivo de contacto del perfil. Se sirve `inline`: con ese encabezado
-       Safari abre la ficha y ofrece agregarlo a la agenda, en vez de bajar un
-       archivo a Archivos; Android lo manda igual a Contactos. */
-    const vcardMatch = url.pathname.match(VCARD_ROUTE)
-    if (vcardMatch) {
-      const partner = PARTNERS.find((p) => p.slug === vcardMatch[1].toLowerCase()) as
-        | VCardPartner
-        | undefined
-      if (!partner) return new Response('Perfil no encontrado', { status: 404 })
-      return new Response(buildVCard(partner, url.origin), {
-        headers: {
-          'Content-Type': 'text/vcard; charset=utf-8',
-          'Content-Disposition': `inline; filename="${vcardFilename(partner.name)}"`,
-          'Cache-Control': 'no-store',
-        },
-      })
-    }
-
-    if (PARTNER_ROUTE.test(url.pathname)) {
-      const response = await env.ASSETS.fetch(
-        new Request(new URL(PARTNER_ENTRY, url).toString(), request),
-      )
-      /* El <head> del HTML es generico: se personaliza aca para que al
-         compartir el link aparezcan el nombre y la foto del partner, y no
-         "Perfil · hito.uno". WhatsApp y los buscadores no ejecutan React. */
-      const slug = url.pathname.split('/').filter(Boolean)[1]?.toLowerCase()
-      const partner = PARTNERS.find((p) => p.slug === slug) as MetaPartner | undefined
-      if (!partner || !response.ok) return response
-      return withProfileMeta(response, partner, url.origin)
-    }
-
-    return env.ASSETS.fetch(request)
+    /* Una sola puerta de salida: todo lo que contesta el Worker pasa por aca
+       y sale con las cabeceras puestas. Si manana se agrega una ruta nueva,
+       las lleva sin que nadie se acuerde de ponerlas. */
+    const respuesta = await resolver(request, env, ctx, url)
+    return conCabeceras(respuesta, url.protocol === 'https:')
   },
+}
+
+/** Lo que el Worker contesta, sin las cabeceras: cada ruta y su respuesta. */
+async function resolver(request: Request, env: Env, ctx: Ctx, url: URL): Promise<Response> {
+  /* Truco: salas de juego para el QR de "mientras esperas". Todo vive bajo
+     /api/truco/. Un error ahi adentro no tumba el resto del sitio: se contesta
+     500 solo en esa ruta. Ver docs/TRUCO.md.
+
+     Va dentro de `resolver` y no de `fetch` para que sus respuestas tambien
+     lleven las cabeceras de seguridad. La unica que no puede pasar por ahi es
+     el cambio a WebSocket (101), y de eso se encarga `conCabeceras`. */
+  if (esRutaTruco(url.pathname)) {
+    try {
+      const respuesta = await manejarTruco(request, env, url)
+      if (respuesta) return respuesta
+    } catch (error) {
+      console.error('truco: error no controlado', error)
+      return json({ error: 'error interno' }, 500)
+    }
+  }
+
+  /* Formulario de la landing. El navegador ya no le habla a Google: manda
+     la consulta aca y recibe un si o un no de verdad. Ver worker/leads.ts. */
+  if (url.pathname === '/api/lead') {
+    if (request.method !== 'POST') return json({ error: 'metodo no permitido' }, 405)
+    const result = await handleLead(
+      request,
+      (path, init) => ask(env, path, init),
+      (promise) => ctx.waitUntil(promise),
+      env.REENVIO_CONSULTAS === 'on',
+      env.APPS_SCRIPT_URL,
+    )
+    return result.ok
+      ? json({ ok: true })
+      : json({ ok: false, error: result.error }, result.status)
+  }
+
+  const apiResponse = await handlePanelApi(request, env, url)
+  if (apiResponse) return apiResponse
+
+  const objectMatch = url.pathname.match(OBJECT_ROUTE)
+  if (objectMatch) {
+    const id = objectMatch[1]
+    const target = await resolveTarget(id, env)
+    if (!target) {
+      // Un objeto impreso con un id desconocido no puede llevar a un error:
+      // va a la landing, con el id en la query para poder rastrearlo.
+      countHit(env, request, id, '(desconocido)', '(sin dueno)')
+      return redirect(new URL(`/?o=${encodeURIComponent(id)}`, url).toString())
+    }
+    countHit(env, request, id, target, SEED[id]?.owner ?? '(sin dueno)')
+    return redirect(target.startsWith('/') ? new URL(target, url).toString() : target)
+  }
+
+  if (PANEL_ROUTE.test(url.pathname)) {
+    return env.ASSETS.fetch(new Request(new URL(PANEL_ENTRY, url).toString(), request))
+  }
+
+  /* Archivo de contacto del perfil. Se sirve `inline`: con ese encabezado
+     Safari abre la ficha y ofrece agregarlo a la agenda, en vez de bajar un
+     archivo a Archivos; Android lo manda igual a Contactos. */
+  const vcardMatch = url.pathname.match(VCARD_ROUTE)
+  if (vcardMatch) {
+    const partner = PARTNERS.find((p) => p.slug === vcardMatch[1].toLowerCase()) as
+      | VCardPartner
+      | undefined
+    if (!partner) return new Response('Perfil no encontrado', { status: 404 })
+    return new Response(buildVCard(partner, url.origin), {
+      headers: {
+        'Content-Type': 'text/vcard; charset=utf-8',
+        'Content-Disposition': `inline; filename="${vcardFilename(partner.name)}"`,
+        'Cache-Control': 'no-store',
+      },
+    })
+  }
+
+  if (PARTNER_ROUTE.test(url.pathname)) {
+    const response = await env.ASSETS.fetch(
+      new Request(new URL(PARTNER_ENTRY, url).toString(), request),
+    )
+    /* El <head> del HTML es generico: se personaliza aca para que al
+       compartir el link aparezcan el nombre y la foto del partner, y no
+       "Perfil · hito.uno". WhatsApp y los buscadores no ejecutan React. */
+    const slug = url.pathname.split('/').filter(Boolean)[1]?.toLowerCase()
+    const partner = PARTNERS.find((p) => p.slug === slug) as MetaPartner | undefined
+    if (!partner || !response.ok) return response
+    return withProfileMeta(response, partner, url.origin)
+  }
+
+  return env.ASSETS.fetch(request)
 }
