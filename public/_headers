@@ -18,11 +18,17 @@
 
 # El truco va mas cerrado que el resto: es la unica parte del sitio que no carga
 # nada de afuera, asi que puede llevar una CSP completa sin riesgo de cortar las
-# tipografias de Google ni la analitica. Cloudflare aplica las reglas que
-# coinciden y para /truco/* gana la mas especifica, asi que estas refuerzan las
-# de arriba, no las reemplazan.
+# tipografias de Google ni la analitica.
+#
+# Cloudflare NO reemplaza por especificidad: aplica TODAS las reglas que
+# coinciden y manda las dos cabeceras. Medido en dev el 2026-10-05, /truco/
+# salia con dos `Content-Security-Policy` y dos `Referrer-Policy`. Con dos CSP
+# el navegador aplica la interseccion, que da lo mismo aca, pero con dos
+# `Referrer-Policy` cual gana depende del navegador. Por eso se quitan primero
+# con `!` y se vuelven a poner, y lo que no cambia (nosniff, DENY) no se repite:
+# ya lo pone la regla de arriba.
 /truco/*
+  ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
-  X-Content-Type-Options: nosniff
+  ! Referrer-Policy
   Referrer-Policy: no-referrer
-  X-Frame-Options: DENY
