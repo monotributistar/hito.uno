@@ -1,10 +1,41 @@
 # hito.uno
 
-Una aplicación React mínima publicada como Cloudflare Worker en
-[hito.uno](https://hito.uno).
+Sitio en producción de **hito.uno**: objetos físicos (impresos en 3D) con **NFC y QR**
+que abren perfiles web, puertos redirigibles y un panel liviano para que el cliente
+cambie el destino sin reimprimir.
 
-Cómo se reparte el trabajo entre chats de Claude Code (ORQ, UX, PLAT, SEC) y el
-flujo de PRs: [`docs/EQUIPO.md`](docs/EQUIPO.md).
+En vivo: [hito.uno](https://hito.uno) · entorno de prueba: [dev.hito.uno](https://dev.hito.uno).
+
+## Qué hace
+
+- **Perfiles** en `/p/<slug>`: página del cliente (datos, canales, vCard, compartir).
+- **Puertos** en `/o/<id>`: URL corta impresa en el objeto; se puede reapuntar sin
+  reimprimir.
+- **Panel** en `/panel/<token>`: el cliente ve su Hito y cambia a dónde apunta
+  (sin cuenta ni contraseña).
+- **Landing** y demos (mapa, reservas, páginas de oferta) servidas desde el mismo
+  Worker.
+- **Formulario de consultas** vía `POST /api/lead` en el Worker (anti-spam, rate
+  limit, almacén, reenvío a planilla solo en producción).
+
+Detalle de producto y roles de trabajo: [`docs/EQUIPO.md`](docs/EQUIPO.md),
+[`docs/DISENO.md`](docs/DISENO.md).
+
+## Stack
+
+| Capa | Tecnología |
+| --- | --- |
+| Front | React 19, TypeScript, Vite |
+| 3D / mapa | Three.js, React Three Fiber |
+| Edge | Cloudflare Workers + Durable Object (SQLite) |
+| Deploy | Wrangler · Workers `hito-uno` / `hito-uno-dev` |
+| Tests | Vitest |
+
+## Estado
+
+Producción activa en `hito.uno`, con cliente real y flujo `dev` → PR → `main`.
+El README de abajo documenta desarrollo, validación, entornos y decisiones de
+seguridad ya aplicadas (no roadmap).
 
 ## Desarrollo local
 
